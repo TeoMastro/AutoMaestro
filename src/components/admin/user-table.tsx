@@ -148,15 +148,6 @@ export function UsersTable({
     });
   }, 300);
 
-  // Auto-clear success message from URL
-  useEffect(() => {
-    if (message) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('message');
-      router.replace(url.pathname + url.search, { scroll: false });
-    }
-  }, [message, router]);
-
   // Handle role filter changes
   const handleRoleFilterChange = useCallback(
     (value: string) => {

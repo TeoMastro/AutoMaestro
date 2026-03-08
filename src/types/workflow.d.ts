@@ -121,10 +121,12 @@ export type WorkflowFormProps = {
   companies: { id: string; name: string }[];
 };
 
-export type WorkflowViewProps = {
+export interface WorkflowViewProps {
   workflow: Workflow;
   documents?: WorkflowDocument[];
-};
+  assignableCompanies?: Company[];
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
 
 export type AdminWorkflowPageProps = {
   searchParams: Promise<GetWorkflowsParams>;

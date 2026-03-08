@@ -34,8 +34,9 @@ export function CompanyDeleteButton({
       try {
         await deleteCompanyAction(companyId);
         router.push('/admin/company?message=companyDeletedSuccess');
-      } catch {
-        // Handle error silently or add a toast
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'unexpectedError';
+        router.push(`/admin/company/${companyId}?error=${errorMsg}`);
       }
     });
   };

@@ -6,8 +6,10 @@ import { getAllUsersForExport } from '@/server-actions/user';
 
 export default async function AdminCompanyViewPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await getSession();
 
@@ -26,7 +28,7 @@ export default async function AdminCompanyViewPage({
 
   return (
     <div className="container mx-auto py-6">
-      <CompanyView company={company} assignments={assignments} users={users} />
+      <CompanyView company={company} assignments={assignments} users={users} searchParams={await searchParams} />
     </div>
   );
 }

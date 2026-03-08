@@ -6,9 +6,11 @@ import { CompanyViewProps } from '@/types/company';
 import { CompanyDeleteButton } from './company-delete-button';
 import { CompanyAssignments } from './company-assignments';
 import Link from 'next/link';
+import { InfoAlert } from '@/components/info-alert';
 
-export function CompanyView({ company, assignments, users = [] }: CompanyViewProps) {
+export function CompanyView({ company, assignments, users = [], searchParams }: CompanyViewProps) {
   const t = useTranslations('app');
+  const errorMsg = searchParams?.error as string | undefined;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -31,6 +33,8 @@ export function CompanyView({ company, assignments, users = [] }: CompanyViewPro
           <CompanyDeleteButton companyId={company.id} companyName={company.name} />
         </div>
       </div>
+
+      {errorMsg && <InfoAlert message={t(errorMsg)} type="error" />}
 
       {/* Company Details */}
       <Card>

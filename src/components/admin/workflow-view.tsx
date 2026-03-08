@@ -10,8 +10,11 @@ import { HostedChat } from '@/components/workflow/hosted-chat';
 import { WorkflowDeleteButton } from './workflow-delete-button';
 import Link from 'next/link';
 
-export function WorkflowView({ workflow, documents = [] }: WorkflowViewProps) {
+import { InfoAlert } from '@/components/info-alert';
+
+export function WorkflowView({ workflow, documents = [], searchParams }: WorkflowViewProps) {
   const t = useTranslations('app');
+  const errorMsg = searchParams?.error as string | undefined;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -34,6 +37,8 @@ export function WorkflowView({ workflow, documents = [] }: WorkflowViewProps) {
           <WorkflowDeleteButton workflowId={workflow.id} workflowName={workflow.name} />
         </div>
       </div>
+
+      {errorMsg && <InfoAlert message={t(errorMsg)} type="error" />}
 
       {/* Workflow Details */}
       <Card>

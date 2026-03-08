@@ -266,7 +266,7 @@ export async function updateWorkflowAction(
       globalError: 'unexpectedError',
     };
   }
-  redirect(`/admin/workflow/${workflowId}?message=workflowUpdatedSuccess`);
+  redirect(`/admin/workflow?message=workflowUpdatedSuccess`);
 }
 
 export async function deleteWorkflowAction(workflowId: string) {

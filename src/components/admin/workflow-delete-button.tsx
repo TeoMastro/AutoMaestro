@@ -34,8 +34,9 @@ export function WorkflowDeleteButton({
       try {
         await deleteWorkflowAction(workflowId);
         router.push('/admin/workflow?message=workflowDeletedSuccess');
-      } catch {
-        // Handle error silently or add a toast
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'unexpectedError';
+        router.push(`/admin/workflow/${workflowId}?error=${errorMsg}`);
       }
     });
   };

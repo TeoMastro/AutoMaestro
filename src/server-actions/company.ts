@@ -138,7 +138,7 @@ export async function updateCompanyAction(
       globalError: 'unexpectedError',
     };
   }
-  redirect(`/admin/company/${companyId}?message=companyUpdatedSuccess`);
+  redirect(`/admin/company?message=companyUpdatedSuccess`);
 }
 
 export async function deleteCompanyAction(companyId: string) {

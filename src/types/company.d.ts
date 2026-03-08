@@ -71,8 +71,18 @@ export type CompanyFormProps = {
   mode: 'create' | 'update';
 };
 
-export type CompanyViewProps = {
+export type CompanyAssignment = {
+  userId: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  assignedAt: Date;
+  assignedBy: string | null;
+};
+
+export interface CompanyViewProps {
   company: Company;
-  assignments: CompanyWithUsers['users'];
-  users: User[];
+  assignments: CompanyAssignment[];
+  users?: Omit<User, 'password_hash'>[];
+  searchParams?: { [key: string]: string | string[] | undefined };
 };

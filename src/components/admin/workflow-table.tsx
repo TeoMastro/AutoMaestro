@@ -82,14 +82,6 @@ export function WorkflowTable({
     [searchParams, pathname, router]
   );
 
-  useEffect(() => {
-    if (message) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('message');
-      router.replace(url.pathname + url.search, { scroll: false });
-    }
-  }, [message, router]);
-
   const handleSort = useCallback(
     (field: SortField) => {
       const newDir = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';

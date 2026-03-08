@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ChatSessionTable } from '@/components/admin/chat-session-table';
 import { getChatSessionsWithPagination, getWorkflowsForFilter } from '@/server-actions/chat-log';
 import type { GetChatSessionsParams } from '@/types/chat-log';
+import { getActiveCompanyId } from '@/lib/active-company';
 
 interface ChatHistoryPageProps {
   searchParams: Promise<GetChatSessionsParams>;
@@ -16,9 +17,10 @@ export default async function ChatHistoryPage({ searchParams }: ChatHistoryPageP
   }
 
   const params = await searchParams;
+  const companyId = await getActiveCompanyId();
   const [{ sessions, totalCount, totalPages, currentPage, limit }, workflows] = await Promise.all([
-    getChatSessionsWithPagination(params),
-    getWorkflowsForFilter(),
+    getChatSessionsWithPagination({ ...params, companyId }),
+    getWorkflowsForFilter(companyId),
   ]);
 
   return (

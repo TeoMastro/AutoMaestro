@@ -23,14 +23,20 @@ async function checkAuth() {
 /**
  * For non-admin users, fetch their accessible workflow IDs via company assignments.
  */
-async function getUserWorkflowIds(userId: string): Promise<string[]> {
+async function getUserWorkflowIds(userId: string, companyId?: string): Promise<string[]> {
   const supabase = createAdminClient();
 
   // Get company IDs the user is assigned to
-  const { data: companies, error: companyError } = await supabase
+  let companyQuery = supabase
     .from('user_companies')
     .select('company_id')
     .eq('user_id', userId);
+
+  if (companyId) {
+    companyQuery = companyQuery.eq('company_id', companyId);
+  }
+
+  const { data: companies, error: companyError } = await companyQuery;
 
   if (companyError) throw companyError;
 
@@ -69,7 +75,7 @@ export async function getChatSessionsWithPagination(
     // For users, restrict to their assigned workflows
     let allowedWorkflowIds: string[] | null = null;
     if (!isAdmin) {
-      allowedWorkflowIds = await getUserWorkflowIds(session.user.id);
+      allowedWorkflowIds = await getUserWorkflowIds(session.user.id, params.companyId);
       if (allowedWorkflowIds.length === 0) {
         return { sessions: [], totalCount: 0, totalPages: 0, currentPage: page, limit };
       }
@@ -194,7 +200,7 @@ export async function getChatSessionMessages(
 // Fetch workflows for filter dropdown
 // ============================================================
 
-export async function getWorkflowsForFilter(): Promise<{ id: string; name: string }[]> {
+export async function getWorkflowsForFilter(companyId?: string): Promise<{ id: string; name: string }[]> {
   try {
     const session = await checkAuth();
     const isAdmin = session.user.role === Role.ADMIN;
@@ -211,7 +217,7 @@ export async function getWorkflowsForFilter(): Promise<{ id: string; name: strin
       return (data || []).map((w) => ({ id: w.id, name: w.name }));
     } else {
       // Users only see workflows from their assigned companies
-      const workflowIds = await getUserWorkflowIds(session.user.id);
+      const workflowIds = await getUserWorkflowIds(session.user.id, companyId);
       if (workflowIds.length === 0) return [];
 
       const { data, error } = await supabase

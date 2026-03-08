@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { TriggerLogTable } from '@/components/admin/trigger-log-table';
 import { getTriggerLogsWithPagination, getTriggerWorkflowsForFilter } from '@/server-actions/trigger-log';
 import type { GetTriggerLogsParams } from '@/types/trigger-log';
+import { getActiveCompanyId } from '@/lib/active-company';
 
 interface TriggerHistoryPageProps {
   searchParams: Promise<GetTriggerLogsParams>;
@@ -16,9 +17,10 @@ export default async function TriggerHistoryPage({ searchParams }: TriggerHistor
   }
 
   const params = await searchParams;
+  const companyId = await getActiveCompanyId();
   const [{ logs, totalCount, totalPages, currentPage, limit }, workflows] = await Promise.all([
     getTriggerLogsWithPagination(params),
-    getTriggerWorkflowsForFilter(),
+    getTriggerWorkflowsForFilter(companyId),
   ]);
 
   return (

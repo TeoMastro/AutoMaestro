@@ -37,6 +37,8 @@
     "selectCompany": "Επιλέξτε εταιρεία",
     "allCompanies": "Όλες οι Εταιρείες",
     "filterByCompany": "Φιλτράρισμα κατά εταιρεία",
+    "switchCompany": "Αλλαγή Εταιρείας",
+    "noCompanyAssigned": "Δεν έχει ανατεθεί εταιρεία. Επικοινωνήστε με τον διαχειριστή.",
     "userAssignedSuccess": "Ο χρήστης ανατέθηκε επιτυχώς",
     "userUnassignedSuccess": "Η ανάθεση χρήστη καταργήθηκε",
 

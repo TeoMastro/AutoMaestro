@@ -180,7 +180,7 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
 // Fetch workflows for filter dropdown (Only trigger workflows)
 // ============================================================
 
-export async function getTriggerWorkflowsForFilter(): Promise<{ id: string; name: string }[]> {
+export async function getTriggerWorkflowsForFilter(companyId?: string): Promise<{ id: string; name: string }[]> {
   try {
     const session = await checkAuth();
     const isAdmin = session.user.role === Role.ADMIN;
@@ -196,10 +196,16 @@ export async function getTriggerWorkflowsForFilter(): Promise<{ id: string; name
       return (data || []).map((w) => ({ id: w.id, name: w.name }));
     } else {
       // Users see workflows from their assigned companies
-      const { data: companies } = await supabase
+      let companyQuery = supabase
         .from('user_companies')
         .select('company_id')
         .eq('user_id', session.user.id);
+
+      if (companyId) {
+        companyQuery = companyQuery.eq('company_id', companyId);
+      }
+
+      const { data: companies } = await companyQuery;
 
       const companyIds = (companies || []).map((c) => c.company_id);
       if (companyIds.length === 0) return [];

@@ -37,6 +37,8 @@
     "selectCompany": "Select a company",
     "allCompanies": "All Companies",
     "filterByCompany": "Filter by company",
+    "switchCompany": "Switch Company",
+    "noCompanyAssigned": "No company assigned. Contact your administrator.",
     "userAssignedSuccess": "User assigned successfully",
     "userUnassignedSuccess": "User unassigned successfully",
 

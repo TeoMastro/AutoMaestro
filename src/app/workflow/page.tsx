@@ -9,6 +9,7 @@ import { HostedChat } from '@/components/workflow/hosted-chat';
 import { DocumentManager } from '@/components/workflow/document-manager';
 import { Card, CardContent } from '@/components/ui/card';
 import { getTranslations } from 'next-intl/server';
+import { getActiveCompanyId } from '@/lib/active-company';
 
 interface WorkflowDashboardPageProps {
   searchParams: Promise<{ workflow?: string }>;
@@ -23,7 +24,8 @@ export default async function WorkflowDashboardPage({
   const t = await getTranslations('app');
   const params = await searchParams;
 
-  const workflows = await getUserWorkflows();
+  const companyId = await getActiveCompanyId();
+  const workflows = await getUserWorkflows(companyId);
 
   if (workflows.length === 0) {
     return (

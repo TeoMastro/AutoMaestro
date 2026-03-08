@@ -376,14 +376,19 @@ export async function getWorkflowsWithPagination(
 // User: fetch own assigned workflows (no admin check — RLS enforced)
 // ============================================================
 
-export async function getUserWorkflows(): Promise<Workflow[]> {
+export async function getUserWorkflows(companyId?: string): Promise<Workflow[]> {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from('workflows')
       .select('*, companies(name)')
-      .eq('is_active', true)
-      .order('name');
+      .eq('is_active', true);
+
+    if (companyId) {
+      query = query.eq('company_id', companyId);
+    }
+
+    const { data, error } = await query.order('name');
 
     if (error) throw error;
     return (data || []).map((w) => mapWorkflow(w as Record<string, unknown>));

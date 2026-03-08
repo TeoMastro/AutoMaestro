@@ -20,6 +20,7 @@ export type GetChatSessionsParams = {
   limit?: string;
   search?: string;
   workflowFilter?: string;
+  companyId?: string;
   sortField?: string;
   sortDirection?: string;
 };

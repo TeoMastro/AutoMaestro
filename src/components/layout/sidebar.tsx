@@ -18,6 +18,9 @@ import { getSession } from '@/lib/auth-session';
 import { getTranslations } from 'next-intl/server';
 import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 import { TermsDialog } from '@/components/legal/terms-dialog';
+import { CompanySwitcher } from '@/components/layout/company-switcher';
+import { getUserCompanies } from '@/server-actions/user-company';
+import { getActiveCompanyId } from '@/lib/active-company';
 
 export async function AppSidebar() {
   const session = await getSession();
@@ -91,19 +94,27 @@ export async function AppSidebar() {
       : []),
   ];
 
+  // Fetch user's companies for the switcher (non-admin only)
+  const userCompanies = !isAdmin ? await getUserCompanies() : [];
+  const activeCompanyId = !isAdmin ? await getActiveCompanyId() : undefined;
+
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-3">
-          {/* App Logo Placeholder */}
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">NL</span>
+        {isAdmin ? (
+          <div className="flex items-center gap-3">
+            {/* App Logo Placeholder */}
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">NL</span>
+            </div>
+            {/* App Title */}
+            <h2 className="text-lg font-semibold text-foreground">
+              Next Launch Kit
+            </h2>
           </div>
-          {/* App Title */}
-          <h2 className="text-lg font-semibold text-foreground">
-            Next Launch Kit
-          </h2>
-        </div>
+        ) : (
+          <CompanySwitcher companies={userCompanies} activeCompanyId={activeCompanyId} />
+        )}
       </SidebarHeader>
 
       <SidebarContent>

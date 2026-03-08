@@ -13,7 +13,15 @@ export default async function middleware(req: NextRequest) {
   }
 
   // Protect authenticated routes — redirect to signin if not logged in
-  const protectedPaths = ['/dashboard', '/profile', '/settings', '/admin'];
+  const protectedPaths = [
+    '/dashboard',
+    '/profile',
+    '/settings',
+    '/admin',
+    '/chat-history',
+    '/trigger-history',
+    '/workflow',
+  ];
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
 
   if (isProtected && !user) {
@@ -74,5 +82,8 @@ export const config = {
     '/admin/:path*',
     '/auth/:path*',
     '/api/:path*',
+    '/chat-history/:path*',
+    '/trigger-history/:path*',
+    '/workflow/:path*',
   ],
 };

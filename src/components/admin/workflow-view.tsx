@@ -8,6 +8,7 @@ import { DocumentManager } from '@/components/workflow/document-manager';
 import { TriggerWorkflow } from '@/components/workflow/trigger-workflow';
 import { HostedChat } from '@/components/workflow/hosted-chat';
 import { WorkflowDeleteButton } from './workflow-delete-button';
+import { WorkflowTokenPanel } from './workflow-token-panel';
 import Link from 'next/link';
 
 import { InfoAlert } from '@/components/info-alert';
@@ -101,7 +102,10 @@ export function WorkflowView({ workflow, documents = [], searchParams }: Workflo
                   </Badge>
                 </div>
               </div>
-
+              <WorkflowTokenPanel
+                workflowId={workflow.id}
+                initialToken={workflow.token}
+              />
             </div>
           </div>
         </CardContent>

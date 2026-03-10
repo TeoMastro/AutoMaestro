@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     // Verify user is assigned to this workflow (RLS also enforces this)
     const { data: workflow, error: wfError } = await supabase
       .from('workflows')
-      .select('id, webhook_url, config, type')
+      .select('id, webhook_url, config, type, token')
       .eq('id', workflowId)
       .eq('is_active', true)
       .single();
@@ -52,7 +52,10 @@ export async function POST(req: NextRequest) {
       // Forward to n8n webhook
       n8nResponse = await fetch(workflow.webhook_url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(workflow.token ? { Authorization: workflow.token } : {}),
+        },
         body: JSON.stringify(payload),
       });
 

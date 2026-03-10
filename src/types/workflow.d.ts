@@ -18,6 +18,7 @@ export type WorkflowConfig = {
 
 export type Workflow = {
   id: string;
+  token: string;
   companyId: string;
   companyName?: string;
   name: string;

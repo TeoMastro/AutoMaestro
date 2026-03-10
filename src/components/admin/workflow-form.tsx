@@ -36,7 +36,6 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
       params_json: workflow?.config?.params?.length
         ? JSON.stringify(workflow.config.params, null, 2)
         : '',
-
     },
     globalError: null,
   };

@@ -53,8 +53,10 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-  // Protect API routes
-  if (pathname.startsWith('/api') && !user) {
+  // Protect API routes — allow Bearer-token routes used by n8n
+  const bearerApiPaths = ['/api/logs/', '/api/knowledge-search'];
+  const isBearerApi = bearerApiPaths.some((p) => pathname.startsWith(p));
+  if (pathname.startsWith('/api') && !user && !isBearerApi) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

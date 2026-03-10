@@ -10,7 +10,6 @@ import type {
   GetChatSessionsParams,
   GetChatSessionsResult,
 } from '@/types/chat-log';
-import { calculateCost } from '@/lib/pricing';
 
 async function checkAuth() {
   const session = await getSession();
@@ -130,7 +129,7 @@ export async function getChatSessionsWithPagination(
 
 export async function getChatSessionMessages(
   sessionId: string
-): Promise<{ messages: ChatLogEntry[]; workflowName: string; totalCost: number }> {
+): Promise<{ messages: ChatLogEntry[]; workflowName: string }> {
   try {
     const session = await checkAuth();
     const isAdmin = session.user.role === Role.ADMIN;
@@ -174,22 +173,7 @@ export async function getChatSessionMessages(
       createdAt: new Date(r.created_at),
     }));
 
-    // Calculate total cost
-    let totalCost = 0;
-    const { data: usageData, error: usageError } = await supabase
-      .from('workflow_usage')
-      .select('model, prompt_tokens, completion_tokens')
-      .eq('session_id', sessionId);
-      
-    if (!usageError && usageData) {
-      totalCost = usageData.reduce((acc, usage) => {
-        return acc + calculateCost(usage.model, usage.prompt_tokens, usage.completion_tokens);
-      }, 0);
-    } else if (usageError) {
-      logger.error('Error fetching chat session usage', { error: usageError.message });
-    }
-
-    return { messages, workflowName, totalCost };
+    return { messages, workflowName };
   } catch (error) {
     logger.error('Error fetching chat session messages', { error: (error as Error).message });
     throw error;

@@ -97,18 +97,6 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
         </div>
       </div>
 
-      {/* Cost Card */}
-      <Card>
-        <CardHeader className="py-4">
-          <CardTitle className="text-lg font-medium">{t('totalCost')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-500">
-            ${log.totalCost.toFixed(5)}
-          </p>
-        </CardContent>
-      </Card>
-
       {/* Trigger Information Card */}
       <Card>
         <CardContent className="space-y-6 p-6">

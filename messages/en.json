@@ -257,7 +257,6 @@
     "chat-history": "Chat History",
     "sessionId": "Session ID",
     "messageCount": "Messages",
-    "totalCost": "Total Cost",
     "firstMessage": "First Message",
     "lastMessage": "Last Message",
     "noChatSessionsFound": "No chat sessions found.",
@@ -281,6 +280,11 @@
     "success": "Success",
     "error": "Error",
     "userEmail": "User Email",
-    "noResults": "No results found."
+    "noResults": "No results found.",
+
+    "workflowToken": "API Token",
+    "workflowTokenHint": "Used by n8n to authenticate log requests. Keep this secret.",
+    "copyToken": "Copy token",
+    "rerollToken": "Generate new token"
   }
 }

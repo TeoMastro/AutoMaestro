@@ -11,7 +11,6 @@ export type TriggerLogEntry = {
   durationMs: number;
   createdAt: Date;
   executionId: string | null;
-  totalCost: number;
 };
 
 export type GetTriggerLogsParams = {

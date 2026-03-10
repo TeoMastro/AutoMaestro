@@ -31,6 +31,7 @@ function mapWorkflow(w: Record<string, unknown>): Workflow {
   const config = (w.config as Record<string, unknown>) ?? {};
   return {
     id: w.id as string,
+    token: w.token as string,
     companyId: w.company_id as string,
     companyName: (w as any).companies?.name ?? undefined,
     name: w.name as string,
@@ -369,6 +370,36 @@ export async function getWorkflowsWithPagination(
   } catch (error) {
     logger.error('Error fetching workflows', { error: (error as Error).message });
     throw error;
+  }
+}
+
+// ============================================================
+// Admin: Reroll workflow API token
+// ============================================================
+
+export async function rerollWorkflowTokenAction(
+  workflowId: string
+): Promise<{ success: boolean; token?: string; error?: string }> {
+  try {
+    await checkAdminAuth();
+    const supabase = createAdminClient();
+    const newToken = crypto.randomUUID();
+
+    const { data, error } = await supabase
+      .from('workflows')
+      .update({ token: newToken })
+      .eq('id', workflowId)
+      .select('token')
+      .single();
+
+    if (error || !data) throw error ?? new Error('No data returned');
+
+    logger.info('Workflow token rerolled', { workflowId });
+    revalidatePath(`/admin/workflow/${workflowId}`);
+    return { success: true, token: data.token as string };
+  } catch (err) {
+    logger.error('Error rerolling workflow token', { error: (err as Error).message });
+    return { success: false, error: 'unexpectedError' };
   }
 }
 

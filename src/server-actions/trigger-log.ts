@@ -4,7 +4,6 @@ import { getSession } from '@/lib/auth-session';
 import { Role } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { calculateCost } from '@/lib/pricing';
 import type {
   TriggerLogEntry,
   GetTriggerLogsParams,
@@ -87,7 +86,6 @@ export async function getTriggerLogsWithPagination(
       requestParams: {}, // Truncated to save bandwidth on lists
       responseData: null,
       errorMessage: null,
-      totalCost: 0, // Not fetched in list view
     }));
 
     return { logs, totalCount, totalPages, currentPage: page, limit };
@@ -141,18 +139,11 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
       if (!companyAccess) throw new Error('Unauthorized');
     }
 
-    // Fetch related display names and usage cost in parallel
-    const [wfRes, userRes, usageRes] = await Promise.all([
+    // Fetch related display names in parallel
+    const [wfRes, userRes] = await Promise.all([
       supabase.from('workflows').select('name').eq('id', row.workflow_id).single(),
       supabase.from('profiles').select('email').eq('id', row.user_id).single(),
-      row.execution_id
-        ? supabase.from('workflow_usage').select('model, prompt_tokens, completion_tokens').eq('execution_id', row.execution_id)
-        : Promise.resolve({ data: null, error: null }),
     ]);
-
-    const totalCost = (usageRes.data || []).reduce((acc: number, usage: { model: string; prompt_tokens: number; completion_tokens: number }) => {
-      return acc + calculateCost(usage.model, usage.prompt_tokens, usage.completion_tokens);
-    }, 0);
 
     return {
       id: row.id,
@@ -167,7 +158,6 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
       durationMs: row.duration_ms,
       createdAt: new Date(row.created_at),
       executionId: row.execution_id,
-      totalCost,
     };
 
   } catch (error) {

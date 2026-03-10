@@ -257,7 +257,6 @@
     "chat-history": "Ιστορικό Συνομιλιών",
     "sessionId": "ID Συνεδρίας",
     "messageCount": "Μηνύματα",
-    "totalCost": "Συνολικό Κόστος",
     "firstMessage": "Πρώτο Μήνυμα",
     "lastMessage": "Τελευταίο Μήνυμα",
     "noChatSessionsFound": "Δεν βρέθηκαν συνεδρίες συνομιλίας.",
@@ -281,6 +280,11 @@
     "success": "Επιτυχία",
     "error": "Σφάλμα",
     "userEmail": "Email Χρήστη",
-    "noResults": "Δεν βρέθηκαν αποτελέσματα."
+    "noResults": "Δεν βρέθηκαν αποτελέσματα.",
+
+    "workflowToken": "API Token",
+    "workflowTokenHint": "Χρησιμοποιείται από το n8n για πιστοποίηση. Κρατήστε το μυστικό.",
+    "copyToken": "Αντιγραφή token",
+    "rerollToken": "Δημιουργία νέου token"
   }
 }

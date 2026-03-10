@@ -64,11 +64,11 @@ $$ LANGUAGE sql SECURITY DEFINER;
 
 -- 2. companies
 CREATE TABLE public.companies (
-  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  name        TEXT        NOT NULL,
-  note        TEXT,
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  name         TEXT        NOT NULL,
+  note         TEXT,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- 3. user_companies (user ↔ company assignment)
@@ -83,6 +83,7 @@ CREATE TABLE public.user_companies (
 -- 4. workflows (belongs to one company)
 CREATE TABLE public.workflows (
   id                 UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  token              UUID        NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   company_id         UUID        NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
   name               TEXT        NOT NULL,
   description        TEXT,
@@ -153,18 +154,6 @@ CREATE TABLE public.trigger_logs (
   CONSTRAINT trigger_logs_execution_id_unique UNIQUE (execution_id)
 );
 
--- 9. workflow_usage
-CREATE TABLE IF NOT EXISTS public.workflow_usage (
-  id                UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  workflow_id       UUID        REFERENCES public.workflows(id) ON DELETE CASCADE,
-  session_id        TEXT,
-  execution_id      TEXT,
-  model             TEXT,
-  prompt_tokens     INTEGER     DEFAULT 0,
-  completion_tokens INTEGER     DEFAULT 0,
-  created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
 
 -- ============================================================
 -- PART C: INDEXES + TRIGGERS
@@ -190,6 +179,7 @@ CREATE INDEX idx_user_companies_company_id ON public.user_companies(company_id);
 
 -- workflows
 CREATE INDEX idx_workflows_company_id ON public.workflows(company_id);
+CREATE INDEX idx_workflows_token ON public.workflows(token);
 CREATE TRIGGER workflows_updated_at
   BEFORE UPDATE ON public.workflows
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
@@ -211,10 +201,6 @@ CREATE INDEX idx_trigger_logs_workflow_id ON public.trigger_logs(workflow_id);
 CREATE INDEX idx_trigger_logs_user_id     ON public.trigger_logs(user_id);
 CREATE INDEX idx_trigger_logs_created_at  ON public.trigger_logs(created_at);
 CREATE INDEX idx_trigger_logs_status      ON public.trigger_logs(status);
-
--- workflow_usage
-CREATE INDEX IF NOT EXISTS idx_workflow_usage_execution_id ON public.workflow_usage(execution_id);
-CREATE INDEX IF NOT EXISTS idx_workflow_usage_session_id   ON public.workflow_usage(session_id);
 
 
 -- ============================================================

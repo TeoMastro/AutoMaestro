@@ -49,6 +49,5 @@ export type ChatSessionTableProps = {
 export type ChatSessionDetailProps = {
   sessionId: string;
   workflowName: string;
-  totalCost: number;
   messages: ChatLogEntry[];
 };

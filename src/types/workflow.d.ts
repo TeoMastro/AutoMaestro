@@ -64,15 +64,6 @@ export type WorkflowFormState = {
   globalError: string | null;
 };
 
-export type SystemPromptFormState = {
-  success: boolean;
-  errors: Record<string, string[]>;
-  formData: {
-    system_prompt: string;
-  };
-  globalError: string | null;
-};
-
 export type DocumentFormState = {
   success: boolean;
   errors: Record<string, string[]>;

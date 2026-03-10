@@ -8,17 +8,6 @@ export type Company = {
   updatedAt: Date;
 };
 
-export type CompanyWithUsers = Company & {
-  users: {
-    userId: string;
-    firstName: string | null;
-    lastName: string | null;
-    email: string;
-    assignedAt: Date;
-    assignedBy: string | null;
-  }[];
-};
-
 export type CompanyFormState = {
   success: boolean;
   errors: Record<string, string[]>;

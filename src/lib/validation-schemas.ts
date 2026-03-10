@@ -18,11 +18,6 @@ export const createWorkflowSchema = z.object({
 
 export const updateWorkflowSchema = createWorkflowSchema;
 
-export const triggerWorkflowSchema = z.object({
-  workflowId: z.uuid(),
-  params: z.record(z.string(), z.unknown()).optional(),
-});
-
 export const createCompanySchema = z.object({
   name: z.string().min(1, 'companyNameRequired'),
   note: z.string().optional(),
@@ -35,10 +30,6 @@ export const assignUserToCompanySchema = z.object({
   company_id: z.string().min(1, 'companyRequired'),
 });
 
-
-export const ingestDocumentSchema = z.object({
-  workflow_id: z.string().min(1, 'workflowIdRequired'),
-});
 
 export const signinSchema = z.object({
   email: z.email('invalidEmail'),
@@ -139,13 +130,6 @@ export const resetPasswordSchema = z
     message: 'passwordsDoNotMatch',
     path: ['confirmPassword'],
   });
-
-export const createCheckoutSessionSchema = z.object({
-  priceId: z.string().min(1, 'priceIdRequired'),
-  planType: z.enum(['monthly', 'yearly'] as const, {
-    error: 'invalidPlanType',
-  }),
-});
 
 export function formatZodErrors(error: z.ZodError) {
   const fieldErrors: { [key: string]: string[] } = {};

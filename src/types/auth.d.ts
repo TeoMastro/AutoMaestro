@@ -28,10 +28,3 @@ export type ForgotPasswordState = {
   globalError: string | null;
   message?: string;
 };
-
-export type ResetPasswordState = {
-  success: boolean;
-  errors: Record<string, string[]>;
-  formData: { password: string; confirmPassword: string };
-  globalError: string | null;
-};

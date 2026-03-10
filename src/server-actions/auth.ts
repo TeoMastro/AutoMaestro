@@ -2,18 +2,13 @@
 
 import { redirect } from 'next/navigation';
 import { getServerTranslation } from '@/lib/server-translations';
-import {
-  ForgotPasswordState,
-  ResetPasswordState,
-  ValidationState,
-} from '@/types/auth';
+import { ForgotPasswordState, ValidationState } from '@/types/auth';
 import { SignupFormState } from '@/types/auth';
 import {
   signinSchema,
   formatZodErrors,
   signupSchema,
   forgotPasswordSchema,
-  resetPasswordSchema,
 } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
@@ -204,69 +199,4 @@ export async function forgotPasswordAction(
       globalError: 'somethingWentWrong',
     };
   }
-}
-
-export async function resetPasswordAction(
-  prevState: ResetPasswordState,
-  formData: FormData
-): Promise<ResetPasswordState> {
-  const data = {
-    password: formData.get('password')?.toString() ?? '',
-    confirmPassword: formData.get('confirmPassword')?.toString() ?? '',
-  };
-
-  const parsed = resetPasswordSchema.safeParse(data);
-
-  if (!parsed.success) {
-    return {
-      success: false,
-      errors: formatZodErrors(parsed.error),
-      formData: { password: '', confirmPassword: '' },
-      globalError: null,
-    };
-  }
-
-  try {
-    const supabase = await createClient();
-
-    const { error } = await supabase.auth.updateUser({
-      password: parsed.data.password,
-    });
-
-    if (error) {
-      logger.error('Error during password reset', {
-        error: error.message,
-        action: 'resetPassword',
-      });
-
-      return {
-        success: false,
-        errors: {},
-        formData: { password: '', confirmPassword: '' },
-        globalError: 'somethingWentWrong',
-      };
-    }
-
-    logger.info('Password reset successfully');
-  } catch (error) {
-    logger.error('Error during password reset', {
-      error: (error as Error).message,
-      stack: (error as Error).stack,
-      action: 'resetPassword',
-    });
-
-    return {
-      success: false,
-      errors: {},
-      formData: { password: '', confirmPassword: '' },
-      globalError: 'somethingWentWrong',
-    };
-  }
-
-  const successMessage = await getServerTranslation(
-    'app',
-    'passwordResetSuccess'
-  );
-
-  redirect('/auth/signin?message=' + encodeURIComponent(successMessage));
 }

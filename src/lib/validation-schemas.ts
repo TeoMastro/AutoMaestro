@@ -131,6 +131,34 @@ export const resetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
+export const updateProfileSchema = z.object({
+  first_name: z.string().min(1, 'firstNameRequired'),
+  last_name: z.string().min(1, 'lastNameRequired'),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'currentPasswordRequired'),
+    newPassword: z
+      .string()
+      .min(8, 'passwordTooShort')
+      .regex(/[a-z]/, 'passwordNeedsLowercase')
+      .regex(/\d/, 'passwordNeedsNumber')
+      .regex(
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
+        'passwordNeedsSpecialChar'
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'passwordsDontMatch',
+    path: ['confirmPassword'],
+  });
+
+export const changeEmailSchema = z.object({
+  email: z.email('invalidEmail'),
+});
+
 export function formatZodErrors(error: z.ZodError) {
   const fieldErrors: { [key: string]: string[] } = {};
 

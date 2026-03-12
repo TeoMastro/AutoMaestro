@@ -290,6 +290,25 @@
     "workflowToken": "API Token",
     "workflowTokenHint": "Χρησιμοποιείται από το n8n για πιστοποίηση. Κρατήστε το μυστικό.",
     "copyToken": "Αντιγραφή token",
-    "rerollToken": "Δημιουργία νέου token"
+    "rerollToken": "Δημιουργία νέου token",
+
+    "editProfile": "Επεξεργασία Προφίλ",
+    "personalInformation": "Προσωπικά Στοιχεία",
+    "saveChanges": "Αποθήκευση Αλλαγών",
+    "profileUpdatedSuccess": "Το προφίλ ενημερώθηκε επιτυχώς",
+    "yourCompany": "Η Εταιρεία σας",
+    "yourCompanies": "Οι Εταιρείες σας",
+    "memberSince": "Μέλος από",
+    "changeEmail": "Αλλαγή Email",
+    "newEmail": "Νέο Email",
+    "emailChangeConfirmation": "Ένα email επιβεβαίωσης στάλθηκε στη νέα σας διεύθυνση. Ελέγξτε τα εισερχόμενά σας και επιβεβαιώστε την αλλαγή.",
+    "changePassword": "Αλλαγή Κωδικού",
+    "currentPassword": "Τρέχων Κωδικός",
+    "confirmNewPassword": "Επιβεβαίωση Νέου Κωδικού",
+    "currentPasswordRequired": "Ο τρέχων κωδικός είναι υποχρεωτικός",
+    "passwordChangedSuccess": "Ο κωδικός άλλαξε επιτυχώς",
+    "incorrectPassword": "Ο τρέχων κωδικός είναι λανθασμένος",
+    "changingPassword": "Αλλαγή...",
+    "changingEmail": "Αλλαγή..."
   }
 }

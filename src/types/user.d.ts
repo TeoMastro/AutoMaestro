@@ -26,6 +26,13 @@ export type UserFormState = {
   globalError: string | null;
 };
 
+export type ProfileFormState = {
+  success: boolean;
+  errors: Record<string, string[]>;
+  formData: { first_name: string; last_name: string };
+  globalError: string | null;
+};
+
 export type GetUsersParams = {
   page?: string;
   limit?: string;

@@ -290,6 +290,25 @@
     "workflowToken": "API Token",
     "workflowTokenHint": "Used by n8n to authenticate log requests. Keep this secret.",
     "copyToken": "Copy token",
-    "rerollToken": "Generate new token"
+    "rerollToken": "Generate new token",
+
+    "editProfile": "Edit Profile",
+    "personalInformation": "Personal Information",
+    "saveChanges": "Save Changes",
+    "profileUpdatedSuccess": "Profile updated successfully",
+    "yourCompany": "Your Company",
+    "yourCompanies": "Your Companies",
+    "memberSince": "Member since",
+    "changeEmail": "Change Email",
+    "newEmail": "New Email",
+    "emailChangeConfirmation": "A confirmation email has been sent to your new address. Please check your inbox and confirm the change.",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "confirmNewPassword": "Confirm New Password",
+    "currentPasswordRequired": "Current password is required",
+    "passwordChangedSuccess": "Password changed successfully",
+    "incorrectPassword": "Current password is incorrect",
+    "changingPassword": "Changing...",
+    "changingEmail": "Changing..."
   }
 }

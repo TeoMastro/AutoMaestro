@@ -113,7 +113,7 @@ export function CompanyTable({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">{t('companies')}</h1>
-        <Button onClick={() => router.push('/admin/company/create')}>
+        <Button onClick={() => router.push('/manage/companies/create')}>
           <Plus className="h-4 w-4" />
           <span className="hidden md:block">{t('create')}</span>
         </Button>
@@ -173,7 +173,7 @@ export function CompanyTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/admin/company/${company.id}`)}
+                      onClick={() => router.push(`/manage/companies/${company.id}`)}
                       disabled={isPending}
                     >
                       <Eye className="h-4 w-4" />
@@ -181,7 +181,7 @@ export function CompanyTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/admin/company/${company.id}/update`)}
+                      onClick={() => router.push(`/manage/companies/${company.id}/update`)}
                       disabled={isPending}
                     >
                       <Pencil className="h-4 w-4" />

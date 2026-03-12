@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import { WorkflowView } from '@/components/admin/workflow-view';
 import { getWorkflowById } from '@/server-actions/workflow';
 import { getDocumentsForWorkflow } from '@/server-actions/document';
+import { Role } from '@/lib/constants';
 
-export default async function AdminWorkflowViewPage({ 
+export default async function ManageWorkflowViewPage({
   params,
   searchParams,
 }: {
@@ -13,7 +14,7 @@ export default async function AdminWorkflowViewPage({
 }) {
   const session = await getSession();
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
     notFound();
   }
 

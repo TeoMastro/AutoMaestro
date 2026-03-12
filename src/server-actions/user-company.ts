@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 
 /**
  * Fetch companies the current user is assigned to.
- * Returns a lightweight list for the CompanySwitcher component.
+ * Returns a lightweight list of the user's assigned companies.
  */
 export async function getUserCompanies(): Promise<{ id: string; name: string }[]> {
   try {

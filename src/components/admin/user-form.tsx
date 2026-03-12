@@ -18,7 +18,8 @@ import { UserFormProps, UserFormState } from '@/types/user';
 import { Role, Status } from '@/lib/constants';
 import { InfoAlert } from '../info-alert';
 
-export function UserForm({ user, mode }: UserFormProps) {
+export function UserForm({ user, mode, callerRole, companies, preselectedCompanyId }: UserFormProps) {
+  const isManagerCaller = callerRole === Role.MANAGER;
   const t = useTranslations('app');
 
   const initialState: UserFormState = {
@@ -29,7 +30,7 @@ export function UserForm({ user, mode }: UserFormProps) {
       last_name: user?.last_name ?? '',
       email: user?.email || '',
       password: '',
-      role: user?.role || Role.USER,
+      role: user?.role || Role.CLIENT,
       status: user?.status || Status.ACTIVE,
     },
     globalError: null,
@@ -142,15 +143,23 @@ export function UserForm({ user, mode }: UserFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="role">{t('role')}</Label>
-              <Select name="role" defaultValue={state.formData.role}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('selectRole')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USER">{t('userRole')}</SelectItem>
-                  <SelectItem value="ADMIN">{t('adminRole')}</SelectItem>
-                </SelectContent>
-              </Select>
+              {isManagerCaller ? (
+                <>
+                  <Input type="hidden" name="role" value={Role.CLIENT} />
+                  <Input value={t('clientRole')} disabled />
+                </>
+              ) : (
+                <Select name="role" defaultValue={state.formData.role}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('selectRole')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CLIENT">{t('clientRole')}</SelectItem>
+                    <SelectItem value="MANAGER">{t('managerRole')}</SelectItem>
+                    <SelectItem value="ADMIN">{t('adminRole')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
               {state.errors.role && (
                 <p className="text-sm text-red-500">
                   {getErrorMessage('role')}
@@ -181,6 +190,27 @@ export function UserForm({ user, mode }: UserFormProps) {
               )}
             </div>
           </div>
+
+          {isManagerCaller && mode === 'create' && companies && (
+            <div className="space-y-2">
+              <Label htmlFor="company_id">{t('company')}</Label>
+              <Select name="company_id" defaultValue={preselectedCompanyId ?? ''}>
+                <SelectTrigger className={state.errors.company_id ? 'border-red-500' : ''}>
+                  <SelectValue placeholder={t('selectCompany')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {companies.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {state.errors.company_id && (
+                <p className="text-sm text-red-500">
+                  {getErrorMessage('company_id')}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="flex gap-4">
             <Button type="submit" disabled={isPending}>

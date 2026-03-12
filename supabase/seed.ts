@@ -26,14 +26,14 @@ async function ensureProfile(userId: string, email: string, firstName: string, l
       { onConflict: 'id' }
     );
   if (error) {
-    console.error(`❌ Error upserting profile for ${email}:`, error.message);
+    console.error(`Error upserting profile for ${email}:`, error.message);
     return false;
   }
   return true;
 }
 
 async function seed() {
-  console.log('🌱 Seeding database...');
+  console.log('Seeding database...');
 
   // --- Admin user ---
   const { data: adminData, error: adminError } =
@@ -48,7 +48,7 @@ async function seed() {
     });
 
   if (adminError && !adminError.message.includes('already')) {
-    console.error('❌ Error creating admin:', adminError.message);
+    console.error('Error creating admin:', adminError.message);
   } else {
     // User either just created or already exists — get their ID
     let adminId = adminData?.user?.id;
@@ -60,11 +60,38 @@ async function seed() {
     }
     if (adminId) {
       const ok = await ensureProfile(adminId, 'admin@nextlaunchkit.com', 'Admin', 'User', 'ADMIN');
-      if (ok) console.log('✅ Admin user ready:', 'admin@nextlaunchkit.com');
+      if (ok) console.log('Admin user ready:', 'admin@nextlaunchkit.com');
     }
   }
 
-  // --- Demo user ---
+  // --- Demo manager ---
+  const { data: managerData, error: managerError } =
+    await supabase.auth.admin.createUser({
+      email: 'manager@nextlaunchkit.com',
+      password: 'demomanager!1',
+      email_confirm: true,
+      user_metadata: {
+        first_name: 'Demo',
+        last_name: 'Manager',
+      },
+    });
+
+  if (managerError && !managerError.message.includes('already')) {
+    console.error('Error creating manager:', managerError.message);
+  } else {
+    let managerId = managerData?.user?.id;
+    if (!managerId) {
+      const { data: listData } = await supabase.auth.admin.listUsers();
+      const existing = listData?.users?.find((u) => u.email === 'manager@nextlaunchkit.com');
+      managerId = existing?.id;
+    }
+    if (managerId) {
+      const ok = await ensureProfile(managerId, 'manager@nextlaunchkit.com', 'Demo', 'Manager', 'MANAGER');
+      if (ok) console.log('Manager user ready:', 'manager@nextlaunchkit.com');
+    }
+  }
+
+  // --- Demo client ---
   const { data: userData, error: userError } =
     await supabase.auth.admin.createUser({
       email: 'user@nextlaunchkit.com',
@@ -77,7 +104,7 @@ async function seed() {
     });
 
   if (userError && !userError.message.includes('already')) {
-    console.error('❌ Error creating user:', userError.message);
+    console.error('Error creating user:', userError.message);
   } else {
     let userId = userData?.user?.id;
     if (!userId) {
@@ -86,12 +113,12 @@ async function seed() {
       userId = existing?.id;
     }
     if (userId) {
-      const ok = await ensureProfile(userId, 'user@nextlaunchkit.com', 'Demo', 'User', 'USER');
-      if (ok) console.log('✅ Demo user ready:', 'user@nextlaunchkit.com');
+      const ok = await ensureProfile(userId, 'user@nextlaunchkit.com', 'Demo', 'User', 'CLIENT');
+      if (ok) console.log('Demo client ready:', 'user@nextlaunchkit.com');
     }
   }
 
-  console.log('🎉 Seeding complete!');
+  console.log('Seeding complete!');
 }
 
 seed().catch(console.error);

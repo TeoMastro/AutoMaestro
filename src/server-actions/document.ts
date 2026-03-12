@@ -61,10 +61,10 @@ export async function initiateDocumentUploadAction(
       return { success: false, errors: {}, formData: { workflow_id: workflowId }, globalError: 'fileTooLarge' };
     }
 
-    const isAdmin = session.user.role === Role.ADMIN;
+    const isAdminOrManager = session.user.role === Role.ADMIN || session.user.role === Role.MANAGER;
 
     // Admins can access any workflow; regular users must be assigned via company
-    if (isAdmin) {
+    if (isAdminOrManager) {
       const adminClient = createAdminClient();
       const { data: workflow } = await adminClient
         .from('workflows')
@@ -202,8 +202,8 @@ export async function deleteDocumentAction(documentId: string) {
     if (fetchError || !doc) throw new Error('Document not found');
 
     // Verify access: admins can delete any document; users must have company access
-    const isAdmin = session.user.role === Role.ADMIN;
-    if (!isAdmin) {
+    const isAdminOrManager = session.user.role === Role.ADMIN || session.user.role === Role.MANAGER;
+    if (!isAdminOrManager) {
       // Check company access via workflow
       const { data: workflow } = await adminClient
         .from('workflows')

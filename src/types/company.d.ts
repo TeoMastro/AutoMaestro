@@ -74,4 +74,6 @@ export interface CompanyViewProps {
   assignments: CompanyAssignment[];
   users?: Omit<User, 'password_hash'>[];
   searchParams?: { [key: string]: string | string[] | undefined };
+  currentUserId?: string;
+  currentUserRole?: string;
 };

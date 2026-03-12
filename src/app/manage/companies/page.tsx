@@ -3,15 +3,16 @@ import { notFound } from 'next/navigation';
 import { CompanyTable } from '@/components/admin/company-table';
 import { getCompaniesWithPagination } from '@/server-actions/company';
 import { GetCompaniesParams } from '@/types/company';
+import { Role } from '@/lib/constants';
 
-export default async function AdminCompaniesPage({
+export default async function ManageCompaniesPage({
   searchParams,
 }: {
   searchParams: Promise<GetCompaniesParams>;
 }) {
   const session = await getSession();
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
     notFound();
   }
 

@@ -55,6 +55,9 @@ export type AdminUsersPageProps = {
 export type UserFormProps = {
   user?: Omit<User, 'createdAt' | 'updatedAt'> | null;
   mode: 'create' | 'update';
+  callerRole?: Role;
+  companies?: { id: string; name: string }[];
+  preselectedCompanyId?: string;
 };
 
 export type UserViewProps = {

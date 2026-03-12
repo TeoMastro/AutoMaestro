@@ -18,6 +18,7 @@ export default async function middleware(req: NextRequest) {
     '/profile',
     '/settings',
     '/admin',
+    '/manage',
     '/chat-history',
     '/trigger-history',
     '/workflow',
@@ -47,8 +48,17 @@ export default async function middleware(req: NextRequest) {
       return redirectResponse;
     }
 
-    // Admin route protection
+    // Admin route protection (admin-only)
     if (pathname.startsWith('/admin') && profile.role !== Role.ADMIN) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
+    // Manage route protection (admin + manager)
+    if (
+      pathname.startsWith('/manage') &&
+      profile.role !== Role.ADMIN &&
+      profile.role !== Role.MANAGER
+    ) {
       return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
   }
@@ -82,6 +92,7 @@ export const config = {
     '/profile/:path*',
     '/settings/:path*',
     '/admin/:path*',
+    '/manage/:path*',
     '/auth/:path*',
     '/api/:path*',
     '/chat-history/:path*',

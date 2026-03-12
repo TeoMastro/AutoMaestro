@@ -1,7 +1,6 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth-session';
 import { revalidatePath } from 'next/cache';
 import {
   GetUsersParams,
@@ -18,32 +17,33 @@ import {
 import { Role, Status } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-
-async function checkAdminAuth() {
-  const session = await getSession();
-
-  if (!session || session.user.role !== Role.ADMIN) {
-    throw new Error('Unauthorized');
-  }
-
-  return session;
-}
+import {
+  checkAdminAuth,
+  checkAdminOrManagerAuth,
+  getManagerCompanyIds,
+} from '@/lib/auth-helpers';
 
 export async function createUserAction(
   prevState: UserFormState,
   formData: FormData
 ): Promise<UserFormState> {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+    const isManager = session.user.role === Role.MANAGER;
 
     const data = {
       first_name: formData.get('first_name')?.toString() ?? '',
       last_name: formData.get('last_name')?.toString() ?? '',
       email: formData.get('email')?.toString() ?? '',
       password: formData.get('password')?.toString() ?? '',
-      role: (formData.get('role')?.toString() as Role) ?? Role.USER,
+      role: (formData.get('role')?.toString() as Role) ?? Role.CLIENT,
       status: (formData.get('status')?.toString() as Status) ?? Status.ACTIVE,
     };
+
+    // Managers can only create CLIENTs
+    if (isManager) {
+      data.role = Role.CLIENT;
+    }
 
     const parsed = createUserSchema.safeParse(data);
 
@@ -54,6 +54,23 @@ export async function createUserAction(
         formData: { ...data, password: '' },
         globalError: null,
       };
+    }
+
+    // Managers must provide a company_id and it must be theirs
+    const companyId = formData.get('company_id')?.toString() ?? '';
+    if (isManager) {
+      if (!companyId) {
+        return {
+          success: false,
+          errors: { company_id: ['companyRequired'] },
+          formData: { ...parsed.data, password: '' },
+          globalError: null,
+        };
+      }
+      const managerCompanyIds = await getManagerCompanyIds(session.user.id);
+      if (!managerCompanyIds.includes(companyId)) {
+        throw new Error('Unauthorized');
+      }
     }
 
     const trimmedEmail = parsed.data.email.trim().toLowerCase();
@@ -100,12 +117,21 @@ export async function createUserAction(
       throw profileError;
     }
 
+    // If a company_id was provided, assign the user to that company
+    if (companyId && authData.user.id) {
+      await supabaseAdmin.from('user_companies').insert({
+        user_id: authData.user.id,
+        company_id: companyId,
+        assigned_by: session.user.id,
+      });
+    }
+
     logger.info('User created successfully', {
       adminId: session.user.id,
       createdUserId: authData.user.id,
     });
 
-    revalidatePath('/admin/users');
+    revalidatePath('/admin/user');
   } catch (error) {
     logger.error('Unexpected error during user creation', {
       error: (error as Error).message,
@@ -121,7 +147,7 @@ export async function createUserAction(
         last_name: formData.get('last_name')?.toString() ?? '',
         email: formData.get('email')?.toString() ?? '',
         password: '',
-        role: (formData.get('role')?.toString() as Role) ?? Role.USER,
+        role: (formData.get('role')?.toString() as Role) ?? Role.CLIENT,
         status: (formData.get('status')?.toString() as Status) ?? Status.ACTIVE,
       },
       globalError: 'unexpectedError',
@@ -136,16 +162,41 @@ export async function updateUserAction(
   formData: FormData
 ): Promise<UserFormState> {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+    const isManager = session.user.role === Role.MANAGER;
 
     const data = {
       first_name: formData.get('first_name')?.toString() ?? '',
       last_name: formData.get('last_name')?.toString() ?? '',
       email: formData.get('email')?.toString() ?? '',
       password: formData.get('password')?.toString() ?? '',
-      role: (formData.get('role')?.toString() as Role) ?? Role.USER,
+      role: (formData.get('role')?.toString() as Role) ?? Role.CLIENT,
       status: (formData.get('status')?.toString() as Status) ?? Status.ACTIVE,
     };
+
+    // Managers can only update CLIENTs in their companies
+    if (isManager) {
+      data.role = Role.CLIENT;
+      const supabaseCheck = createAdminClient();
+      const { data: targetUser } = await supabaseCheck
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+      if (!targetUser || targetUser.role !== Role.CLIENT) {
+        throw new Error('Unauthorized');
+      }
+      // Verify user is in manager's companies
+      const managerCompanyIds = await getManagerCompanyIds(session.user.id);
+      const { data: userCompanies } = await supabaseCheck
+        .from('user_companies')
+        .select('company_id')
+        .eq('user_id', userId)
+        .in('company_id', managerCompanyIds);
+      if (!userCompanies || userCompanies.length === 0) {
+        throw new Error('Unauthorized');
+      }
+    }
 
     const parsed = updateUserSchema.safeParse(data);
 
@@ -228,7 +279,7 @@ export async function updateUserAction(
       updatedUserId: userId,
     });
 
-    revalidatePath('/admin/users');
+    revalidatePath('/admin/user');
   } catch (error) {
     logger.error('Unexpected error during user update', {
       error: (error as Error).message,
@@ -244,7 +295,7 @@ export async function updateUserAction(
         last_name: formData.get('last_name')?.toString() ?? '',
         email: formData.get('email')?.toString() ?? '',
         password: '',
-        role: (formData.get('role')?.toString() as Role) ?? Role.USER,
+        role: (formData.get('role')?.toString() as Role) ?? Role.CLIENT,
         status: (formData.get('status')?.toString() as Status) ?? Status.ACTIVE,
       },
       globalError: 'unexpectedError',
@@ -255,7 +306,8 @@ export async function updateUserAction(
 
 export async function deleteUserAction(userId: string) {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+    const isManager = session.user.role === Role.MANAGER;
 
     if (session.user.id === userId) {
       throw new Error('Cannot delete own account');
@@ -263,15 +315,31 @@ export async function deleteUserAction(userId: string) {
 
     const supabaseAdmin = createAdminClient();
 
-    // Check user exists
+    // Check user exists and verify manager access
     const { data: existingUser } = await supabaseAdmin
       .from('profiles')
-      .select('id')
+      .select('id, role')
       .eq('id', userId)
       .single();
 
     if (!existingUser) {
       throw new Error('User not found');
+    }
+
+    // Managers can only delete CLIENTs in their companies
+    if (isManager) {
+      if (existingUser.role !== Role.CLIENT) {
+        throw new Error('Unauthorized');
+      }
+      const managerCompanyIds = await getManagerCompanyIds(session.user.id);
+      const { data: userCompanies } = await supabaseAdmin
+        .from('user_companies')
+        .select('company_id')
+        .eq('user_id', userId)
+        .in('company_id', managerCompanyIds);
+      if (!userCompanies || userCompanies.length === 0) {
+        throw new Error('Unauthorized');
+      }
     }
 
     // Delete auth user (cascade will delete profile)
@@ -286,7 +354,7 @@ export async function deleteUserAction(userId: string) {
       deletedUserId: userId,
     });
 
-    revalidatePath('/admin/users');
+    revalidatePath('/admin/user');
 
     return { success: true };
   } catch (error) {
@@ -302,7 +370,7 @@ export async function deleteUserAction(userId: string) {
 
 export async function getUserById(userId: string) {
   try {
-    await checkAdminAuth();
+    await checkAdminOrManagerAuth();
 
     const supabaseAdmin = createAdminClient();
 
@@ -338,7 +406,11 @@ export async function getUserById(userId: string) {
   }
 }
 
-async function fetchUsers(params: GetUsersParams & { paginate?: boolean }) {
+async function fetchUsers(
+  params: GetUsersParams & { paginate?: boolean },
+  callerRole?: string,
+  callerId?: string
+) {
   const page = parseInt(params.page || '1');
   const limit = parseInt(params.limit || '10');
   const search = params.search || '';
@@ -368,6 +440,28 @@ async function fetchUsers(params: GetUsersParams & { paginate?: boolean }) {
     .select('id, first_name, last_name, email, role, status, created_at, updated_at', {
       count: 'exact',
     });
+
+  // Managers only see CLIENTs in their companies
+  if (callerRole === Role.MANAGER && callerId) {
+    const managerCompanyIds = await getManagerCompanyIds(callerId);
+    if (managerCompanyIds.length === 0) {
+      return paginate
+        ? { users: [], totalCount: 0, totalPages: 0, currentPage: page, limit }
+        : { users: [] };
+    }
+    // Get user IDs in manager's companies
+    const { data: companyUsers } = await supabaseAdmin
+      .from('user_companies')
+      .select('user_id')
+      .in('company_id', managerCompanyIds);
+    const userIds = (companyUsers || []).map((cu) => cu.user_id);
+    if (userIds.length === 0) {
+      return paginate
+        ? { users: [], totalCount: 0, totalPages: 0, currentPage: page, limit }
+        : { users: [] };
+    }
+    query = query.in('id', userIds).eq('role', Role.CLIENT);
+  }
 
   // Apply search filter (sanitize to prevent PostgREST filter injection)
   if (search) {
@@ -440,13 +534,22 @@ async function fetchUsers(params: GetUsersParams & { paginate?: boolean }) {
 export async function getUsersWithPagination(
   params: GetUsersParams
 ): Promise<GetUsersResult> {
-  return fetchUsers({ ...params, paginate: true }) as Promise<GetUsersResult>;
+  const session = await checkAdminOrManagerAuth();
+  return fetchUsers(
+    { ...params, paginate: true },
+    session.user.role,
+    session.user.id
+  ) as Promise<GetUsersResult>;
 }
 
 export async function getAllUsersForExport(
   params: Omit<GetUsersParams, 'page' | 'limit'>
 ): Promise<User[]> {
-  await checkAdminAuth();
-  const result = await fetchUsers({ ...params, paginate: false });
+  const session = await checkAdminOrManagerAuth();
+  const result = await fetchUsers(
+    { ...params, paginate: false },
+    session.user.role,
+    session.user.id
+  );
   return (result as GetUsersResultWithoutPagination).users;
 }

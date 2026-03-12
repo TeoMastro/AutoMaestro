@@ -1,14 +1,14 @@
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, UserPlus } from 'lucide-react';
 import { CompanyViewProps } from '@/types/company';
 import { CompanyDeleteButton } from './company-delete-button';
 import { CompanyAssignments } from './company-assignments';
 import Link from 'next/link';
 import { InfoAlert } from '@/components/info-alert';
 
-export function CompanyView({ company, assignments, users = [], searchParams }: CompanyViewProps) {
+export function CompanyView({ company, assignments, users = [], searchParams, currentUserId, currentUserRole }: CompanyViewProps) {
   const t = useTranslations('app');
   const errorMsg = searchParams?.error as string | undefined;
 
@@ -18,7 +18,7 @@ export function CompanyView({ company, assignments, users = [], searchParams }: 
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="outline" size="sm" asChild>
-            <Link href="/admin/company">
+            <Link href="/manage/companies">
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -26,7 +26,13 @@ export function CompanyView({ company, assignments, users = [], searchParams }: 
         </div>
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link href={`/admin/company/${company.id}/update`}>
+            <Link href={`/manage/clients/create?company_id=${company.id}`}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              {t('createClient')}
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href={`/manage/companies/${company.id}/update`}>
               <Edit className="h-4 w-4" />
             </Link>
           </Button>
@@ -67,7 +73,7 @@ export function CompanyView({ company, assignments, users = [], searchParams }: 
           <CardTitle>{t('assignedUsers')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <CompanyAssignments companyId={company.id} assignments={assignments} users={users} />
+          <CompanyAssignments companyId={company.id} assignments={assignments} users={users} currentUserId={currentUserId} currentUserRole={currentUserRole} />
         </CardContent>
       </Card>
     </div>

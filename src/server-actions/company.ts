@@ -1,9 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth-session';
 import { revalidatePath } from 'next/cache';
 import { Role } from '@/lib/constants';
+import {
+  checkAdminOrManagerAuth,
+  getManagerCompanyIds,
+  checkManagerCompanyAccess,
+} from '@/lib/auth-helpers';
 import {
   createCompanySchema,
   updateCompanySchema,
@@ -20,14 +24,6 @@ import type {
   GetCompaniesResult,
 } from '@/types/company';
 
-async function checkAdminAuth() {
-  const session = await getSession();
-  if (!session || session.user.role !== Role.ADMIN) {
-    throw new Error('Unauthorized');
-  }
-  return session;
-}
-
 function mapCompany(c: Record<string, unknown>): Company {
   return {
     id: c.id as string,
@@ -39,7 +35,7 @@ function mapCompany(c: Record<string, unknown>): Company {
 }
 
 // ============================================================
-// Admin: CRUD
+// Admin / Manager: CRUD
 // ============================================================
 
 export async function createCompanyAction(
@@ -47,7 +43,7 @@ export async function createCompanyAction(
   formData: FormData
 ): Promise<CompanyFormState> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const data = {
       name: formData.get('name')?.toString() ?? '',
@@ -65,15 +61,28 @@ export async function createCompanyAction(
     }
 
     const supabase = createAdminClient();
-    const { error } = await supabase.from('companies').insert({
-      name: parsed.data.name.trim(),
-      note: parsed.data.note?.trim() || null,
-    });
+    const { data: newCompany, error } = await supabase
+      .from('companies')
+      .insert({
+        name: parsed.data.name.trim(),
+        note: parsed.data.note?.trim() || null,
+      })
+      .select('id')
+      .single();
 
     if (error) throw error;
 
+    // If the caller is a MANAGER, auto-assign them to the new company
+    if (session.user.role === Role.MANAGER && newCompany) {
+      await supabase.from('user_companies').insert({
+        user_id: session.user.id,
+        company_id: newCompany.id,
+        assigned_by: session.user.id,
+      });
+    }
+
     logger.info('Company created');
-    revalidatePath('/admin/company');
+    revalidatePath('/manage/companies');
   } catch (error) {
     logger.error('Error creating company', { error: (error as Error).message });
     return {
@@ -86,7 +95,7 @@ export async function createCompanyAction(
       globalError: 'unexpectedError',
     };
   }
-  redirect('/admin/company?message=companyCreatedSuccess');
+  redirect('/manage/companies?message=companyCreatedSuccess');
 }
 
 export async function updateCompanyAction(
@@ -95,7 +104,11 @@ export async function updateCompanyAction(
   formData: FormData
 ): Promise<CompanyFormState> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, companyId);
+    }
 
     const data = {
       name: formData.get('name')?.toString() ?? '',
@@ -124,8 +137,8 @@ export async function updateCompanyAction(
     if (error) throw error;
 
     logger.info('Company updated', { companyId });
-    revalidatePath('/admin/company');
-    revalidatePath(`/admin/company/${companyId}`);
+    revalidatePath('/manage/companies');
+    revalidatePath(`/manage/companies/${companyId}`);
   } catch (error) {
     logger.error('Error updating company', { error: (error as Error).message });
     return {
@@ -138,12 +151,16 @@ export async function updateCompanyAction(
       globalError: 'unexpectedError',
     };
   }
-  redirect(`/admin/company?message=companyUpdatedSuccess`);
+  redirect(`/manage/companies?message=companyUpdatedSuccess`);
 }
 
 export async function deleteCompanyAction(companyId: string) {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, companyId);
+    }
 
     const supabase = createAdminClient();
     const { error } = await supabase
@@ -154,7 +171,7 @@ export async function deleteCompanyAction(companyId: string) {
     if (error) throw error;
 
     logger.info('Company deleted', { adminId: session.user.id, companyId });
-    revalidatePath('/admin/company');
+    revalidatePath('/manage/companies');
 
     return { success: true };
   } catch (error) {
@@ -164,7 +181,7 @@ export async function deleteCompanyAction(companyId: string) {
 }
 
 // ============================================================
-// Admin: User assignments
+// Admin / Manager: User assignments
 // ============================================================
 
 export async function assignUserToCompanyAction(
@@ -172,7 +189,7 @@ export async function assignUserToCompanyAction(
   formData: FormData
 ): Promise<AssignUserToCompanyFormState> {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const data = {
       user_id: formData.get('user_id')?.toString() ?? '',
@@ -187,6 +204,10 @@ export async function assignUserToCompanyAction(
         formData: data,
         globalError: null,
       };
+    }
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, parsed.data.company_id);
     }
 
     const supabase = createAdminClient();
@@ -207,7 +228,7 @@ export async function assignUserToCompanyAction(
       companyId: parsed.data.company_id,
     });
 
-    revalidatePath(`/admin/company/${parsed.data.company_id}`);
+    revalidatePath(`/manage/companies/${parsed.data.company_id}`);
 
     return { success: true, errors: {}, formData: data, globalError: null };
   } catch (error) {
@@ -229,7 +250,16 @@ export async function unassignUserFromCompanyAction(
   companyId: string
 ) {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+
+    // Managers cannot unassign themselves from a company
+    if (session.user.role === Role.MANAGER && session.user.id === userId) {
+      throw new Error('cannotUnassignSelf');
+    }
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, companyId);
+    }
 
     const supabase = createAdminClient();
     const { error } = await supabase
@@ -240,7 +270,7 @@ export async function unassignUserFromCompanyAction(
 
     if (error) throw error;
 
-    revalidatePath(`/admin/company/${companyId}`);
+    revalidatePath(`/manage/companies/${companyId}`);
     return { success: true };
   } catch (error) {
     logger.error('Error unassigning user from company', { error: (error as Error).message });
@@ -249,12 +279,16 @@ export async function unassignUserFromCompanyAction(
 }
 
 // ============================================================
-// Admin: Data fetches
+// Admin / Manager: Data fetches
 // ============================================================
 
 export async function getCompanyById(companyId: string): Promise<Company | false> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, companyId);
+    }
 
     const supabase = createAdminClient();
     const { data, error } = await supabase
@@ -275,7 +309,7 @@ export async function getCompaniesWithPagination(
   params: GetCompaniesParams
 ): Promise<GetCompaniesResult> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const page = parseInt(params.page || '1');
     const limit = parseInt(params.limit || '10');
@@ -288,6 +322,15 @@ export async function getCompaniesWithPagination(
     let query = supabase
       .from('companies')
       .select('*', { count: 'exact' });
+
+    // If MANAGER, restrict to their assigned companies
+    if (session.user.role === Role.MANAGER) {
+      const companyIds = await getManagerCompanyIds(session.user.id);
+      if (companyIds.length === 0) {
+        return { companies: [], totalCount: 0, totalPages: 0, currentPage: page, limit };
+      }
+      query = query.in('id', companyIds);
+    }
 
     if (search) {
       const safe = search.replace(/[,.()]/g, '');
@@ -317,14 +360,24 @@ export async function getCompaniesWithPagination(
 
 export async function getAllCompanies(): Promise<{ id: string; name: string }[]> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const supabase = createAdminClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from('companies')
       .select('id, name')
       .order('name');
 
+    // If MANAGER, restrict to their assigned companies
+    if (session.user.role === Role.MANAGER) {
+      const companyIds = await getManagerCompanyIds(session.user.id);
+      if (companyIds.length === 0) {
+        return [];
+      }
+      query = query.in('id', companyIds);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return (data || []).map((c) => ({ id: c.id, name: c.name }));
   } catch (error) {
@@ -337,7 +390,11 @@ export async function getCompanyAssignments(
   companyId: string
 ): Promise<{ userId: string; firstName: string | null; lastName: string | null; email: string; assignedAt: Date; assignedBy: string | null }[]> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, companyId);
+    }
 
     const supabase = createAdminClient();
     const { data: assignments, error } = await supabase

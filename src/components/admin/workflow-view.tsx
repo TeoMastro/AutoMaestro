@@ -23,7 +23,7 @@ export function WorkflowView({ workflow, documents = [], searchParams }: Workflo
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="outline" size="sm" asChild>
-            <Link href="/admin/workflow">
+            <Link href="/manage/workflows">
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -31,7 +31,7 @@ export function WorkflowView({ workflow, documents = [], searchParams }: Workflo
         </div>
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link href={`/admin/workflow/${workflow.id}/update`}>
+            <Link href={`/manage/workflows/${workflow.id}/update`}>
               <Edit className="h-4 w-4" />
             </Link>
           </Button>

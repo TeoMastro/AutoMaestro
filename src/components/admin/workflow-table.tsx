@@ -142,7 +142,7 @@ export function WorkflowTable({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">{t('workflows')}</h1>
-        <Button onClick={() => router.push('/admin/workflow/create')}>
+        <Button onClick={() => router.push('/manage/workflows/create')}>
           <Plus className="h-4 w-4" />
           <span className="hidden md:block">{t('create')}</span>
         </Button>
@@ -245,7 +245,7 @@ export function WorkflowTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/admin/workflow/${wf.id}`)}
+                      onClick={() => router.push(`/manage/workflows/${wf.id}`)}
                       disabled={isPending}
                     >
                       <Eye className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function WorkflowTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/admin/workflow/${wf.id}/update`)}
+                      onClick={() => router.push(`/manage/workflows/${wf.id}/update`)}
                       disabled={isPending}
                     >
                       <Pencil className="h-4 w-4" />

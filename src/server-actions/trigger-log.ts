@@ -39,7 +39,7 @@ export async function getTriggerLogsWithPagination(
     const offset = (page - 1) * limit;
 
     // Strict Role-Based Data Access
-    // Admins send NULL to fetch all users, regular users send their own ID to enforce safety.
+    // Admins send NULL to fetch all, managers and clients send their own ID (scoped via company assignments).
     const strictUserId = isAdmin ? null : session.user.id;
 
     const supabase = createAdminClient();
@@ -103,7 +103,7 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
   try {
     const session = await checkAuth();
     const isAdmin = session.user.role === Role.ADMIN;
-    
+
     const supabase = createAdminClient();
 
     // Base query
@@ -111,7 +111,7 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
       .from('trigger_logs')
       .select('id, workflow_id, user_id, status, request_params, response_data, error_message, duration_ms, created_at, execution_id');
 
-    // We bypass initial RLS using admin client to fetch the row, 
+    // We bypass initial RLS using admin client to fetch the row,
     // then authorize the user manually to allow assigned-workflow viewing.
     const { data: row, error } = await query.eq('id', id).single();
 
@@ -119,6 +119,7 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
       throw new Error('Trigger log not found');
     }
 
+    // Non-admin users (managers + clients) need company-level access check
     if (!isAdmin && row.user_id !== session.user.id) {
       // Check if user has access to the workflow via company
       const { data: workflow } = await supabase

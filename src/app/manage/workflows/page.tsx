@@ -4,11 +4,12 @@ import { WorkflowTable } from '@/components/admin/workflow-table';
 import { getWorkflowsWithPagination } from '@/server-actions/workflow';
 import { getAllCompanies } from '@/server-actions/company';
 import { AdminWorkflowPageProps } from '@/types/workflow';
+import { Role } from '@/lib/constants';
 
-export default async function AdminWorkflowsPage({ searchParams }: AdminWorkflowPageProps) {
+export default async function ManageWorkflowsPage({ searchParams }: AdminWorkflowPageProps) {
   const session = await getSession();
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
     notFound();
   }
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth-session';
+import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
 import { revalidatePath } from 'next/cache';
 import { Role, WorkflowType } from '@/lib/constants';
 import {
@@ -18,14 +18,6 @@ import type {
   GetWorkflowsParams,
   GetWorkflowsResult,
 } from '@/types/workflow';
-
-async function checkAdminAuth() {
-  const session = await getSession();
-  if (!session || session.user.role !== Role.ADMIN) {
-    throw new Error('Unauthorized');
-  }
-  return session;
-}
 
 function mapWorkflow(w: Record<string, unknown>): Workflow {
   const config = (w.config as Record<string, unknown>) ?? {};
@@ -58,7 +50,7 @@ export async function createWorkflowAction(
   formData: FormData
 ): Promise<WorkflowFormState> {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const data = {
       company_id: formData.get('company_id')?.toString() ?? '',
@@ -79,6 +71,10 @@ export async function createWorkflowAction(
         formData: data,
         globalError: null,
       };
+    }
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, parsed.data.company_id);
     }
 
     // Parse params JSON
@@ -139,7 +135,7 @@ export async function createWorkflowAction(
     }
 
     logger.info('Workflow created', { adminId: session.user.id });
-    revalidatePath('/admin/workflow');
+    revalidatePath('/manage/workflows');
   } catch (error) {
     logger.error('Error creating workflow', { error: (error as Error).message });
     return {
@@ -158,7 +154,7 @@ export async function createWorkflowAction(
       globalError: 'unexpectedError',
     };
   }
-  redirect('/admin/workflow?message=workflowCreatedSuccess');
+  redirect('/manage/workflows?message=workflowCreatedSuccess');
 }
 
 export async function updateWorkflowAction(
@@ -167,7 +163,7 @@ export async function updateWorkflowAction(
   formData: FormData
 ): Promise<WorkflowFormState> {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const data = {
       company_id: formData.get('company_id')?.toString() ?? '',
@@ -188,6 +184,10 @@ export async function updateWorkflowAction(
         formData: data,
         globalError: null,
       };
+    }
+
+    if (session.user.role === Role.MANAGER) {
+      await checkManagerCompanyAccess(session.user.id, parsed.data.company_id);
     }
 
     // Parse params JSON
@@ -247,8 +247,8 @@ export async function updateWorkflowAction(
     if (error) throw error;
 
     logger.info('Workflow updated', { adminId: session.user.id, workflowId });
-    revalidatePath('/admin/workflow');
-    revalidatePath(`/admin/workflow/${workflowId}`);
+    revalidatePath('/manage/workflows');
+    revalidatePath(`/manage/workflows/${workflowId}`);
   } catch (error) {
     logger.error('Error updating workflow', { error: (error as Error).message });
     return {
@@ -267,14 +267,26 @@ export async function updateWorkflowAction(
       globalError: 'unexpectedError',
     };
   }
-  redirect(`/admin/workflow?message=workflowUpdatedSuccess`);
+  redirect(`/manage/workflows?message=workflowUpdatedSuccess`);
 }
 
 export async function deleteWorkflowAction(workflowId: string) {
   try {
-    const session = await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const supabase = createAdminClient();
+
+    // If MANAGER, verify they have access to this workflow's company
+    if (session.user.role === Role.MANAGER) {
+      const { data: wf, error: wfError } = await supabase
+        .from('workflows')
+        .select('company_id')
+        .eq('id', workflowId)
+        .single();
+
+      if (wfError || !wf) throw new Error('Workflow not found');
+      await checkManagerCompanyAccess(session.user.id, wf.company_id);
+    }
 
     // Try to drop KB partition if it exists
     const shortId = workflowId.replace(/-/g, '_');
@@ -293,7 +305,7 @@ export async function deleteWorkflowAction(workflowId: string) {
     if (error) throw error;
 
     logger.info('Workflow deleted', { adminId: session.user.id, workflowId });
-    revalidatePath('/admin/workflow');
+    revalidatePath('/manage/workflows');
 
     return { success: true };
   } catch (error) {
@@ -308,7 +320,7 @@ export async function deleteWorkflowAction(workflowId: string) {
 
 export async function getWorkflowById(workflowId: string): Promise<Workflow | false> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const supabase = createAdminClient();
     const { data, error } = await supabase
@@ -318,6 +330,13 @@ export async function getWorkflowById(workflowId: string): Promise<Workflow | fa
       .single();
 
     if (error || !data) return false;
+
+    // If MANAGER, verify they have access to this workflow's company
+    if (session.user.role === Role.MANAGER) {
+      const companyIds = await getManagerCompanyIds(session.user.id);
+      if (!companyIds.includes(data.company_id)) return false;
+    }
+
     return mapWorkflow(data as Record<string, unknown>);
   } catch (error) {
     logger.error('Error fetching workflow', { error: (error as Error).message });
@@ -329,7 +348,7 @@ export async function getWorkflowsWithPagination(
   params: GetWorkflowsParams
 ): Promise<GetWorkflowsResult> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
 
     const page = parseInt(params.page || '1');
     const limit = parseInt(params.limit || '10');
@@ -344,6 +363,15 @@ export async function getWorkflowsWithPagination(
     let query = supabase
       .from('workflows')
       .select('*, companies(name)', { count: 'exact' });
+
+    // If MANAGER, auto-filter by their company IDs
+    if (session.user.role === Role.MANAGER) {
+      const companyIds = await getManagerCompanyIds(session.user.id);
+      if (companyIds.length === 0) {
+        return { workflows: [], totalCount: 0, totalPages: 0, currentPage: page, limit };
+      }
+      query = query.in('company_id', companyIds);
+    }
 
     if (search) {
       const safe = search.replace(/[,.()]/g, '');
@@ -381,8 +409,21 @@ export async function rerollWorkflowTokenAction(
   workflowId: string
 ): Promise<{ success: boolean; token?: string; error?: string }> {
   try {
-    await checkAdminAuth();
+    const session = await checkAdminOrManagerAuth();
     const supabase = createAdminClient();
+
+    // If MANAGER, verify they have access to this workflow's company
+    if (session.user.role === Role.MANAGER) {
+      const { data: wf, error: wfError } = await supabase
+        .from('workflows')
+        .select('company_id')
+        .eq('id', workflowId)
+        .single();
+
+      if (wfError || !wf) throw new Error('Workflow not found');
+      await checkManagerCompanyAccess(session.user.id, wf.company_id);
+    }
+
     const newToken = crypto.randomUUID();
 
     const { data, error } = await supabase
@@ -395,7 +436,7 @@ export async function rerollWorkflowTokenAction(
     if (error || !data) throw error ?? new Error('No data returned');
 
     logger.info('Workflow token rerolled', { workflowId });
-    revalidatePath(`/admin/workflow/${workflowId}`);
+    revalidatePath(`/manage/workflows/${workflowId}`);
     return { success: true, token: data.token as string };
   } catch (err) {
     logger.error('Error rerolling workflow token', { error: (err as Error).message });

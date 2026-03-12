@@ -71,7 +71,7 @@ export async function getChatSessionsWithPagination(
     const sortDirection = params.sortDirection || 'desc';
     const offset = (page - 1) * limit;
 
-    // For users, restrict to their assigned workflows
+    // For non-admin users (managers + clients), restrict to their assigned workflows
     let allowedWorkflowIds: string[] | null = null;
     if (!isAdmin) {
       allowedWorkflowIds = await getUserWorkflowIds(session.user.id, params.companyId);
@@ -146,7 +146,7 @@ export async function getChatSessionMessages(
 
     const rows = data || [];
 
-    // For users, verify they have access to this workflow via company
+    // For non-admin users (managers + clients), verify access via company
     if (!isAdmin && rows.length > 0) {
       const allowedWorkflowIds = await getUserWorkflowIds(session.user.id);
       if (!allowedWorkflowIds.includes(rows[0].workflow_id)) {
@@ -200,7 +200,7 @@ export async function getWorkflowsForFilter(companyId?: string): Promise<{ id: s
       if (error) throw error;
       return (data || []).map((w) => ({ id: w.id, name: w.name }));
     } else {
-      // Users only see workflows from their assigned companies
+      // Managers and clients see workflows from their assigned companies
       const workflowIds = await getUserWorkflowIds(session.user.id, companyId);
       if (workflowIds.length === 0) return [];
 

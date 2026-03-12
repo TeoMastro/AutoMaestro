@@ -321,7 +321,8 @@ export function UsersTable({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('allRoles')}</SelectItem>
-            <SelectItem value="USER">{t('userRole')}</SelectItem>
+            <SelectItem value="CLIENT">{t('clientRole')}</SelectItem>
+            <SelectItem value="MANAGER">{t('managerRole')}</SelectItem>
             <SelectItem value="ADMIN">{t('adminRole')}</SelectItem>
           </SelectContent>
         </Select>
@@ -413,12 +414,18 @@ export function UsersTable({
                   <TableCell>
                     <Badge
                       variant={
-                        user.role === Role.ADMIN ? 'default' : 'secondary'
+                        user.role === Role.ADMIN
+                          ? 'default'
+                          : user.role === Role.MANAGER
+                            ? 'outline'
+                            : 'secondary'
                       }
                     >
                       {user.role === Role.ADMIN
                         ? t('adminRole')
-                        : t('userRole')}
+                        : user.role === Role.MANAGER
+                          ? t('managerRole')
+                          : t('clientRole')}
                     </Badge>
                   </TableCell>
                   {/* Add status column */}

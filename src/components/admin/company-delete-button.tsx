@@ -33,10 +33,10 @@ export function CompanyDeleteButton({
     startTransition(async () => {
       try {
         await deleteCompanyAction(companyId);
-        router.push('/admin/company?message=companyDeletedSuccess');
+        router.push('/manage/companies?message=companyDeletedSuccess');
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'unexpectedError';
-        router.push(`/admin/company/${companyId}?error=${errorMsg}`);
+        router.push(`/manage/companies/${companyId}?error=${errorMsg}`);
       }
     });
   };

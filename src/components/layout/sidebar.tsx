@@ -18,9 +18,8 @@ import { getSession } from '@/lib/auth-session';
 import { getTranslations } from 'next-intl/server';
 import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 import { TermsDialog } from '@/components/legal/terms-dialog';
-import { CompanySwitcher } from '@/components/layout/company-switcher';
 import { getUserCompanies } from '@/server-actions/user-company';
-import { getActiveCompanyId } from '@/lib/active-company';
+import { Role } from '@/lib/constants';
 
 export async function AppSidebar() {
   const session = await getSession();
@@ -29,10 +28,13 @@ export async function AppSidebar() {
   const userData = {
     name: `${session?.user.first_name || ''} ${session?.user.last_name || ''}`.trim() || 'User',
     email: session?.user.email || 'user@example.com',
-    avatar: '', // TODO: include the icon if
+    avatar: '',
   };
 
-  const isAdmin = session?.user.role === 'ADMIN';
+  const userRole = session?.user.role;
+  const isAdmin = userRole === Role.ADMIN;
+  const isManager = userRole === Role.MANAGER;
+  const isClient = userRole === Role.CLIENT;
 
   const items = [
     {
@@ -40,8 +42,8 @@ export async function AppSidebar() {
       url: '/dashboard',
       icon: Home,
     },
-    // Only show /workflow for non-admin users
-    ...(!isAdmin
+    // Client: My Workflows
+    ...(isClient
       ? [
           {
             title: t('myWorkflows'),
@@ -50,39 +52,39 @@ export async function AppSidebar() {
           },
         ]
       : []),
-    // Admin-only: Workflows
-    ...(isAdmin
+    // Admin + Manager: Workflows (manage)
+    ...(isAdmin || isManager
       ? [
           {
             title: t('workflows'),
-            url: '/admin/workflow',
+            url: '/manage/workflows',
             icon: Bot,
           },
         ]
       : []),
-    // Admin-only: Companies
-    ...(isAdmin
+    // Admin + Manager: Companies (manage)
+    ...(isAdmin || isManager
       ? [
           {
             title: t('companies'),
-            url: '/admin/company',
+            url: '/manage/companies',
             icon: Building2,
           },
         ]
       : []),
-    // Chat History — visible to both roles, between Workflows and Users
+    // Chat History — visible to all roles
     {
       title: t('chatHistory'),
       url: '/chat-history',
       icon: MessageSquare,
     },
-    // Trigger History — visible to both roles
+    // Trigger History — visible to all roles
     {
       title: t('triggerHistory'),
       url: '/trigger-history',
       icon: Activity,
     },
-    // Admin-only: Users (after Chat History)
+    // Admin-only: Users
     ...(isAdmin
       ? [
           {
@@ -94,26 +96,32 @@ export async function AppSidebar() {
       : []),
   ];
 
-  // Fetch user's companies for the switcher (non-admin only)
-  const userCompanies = !isAdmin ? await getUserCompanies() : [];
-  const activeCompanyId = !isAdmin ? await getActiveCompanyId() : undefined;
+  // Fetch client's company name for sidebar header
+  const clientCompanyName = isClient
+    ? (await getUserCompanies())[0]?.name
+    : undefined;
 
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        {isAdmin ? (
+        {isClient ? (
           <div className="flex items-center gap-3">
-            {/* App Logo Placeholder */}
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+              <Building2 className="size-4 text-white" />
+            </div>
+            <span className="truncate text-sm font-medium">
+              {clientCompanyName ?? 'No company assigned'}
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">NL</span>
             </div>
-            {/* App Title */}
             <h2 className="text-lg font-semibold text-foreground">
               Next Launch Kit
             </h2>
           </div>
-        ) : (
-          <CompanySwitcher companies={userCompanies} activeCompanyId={activeCompanyId} />
         )}
       </SidebarHeader>
 

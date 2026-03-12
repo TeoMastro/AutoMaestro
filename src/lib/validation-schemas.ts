@@ -70,7 +70,7 @@ export const createUserSchema = z.object({
       /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
       'passwordNeedsSpecialChar'
     ),
-  role: z.enum([Role.ADMIN, Role.USER]),
+  role: z.enum([Role.ADMIN, Role.MANAGER, Role.CLIENT]),
   status: z.enum([Status.ACTIVE, Status.INACTIVE, Status.UNVERIFIED]),
 });
 
@@ -105,7 +105,7 @@ export const updateUserSchema = z.object({
       }
       return true;
     }, 'passwordNeedsSpecialChar'),
-  role: z.enum([Role.ADMIN, Role.USER]),
+  role: z.enum([Role.ADMIN, Role.MANAGER, Role.CLIENT]),
   status: z.enum([Status.ACTIVE, Status.INACTIVE, Status.UNVERIFIED]),
 });
 

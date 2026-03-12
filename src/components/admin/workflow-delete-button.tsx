@@ -33,10 +33,10 @@ export function WorkflowDeleteButton({
     startTransition(async () => {
       try {
         await deleteWorkflowAction(workflowId);
-        router.push('/admin/workflow?message=workflowDeletedSuccess');
+        router.push('/manage/workflows?message=workflowDeletedSuccess');
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'unexpectedError';
-        router.push(`/admin/workflow/${workflowId}?error=${errorMsg}`);
+        router.push(`/manage/workflows/${workflowId}?error=${errorMsg}`);
       }
     });
   };

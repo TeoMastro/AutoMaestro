@@ -135,10 +135,20 @@ export function UserView({ user }: UserViewProps) {
                 </label>
                 <div className="mt-1">
                   <Badge
-                    variant={user.role === 'ADMIN' ? 'default' : 'secondary'}
+                    variant={
+                      user.role === 'ADMIN'
+                        ? 'default'
+                        : user.role === 'MANAGER'
+                          ? 'outline'
+                          : 'secondary'
+                    }
                     className="text-sm"
                   >
-                    {user.role === 'ADMIN' ? t('adminRole') : t('userRole')}
+                    {user.role === 'ADMIN'
+                      ? t('adminRole')
+                      : user.role === 'MANAGER'
+                        ? t('managerRole')
+                        : t('clientRole')}
                   </Badge>
                 </div>
               </div>

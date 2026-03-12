@@ -48,7 +48,7 @@ CREATE TABLE public.profiles (
   first_name  TEXT,
   last_name   TEXT,
   email       TEXT        NOT NULL,
-  role        TEXT        NOT NULL DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
+  role        TEXT        NOT NULL DEFAULT 'CLIENT' CHECK (role IN ('CLIENT', 'MANAGER', 'ADMIN')),
   status      TEXT        NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'UNVERIFIED')),
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -61,6 +61,23 @@ RETURNS boolean AS $$
     SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'ADMIN'
   );
 $$ LANGUAGE sql SECURITY DEFINER;
+
+-- Helper: check manager role
+CREATE OR REPLACE FUNCTION public.is_manager()
+RETURNS boolean AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'MANAGER'
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
+-- Helper: check admin or manager role
+CREATE OR REPLACE FUNCTION public.is_admin_or_manager()
+RETURNS boolean AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('ADMIN', 'MANAGER')
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
 
 -- 2. companies
 CREATE TABLE public.companies (
@@ -203,6 +220,26 @@ CREATE INDEX idx_trigger_logs_created_at  ON public.trigger_logs(created_at);
 CREATE INDEX idx_trigger_logs_status      ON public.trigger_logs(status);
 
 
+-- Helper: check if current user has access to a company (bypasses RLS to avoid recursion)
+CREATE OR REPLACE FUNCTION public.has_company_access(p_company_id UUID)
+RETURNS boolean AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_companies
+    WHERE user_id = auth.uid() AND company_id = p_company_id
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
+-- Helper: check if two users share at least one company (bypasses RLS to avoid recursion)
+CREATE OR REPLACE FUNCTION public.shares_company(user_a UUID, user_b UUID)
+RETURNS boolean AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_companies uc1
+    JOIN public.user_companies uc2 ON uc1.company_id = uc2.company_id
+    WHERE uc1.user_id = user_a AND uc2.user_id = user_b
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
+
 -- ============================================================
 -- PART D: ROW LEVEL SECURITY (all tables exist, safe to cross-reference)
 -- ============================================================
@@ -215,18 +252,22 @@ CREATE POLICY "Admins can view all profiles"   ON public.profiles FOR SELECT USI
 CREATE POLICY "Admins can update all profiles" ON public.profiles FOR UPDATE USING (public.is_admin());
 CREATE POLICY "Admins can delete profiles"     ON public.profiles FOR DELETE USING (public.is_admin());
 CREATE POLICY "Admins can insert profiles"     ON public.profiles FOR INSERT WITH CHECK (public.is_admin());
+CREATE POLICY "Managers view company client profiles" ON public.profiles
+  FOR SELECT USING (
+    public.is_manager()
+    AND public.shares_company(auth.uid(), profiles.id)
+  );
 
 -- companies
 ALTER TABLE public.companies ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins manage companies" ON public.companies
   FOR ALL USING (public.is_admin());
-CREATE POLICY "Users view assigned companies" ON public.companies
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.user_companies
-      WHERE user_companies.company_id = companies.id
-        AND user_companies.user_id = auth.uid()
-    )
+CREATE POLICY "Clients view assigned companies" ON public.companies
+  FOR SELECT USING (public.has_company_access(companies.id));
+CREATE POLICY "Managers manage assigned companies" ON public.companies
+  FOR ALL USING (
+    public.is_manager()
+    AND public.has_company_access(companies.id)
   );
 
 -- user_companies
@@ -235,31 +276,43 @@ CREATE POLICY "Admins manage user_companies" ON public.user_companies
   FOR ALL USING (public.is_admin());
 CREATE POLICY "Users view own company assignments" ON public.user_companies
   FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Managers manage own company assignments" ON public.user_companies
+  FOR ALL USING (
+    public.is_manager()
+    AND public.has_company_access(user_companies.company_id)
+  );
 
 -- workflows
 ALTER TABLE public.workflows ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins manage workflows" ON public.workflows
   FOR ALL USING (public.is_admin());
-CREATE POLICY "Users view company workflows" ON public.workflows
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.user_companies uc
-      WHERE uc.company_id = workflows.company_id
-        AND uc.user_id = auth.uid()
-    )
+CREATE POLICY "Clients view company workflows" ON public.workflows
+  FOR SELECT USING (public.has_company_access(workflows.company_id));
+CREATE POLICY "Managers manage company workflows" ON public.workflows
+  FOR ALL USING (
+    public.is_manager()
+    AND public.has_company_access(workflows.company_id)
   );
 
 -- documents
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins manage documents" ON public.documents
   FOR ALL USING (public.is_admin());
-CREATE POLICY "Users manage assigned workflow documents" ON public.documents
+CREATE POLICY "Clients manage assigned workflow documents" ON public.documents
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM public.workflows w
-      JOIN public.user_companies uc ON uc.company_id = w.company_id
       WHERE w.id = documents.workflow_id
-        AND uc.user_id = auth.uid()
+        AND public.has_company_access(w.company_id)
+    )
+  );
+CREATE POLICY "Managers manage company documents" ON public.documents
+  FOR ALL USING (
+    public.is_manager()
+    AND EXISTS (
+      SELECT 1 FROM public.workflows w
+      WHERE w.id = documents.workflow_id
+        AND public.has_company_access(w.company_id)
     )
   );
 
@@ -267,13 +320,21 @@ CREATE POLICY "Users manage assigned workflow documents" ON public.documents
 ALTER TABLE public.knowledge_base ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins manage knowledge_base" ON public.knowledge_base
   FOR ALL USING (public.is_admin());
-CREATE POLICY "Users view company workflow kb" ON public.knowledge_base
+CREATE POLICY "Clients view company workflow kb" ON public.knowledge_base
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.workflows w
-      JOIN public.user_companies uc ON uc.company_id = w.company_id
       WHERE w.id = knowledge_base.workflow_id
-        AND uc.user_id = auth.uid()
+        AND public.has_company_access(w.company_id)
+    )
+  );
+CREATE POLICY "Managers view company kb" ON public.knowledge_base
+  FOR SELECT USING (
+    public.is_manager()
+    AND EXISTS (
+      SELECT 1 FROM public.workflows w
+      WHERE w.id = knowledge_base.workflow_id
+        AND public.has_company_access(w.company_id)
     )
   );
 
@@ -281,12 +342,38 @@ CREATE POLICY "Users view company workflow kb" ON public.knowledge_base
 ALTER TABLE public.chat_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins manage chat_logs" ON public.chat_logs
   FOR ALL USING (public.is_admin());
+CREATE POLICY "Clients view company chat_logs" ON public.chat_logs
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.workflows w
+      WHERE w.id = chat_logs.workflow_id
+        AND public.has_company_access(w.company_id)
+    )
+  );
+CREATE POLICY "Managers view company chat_logs" ON public.chat_logs
+  FOR SELECT USING (
+    public.is_manager()
+    AND EXISTS (
+      SELECT 1 FROM public.workflows w
+      WHERE w.id = chat_logs.workflow_id
+        AND public.has_company_access(w.company_id)
+    )
+  );
 
 -- trigger_logs
 ALTER TABLE public.trigger_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins view all trigger_logs" ON public.trigger_logs
   FOR SELECT USING (public.is_admin());
-CREATE POLICY "Users view assigned trigger_logs" ON public.trigger_logs
+CREATE POLICY "Managers view company trigger_logs" ON public.trigger_logs
+  FOR SELECT USING (
+    public.is_manager()
+    AND EXISTS (
+      SELECT 1 FROM public.workflows w
+      WHERE w.id = trigger_logs.workflow_id
+        AND public.has_company_access(w.company_id)
+    )
+  );
+CREATE POLICY "Clients view assigned trigger_logs" ON public.trigger_logs
   FOR SELECT USING (
     auth.uid() = user_id
     OR EXISTS (

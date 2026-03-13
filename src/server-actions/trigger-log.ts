@@ -34,6 +34,7 @@ export async function getTriggerLogsWithPagination(
     const search = params.search || '';
     const workflowFilter = params.workflowFilter || '';
     const statusFilter = params.statusFilter || '';
+    const companyFilter = params.companyFilter || '';
     const sortField = params.sortField || 'created_at';
     const sortDirection = params.sortDirection || 'desc';
     const offset = (page - 1) * limit;
@@ -48,6 +49,7 @@ export async function getTriggerLogsWithPagination(
       p_search: search,
       p_workflow_id: workflowFilter || null,
       p_user_id: strictUserId,
+      p_company_id: companyFilter || null,
       p_status: statusFilter,
       p_sort_field: sortField,
       p_sort_dir: sortDirection,
@@ -178,11 +180,14 @@ export async function getTriggerWorkflowsForFilter(companyId?: string): Promise<
     const supabase = createAdminClient();
 
     if (isAdmin) {
-      const { data, error } = await supabase
+      let query = supabase
         .from('workflows')
         .select('id, name')
-        .eq('type', 'trigger')
-        .order('name');
+        .eq('type', 'trigger');
+      if (companyId) {
+        query = query.eq('company_id', companyId);
+      }
+      const { data, error } = await query.order('name');
       if (error) throw error;
       return (data || []).map((w) => ({ id: w.id, name: w.name }));
     } else {

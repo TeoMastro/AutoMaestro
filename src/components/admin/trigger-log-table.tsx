@@ -25,21 +25,7 @@ import { Eye, X } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
-import type { TriggerLogEntry } from '@/types/trigger-log';
-
-interface TriggerLogTableProps {
-  logs: TriggerLogEntry[];
-  totalCount: number;
-  totalPages: number;
-  currentPage: number;
-  limit: number;
-  sortField: string;
-  sortDirection: 'asc' | 'desc';
-  searchTerm: string;
-  workflowFilter: string;
-  statusFilter: string;
-  workflows: { id: string; name: string }[];
-}
+import type { TriggerLogTableProps } from '@/types/trigger-log';
 
 export function TriggerLogTable({
   logs,
@@ -51,7 +37,10 @@ export function TriggerLogTable({
   sortDirection,
   searchTerm,
   workflowFilter,
+  companyFilter,
+  isClient,
   statusFilter,
+  companies,
   workflows,
 }: TriggerLogTableProps) {
   const router = useRouter();
@@ -61,6 +50,7 @@ export function TriggerLogTable({
 
   const [searchLocal, setSearchLocal] = useState(searchTerm);
   const [workflowFilterLocal, setWorkflowFilterLocal] = useState(workflowFilter);
+  const [companyFilterLocal, setCompanyFilterLocal] = useState(companyFilter);
   const [statusFilterLocal, setStatusFilterLocal] = useState(statusFilter);
 
   const updateUrl = useCallback(
@@ -103,6 +93,15 @@ export function TriggerLogTable({
     [updateUrl]
   );
 
+  const handleCompanyFilter = useCallback(
+    (value: string) => {
+      setCompanyFilterLocal(value);
+      setWorkflowFilterLocal('all');
+      updateUrl({ companyFilter: value, workflowFilter: 'all', page: '1' });
+    },
+    [updateUrl]
+  );
+
   const handleStatusFilter = useCallback(
     (value: string) => {
       setStatusFilterLocal(value);
@@ -114,11 +113,12 @@ export function TriggerLogTable({
   const handleReset = useCallback(() => {
     setSearchLocal('');
     setWorkflowFilterLocal('all');
+    setCompanyFilterLocal('all');
     setStatusFilterLocal('all');
-    updateUrl({ search: '', workflowFilter: 'all', statusFilter: 'all', page: '1' });
+    updateUrl({ search: '', workflowFilter: 'all', companyFilter: 'all', statusFilter: 'all', page: '1' });
   }, [updateUrl]);
 
-  const hasFilters = searchLocal !== '' || workflowFilterLocal !== 'all' || statusFilterLocal !== 'all';
+  const hasFilters = searchLocal !== '' || workflowFilterLocal !== 'all' || companyFilterLocal !== 'all' || statusFilterLocal !== 'all';
 
   return (
     <div className="space-y-4">
@@ -136,6 +136,19 @@ export function TriggerLogTable({
           }}
           className="w-full md:max-w-sm"
         />
+        {!isClient && (
+          <Select value={companyFilterLocal} onValueChange={handleCompanyFilter}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder={t('filterByCompany')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allCompanies')}</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Select value={statusFilterLocal || 'all'} onValueChange={handleStatusFilter}>
           <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder={t('filterByStatus')} />

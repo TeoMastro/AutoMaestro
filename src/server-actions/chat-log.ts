@@ -80,12 +80,15 @@ export async function getChatSessionsWithPagination(
       }
     }
 
+    const companyFilter = params.companyFilter || '';
+
     const supabase = createAdminClient();
 
     const { data, error } = await supabase.rpc('get_chat_sessions', {
       p_search: search,
       p_workflow_id: workflowFilter || null,
       p_workflow_ids: allowedWorkflowIds,
+      p_company_id: companyFilter || null,
       p_sort_field: sortField,
       p_sort_dir: sortDirection,
       p_limit: limit,
@@ -192,11 +195,14 @@ export async function getWorkflowsForFilter(companyId?: string): Promise<{ id: s
     const supabase = createAdminClient();
 
     if (isAdmin) {
-      const { data, error } = await supabase
+      let query = supabase
         .from('workflows')
         .select('id, name')
-        .eq('type', 'chat')
-        .order('name');
+        .eq('type', 'chat');
+      if (companyId) {
+        query = query.eq('company_id', companyId);
+      }
+      const { data, error } = await query.order('name');
       if (error) throw error;
       return (data || []).map((w) => ({ id: w.id, name: w.name }));
     } else {

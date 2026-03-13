@@ -18,6 +18,7 @@ export type GetTriggerLogsParams = {
   limit?: string;
   search?: string;
   workflowFilter?: string;
+  companyFilter?: string;
   statusFilter?: string;
   sortField?: string;
   sortDirection?: string;
@@ -29,4 +30,21 @@ export type GetTriggerLogsResult = {
   totalPages: number;
   currentPage: number;
   limit: number;
+};
+
+export type TriggerLogTableProps = {
+  logs: TriggerLogEntry[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+  sortField: string;
+  sortDirection: 'asc' | 'desc';
+  searchTerm: string;
+  workflowFilter: string;
+  companyFilter: string;
+  isClient: boolean;
+  statusFilter: string;
+  companies: { id: string; name: string }[];
+  workflows: { id: string; name: string }[];
 };

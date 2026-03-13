@@ -37,6 +37,9 @@ export function ChatSessionTable({
   sortDirection,
   searchTerm,
   workflowFilter,
+  companyFilter,
+  isClient,
+  companies,
   workflows,
 }: ChatSessionTableProps) {
   const router = useRouter();
@@ -46,6 +49,7 @@ export function ChatSessionTable({
 
   const [searchLocal, setSearchLocal] = useState(searchTerm);
   const [workflowFilterLocal, setWorkflowFilterLocal] = useState(workflowFilter);
+  const [companyFilterLocal, setCompanyFilterLocal] = useState(companyFilter);
 
   const updateUrl = useCallback(
     (params: Record<string, string>) => {
@@ -87,13 +91,23 @@ export function ChatSessionTable({
     [updateUrl]
   );
 
+  const handleCompanyFilter = useCallback(
+    (value: string) => {
+      setCompanyFilterLocal(value);
+      setWorkflowFilterLocal('all');
+      updateUrl({ companyFilter: value, workflowFilter: 'all', page: '1' });
+    },
+    [updateUrl]
+  );
+
   const handleReset = useCallback(() => {
     setSearchLocal('');
     setWorkflowFilterLocal('all');
-    updateUrl({ search: '', workflowFilter: 'all', page: '1' });
+    setCompanyFilterLocal('all');
+    updateUrl({ search: '', workflowFilter: 'all', companyFilter: 'all', page: '1' });
   }, [updateUrl]);
 
-  const hasFilters = searchLocal !== '' || workflowFilterLocal !== 'all';
+  const hasFilters = searchLocal !== '' || workflowFilterLocal !== 'all' || companyFilterLocal !== 'all';
 
   const truncateSessionId = (id: string) => {
     if (id.length <= 16) return id;
@@ -116,6 +130,19 @@ export function ChatSessionTable({
           }}
           className="w-full md:max-w-sm"
         />
+        {!isClient && (
+          <Select value={companyFilterLocal} onValueChange={handleCompanyFilter}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder={t('filterByCompany')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allCompanies')}</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Select value={workflowFilterLocal} onValueChange={handleWorkflowFilter}>
           <SelectTrigger className="w-full md:w-[220px]">
             <SelectValue placeholder={t('filterByWorkflow')} />

@@ -20,6 +20,7 @@ export type GetChatSessionsParams = {
   limit?: string;
   search?: string;
   workflowFilter?: string;
+  companyFilter?: string;
   companyId?: string;
   sortField?: string;
   sortDirection?: string;
@@ -43,6 +44,9 @@ export type ChatSessionTableProps = {
   sortDirection: 'asc' | 'desc';
   searchTerm: string;
   workflowFilter: string;
+  companyFilter: string;
+  isClient: boolean;
+  companies: { id: string; name: string }[];
   workflows: { id: string; name: string }[];
 };
 

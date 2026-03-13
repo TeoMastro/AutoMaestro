@@ -39,6 +39,7 @@ import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
 import { InfoAlert } from '@/components/info-alert';
 import { WorkflowTableProps } from '@/types/workflow';
+import { badgeStyles } from '@/lib/badge-styles';
 
 export function WorkflowTable({
   workflows,
@@ -217,19 +218,19 @@ export function WorkflowTable({
                   {wf.companyName || '—'}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={wf.type === 'chat' ? 'default' : 'secondary'}>
+                  <Badge variant="outline" className={wf.type === 'chat' ? badgeStyles.green : badgeStyles.slate}>
                     {wf.type === 'chat' ? t('workflowTypeChat') : t('workflowTypeTrigger')}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   {wf.hasKnowledgeBase ? (
-                    <Badge variant="outline">{t('active')}</Badge>
+                    <Badge variant="outline" className={badgeStyles.green}>{t('active')}</Badge>
                   ) : (
                     <span className="text-muted-foreground text-sm">—</span>
                   )}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={wf.isActive ? 'default' : 'destructive'}>
+                  <Badge variant="outline" className={wf.isActive ? badgeStyles.green : badgeStyles.red}>
                     {wf.isActive ? t('activeStatus') : t('inactiveStatus')}
                   </Badge>
                 </TableCell>
@@ -261,7 +262,7 @@ export function WorkflowTable({
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
-                          variant="outline"
+                          variant="destructive"
                           size="sm"
                           disabled={isPending || deletingId === wf.id}
                         >

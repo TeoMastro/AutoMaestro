@@ -19,6 +19,7 @@ import { InfoAlert } from '@/components/info-alert';
 import { Pencil } from 'lucide-react';
 import { updateProfileAction } from '@/server-actions/profile';
 import { Role } from '@/lib/constants';
+import { badgeStyles } from '@/lib/badge-styles';
 import {
   updateProfileSchema,
   changeEmailSchema,
@@ -61,14 +62,13 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
     .toUpperCase()
     .slice(0, 2);
 
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeStyle = (role: string) => {
     switch (role) {
       case 'ADMIN':
-        return 'destructive' as const;
       case 'MANAGER':
-        return 'default' as const;
+        return badgeStyles.indigo;
       default:
-        return 'secondary' as const;
+        return badgeStyles.slate;
     }
   };
 
@@ -257,10 +257,10 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                 <h3 className="text-lg font-semibold">{fullName}</h3>
                 <p className="text-sm text-muted-foreground">{user.email}</p>
                 <div className="flex gap-2">
-                  <Badge variant={getRoleBadgeVariant(user.role)}>
+                  <Badge variant="outline" className={getRoleBadgeStyle(user.role)}>
                     {getRoleLabel(user.role)}
                   </Badge>
-                  <Badge variant="outline">{t('active')}</Badge>
+                  <Badge variant="outline" className={badgeStyles.green}>{t('active')}</Badge>
                 </div>
               </div>
             </div>
@@ -336,10 +336,10 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
               </Avatar>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Badge variant={getRoleBadgeVariant(user.role)}>
+                  <Badge variant="outline" className={getRoleBadgeStyle(user.role)}>
                     {getRoleLabel(user.role)}
                   </Badge>
-                  <Badge variant="outline">{t('active')}</Badge>
+                  <Badge variant="outline" className={badgeStyles.green}>{t('active')}</Badge>
                 </div>
               </div>
             </div>

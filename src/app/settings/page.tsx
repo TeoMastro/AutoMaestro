@@ -1,4 +1,5 @@
 import LanguageSwitcher from '@/components/language-switcher';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { getSession } from '@/lib/auth-session';
 import { redirect } from 'next/navigation';
 import { Status } from '@/lib/constants';
@@ -16,10 +17,14 @@ export default async function SettingsPage() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">{t('selectLanguage')}:</span>
             <LanguageSwitcher />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">{t('theme')}:</span>
+            <ThemeToggle />
           </div>
         </CardContent>
       </Card>

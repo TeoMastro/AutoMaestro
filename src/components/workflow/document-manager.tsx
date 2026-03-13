@@ -34,17 +34,18 @@ import { Upload, Trash2, Database } from 'lucide-react';
 import { InfoAlert } from '@/components/info-alert';
 import { WorkflowDocument } from '@/types/workflow';
 import { DocumentStatus, SUPPORTED_FILE_TYPES, MAX_FILE_SIZE_BYTES, MAX_UPLOAD_FILES } from '@/lib/constants';
+import { badgeStyles } from '@/lib/badge-styles';
 
 interface DocumentManagerProps {
   workflowId: string;
   initialDocuments: WorkflowDocument[];
 }
 
-const STATUS_VARIANT: Record<DocumentStatus, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  pending: 'secondary',
-  processing: 'outline',
-  ready: 'default',
-  error: 'destructive',
+const STATUS_STYLE: Record<DocumentStatus, string> = {
+  pending: badgeStyles.amber,
+  processing: badgeStyles.amber,
+  ready: badgeStyles.green,
+  error: badgeStyles.red,
 };
 
 function formatBytes(bytes: number | null) {
@@ -299,7 +300,7 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={STATUS_VARIANT[doc.status]}>
+                    <Badge variant="outline" className={STATUS_STYLE[doc.status]}>
                       {t(`documentStatus${doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}` as Parameters<typeof t>[0])}
                     </Badge>
                     {pollingIds.has(doc.id) && (
@@ -309,7 +310,7 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
                   <TableCell className="text-right">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm" disabled={isPending}>
+                        <Button variant="destructive" size="sm" disabled={isPending}>
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </AlertDialogTrigger>

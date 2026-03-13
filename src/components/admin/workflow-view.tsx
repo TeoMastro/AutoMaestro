@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Edit, Globe, Database, Building2 } from 'lucide-react';
 import { WorkflowViewProps } from '@/types/workflow';
+import { badgeStyles } from '@/lib/badge-styles';
 import { DocumentManager } from '@/components/workflow/document-manager';
 import { TriggerWorkflow } from '@/components/workflow/trigger-workflow';
 import { HostedChat } from '@/components/workflow/hosted-chat';
@@ -67,7 +68,7 @@ export function WorkflowView({ workflow, documents = [], searchParams }: Workflo
               <div>
                 <label className="text-sm font-medium text-muted-foreground">{t('workflowType')}</label>
                 <div className="mt-1">
-                  <Badge variant={workflow.type === 'chat' ? 'default' : 'secondary'}>
+                  <Badge variant="outline" className={workflow.type === 'chat' ? badgeStyles.green : badgeStyles.slate}>
                     {workflow.type === 'chat' ? t('workflowTypeChat') : t('workflowTypeTrigger')}
                   </Badge>
                 </div>
@@ -75,7 +76,7 @@ export function WorkflowView({ workflow, documents = [], searchParams }: Workflo
               <div>
                 <label className="text-sm font-medium text-muted-foreground">{t('status')}</label>
                 <div className="mt-1">
-                  <Badge variant={workflow.isActive ? 'default' : 'destructive'}>
+                  <Badge variant="outline" className={workflow.isActive ? badgeStyles.green : badgeStyles.red}>
                     {workflow.isActive ? t('activeStatus') : t('inactiveStatus')}
                   </Badge>
                 </div>
@@ -97,7 +98,7 @@ export function WorkflowView({ workflow, documents = [], searchParams }: Workflo
                   {t('knowledgeBase')}
                 </label>
                 <div className="mt-1">
-                  <Badge variant={workflow.hasKnowledgeBase ? 'outline' : 'secondary'}>
+                  <Badge variant="outline" className={workflow.hasKnowledgeBase ? badgeStyles.green : badgeStyles.slate}>
                     {workflow.hasKnowledgeBase ? t('active') : t('inactiveStatus')}
                   </Badge>
                 </div>

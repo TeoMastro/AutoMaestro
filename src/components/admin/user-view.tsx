@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Edit, Calendar, Mail, Shield, Trash2 } from 'lucide-react';
 import { UserViewProps } from '@/types/user';
-import { getStatusBadge } from '@/components/admin/user-table';
+import { getStatusBadge, getRoleBadgeClass } from '@/components/admin/user-table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,7 +55,7 @@ export function UserView({ user }: UserViewProps) {
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="destructive">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </AlertDialogTrigger>
@@ -135,14 +135,8 @@ export function UserView({ user }: UserViewProps) {
                 </label>
                 <div className="mt-1">
                   <Badge
-                    variant={
-                      user.role === 'ADMIN'
-                        ? 'default'
-                        : user.role === 'MANAGER'
-                          ? 'outline'
-                          : 'secondary'
-                    }
-                    className="text-sm"
+                    variant="outline"
+                    className={`text-sm ${getRoleBadgeClass(user.role)}`}
                   >
                     {user.role === 'ADMIN'
                       ? t('adminRole')
@@ -158,7 +152,7 @@ export function UserView({ user }: UserViewProps) {
                   {t('status')}
                 </label>
                 <div className="mt-1">
-                  <Badge variant={statusBadge.variant} className="text-sm">
+                  <Badge variant="outline" className={`text-sm ${statusBadge.className}`}>
                     {statusBadge.text}
                   </Badge>
                 </div>

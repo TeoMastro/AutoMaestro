@@ -15,6 +15,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import type { TriggerLogEntry } from '@/types/trigger-log';
+import { badgeStyles } from '@/lib/badge-styles';
 
 interface TriggerLogViewProps {
   log: TriggerLogEntry;
@@ -147,7 +148,7 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
                   {t('status')}
                 </label>
                 <div className="mt-1">
-                  <Badge variant={log.status === 'success' ? 'default' : 'destructive'} className="text-sm">
+                  <Badge variant="outline" className={`text-sm ${log.status === 'success' ? badgeStyles.green : badgeStyles.red}`}>
                     {t(log.status)}
                   </Badge>
                 </div>

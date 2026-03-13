@@ -26,6 +26,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
 import type { TriggerLogTableProps } from '@/types/trigger-log';
+import { badgeStyles } from '@/lib/badge-styles';
 
 export function TriggerLogTable({
   logs,
@@ -210,7 +211,7 @@ export function TriggerLogTable({
                 </TableCell>
                 <TableCell>{log.userEmail}</TableCell>
                 <TableCell>
-                  <Badge variant={log.status === 'success' ? 'default' : 'destructive'} className="text-sm">
+                  <Badge variant="outline" className={`text-sm ${log.status === 'success' ? badgeStyles.green : badgeStyles.red}`}>
                     {t(log.status)}
                   </Badge>
                 </TableCell>

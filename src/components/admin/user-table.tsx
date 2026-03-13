@@ -43,29 +43,40 @@ import {
 import { Role, Status } from '@/lib/constants';
 import { UsersTableProps } from '@/types/user';
 import { InfoAlert } from '@/components/info-alert';
+import { badgeStyles } from '@/lib/badge-styles';
 
 export const getStatusBadge = (status: Status, t: (key: string) => string) => {
   switch (status) {
     case Status.ACTIVE:
       return {
-        variant: 'default' as const,
+        className: badgeStyles.green,
         text: t('activeStatus'),
       };
     case Status.INACTIVE:
       return {
-        variant: 'destructive' as const,
+        className: badgeStyles.red,
         text: t('inactiveStatus'),
       };
     case Status.UNVERIFIED:
       return {
-        variant: 'outline' as const,
+        className: badgeStyles.amber,
         text: t('unverifiedStatus'),
       };
     default:
       return {
-        variant: 'secondary' as const,
+        className: badgeStyles.slate,
         text: status,
       };
+  }
+};
+
+export const getRoleBadgeClass = (role: string) => {
+  switch (role) {
+    case Role.ADMIN:
+    case Role.MANAGER:
+      return badgeStyles.indigo;
+    default:
+      return badgeStyles.slate;
   }
 };
 
@@ -413,13 +424,8 @@ export function UsersTable({
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={
-                        user.role === Role.ADMIN
-                          ? 'default'
-                          : user.role === Role.MANAGER
-                            ? 'outline'
-                            : 'secondary'
-                      }
+                      variant="outline"
+                      className={getRoleBadgeClass(user.role)}
                     >
                       {user.role === Role.ADMIN
                         ? t('adminRole')
@@ -430,7 +436,7 @@ export function UsersTable({
                   </TableCell>
                   {/* Add status column */}
                   <TableCell>
-                    <Badge variant={statusBadge.variant}>
+                    <Badge variant="outline" className={statusBadge.className}>
                       {statusBadge.text}
                     </Badge>
                   </TableCell>
@@ -467,7 +473,7 @@ export function UsersTable({
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
-                            variant="outline"
+                            variant="destructive"
                             size="sm"
                             disabled={
                               user.id === currentUserId ||

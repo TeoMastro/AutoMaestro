@@ -44,7 +44,7 @@ export function CompanyDeleteButton({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" disabled={isPending}>
+        <Button variant="destructive" disabled={isPending}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </AlertDialogTrigger>

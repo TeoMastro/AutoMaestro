@@ -120,6 +120,41 @@ type FormState = {
 - `SortableTableHeader` for admin/manage tables — extend its `SortField` type when adding new sortable columns
 - Admin/manage tables use sortable headers, pagination, and filters
 
+## Design System
+
+### Theme
+
+Indigo-based palette via CSS custom properties in `globals.css`. Dark mode supported via `next-themes` (`ThemeProvider` wraps the app in `layout.tsx`). Theme toggle lives on the `/settings` page next to the language switcher.
+
+- `--primary`: Indigo 600 (light) / Indigo 400 (dark)
+- `--background`: Subtle off-white tint `oklch(0.985 0.004 265)` — not pure white, gives depth between page and cards
+
+### Button Hierarchy
+
+| Action | Variant | Examples |
+|--------|---------|---------|
+| Create / Submit / Save | `default` (indigo fill) | "Create", form submit buttons |
+| Delete | `destructive` (red fill) | All Trash2 icon buttons |
+| View / Edit / Navigate | `outline` | Eye, Pencil, ArrowLeft buttons |
+| Cancel / Back | `outline` | Cancel buttons in forms |
+| Toggle / Dismiss | `ghost` | Theme toggle, close alert |
+
+### Badge Color System (`/src/lib/badge-styles.ts`)
+
+5 semantic colors applied via `variant="outline"` + `className={badgeStyles.X}`:
+
+| Color | Style | Usage |
+|-------|-------|-------|
+| **Green** (emerald) | `badgeStyles.green` | ACTIVE, active workflow, CHAT, ready |
+| **Indigo** | `badgeStyles.indigo` | ADMIN, MANAGER |
+| **Amber** | `badgeStyles.amber` | UNVERIFIED, pending, processing |
+| **Red** | `badgeStyles.red` | INACTIVE, inactive workflow, error |
+| **Slate** (zinc) | `badgeStyles.slate` | CLIENT, TRIGGER |
+
+Each style includes light + dark mode classes. Always use `variant="outline"` as the base — the className colors override via `tw-merge` in `cn()`.
+
+Helper exports in `user-table.tsx`: `getStatusBadge(status, t)` and `getRoleBadgeClass(role)` — reuse these instead of duplicating logic.
+
 ## File Conventions
 
 - kebab-case for filenames

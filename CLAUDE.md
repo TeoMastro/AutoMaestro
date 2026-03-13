@@ -1,147 +1,142 @@
-# Next Launch Kit - Project Guide
+# CLAUDE.md
 
-This is a Next.js 16 full-stack application with Supabase authentication, user management, and internationalization.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Tech Stack
+## What This Is
 
-- **Framework**: Next.js 16 with App Router, React 19, TypeScript
-- **Database**: Supabase PostgreSQL with Row Level Security (RLS)
-- **Authentication**: Supabase Auth (email/password + Google OAuth)
-- **Styling**: Tailwind CSS 4, shadcn/ui components
-- **Validation**: Zod schemas
-- **Logging**: Winston
-- **i18n**: next-intl (English/Greek)
+n8n Whitelabel Frontend — a Next.js 16 full-stack app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek).
 
 ## Key Commands
 
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run db:seed` - Seed database with demo users
+- `npm run dev` — dev server with Turbopack
+- `npm run build` — production build (requires `.env.local`)
+- `npm run lint` — ESLint
+- `npm run format` / `npm run format:check` — Prettier (single quotes, 2 spaces, trailing commas)
+- `npm run db:seed` — seed demo users (uses `tsx --env-file=.env.local`)
 
-## Project Structure
+No test suite exists.
 
-- `/src/app` - Next.js App Router pages and API routes
-- `/src/components` - React components (UI, auth, admin, layout)
-- `/src/server-actions` - Server actions for data mutations
-- `/src/lib` - Utilities (supabase clients, validation, logging, constants)
-- `/src/lib/supabase` - Supabase client helpers (client.ts, server.ts, admin.ts, middleware.ts)
-- `/src/types` - TypeScript type definitions
-- `/supabase` - SQL migrations and seed script
-- `/messages` - i18n translation files (en.json, el.json)
+## Tech Stack
 
-## Code Standards
+Next.js 16 App Router, React 19, TypeScript strict, Supabase (Postgres + Auth + Storage), Tailwind CSS 4, shadcn/ui, next-intl, Zod v4, Winston logger, OpenAI (embeddings)
 
-- Use TypeScript with strict mode enabled
-- Server Components by default; add `'use client'` only when necessary
-- Server actions in `/src/server-actions` for mutations
-- All forms use `useActionState` hook for form state management
-- Zod schemas in `/src/lib/validation-schemas.ts` for validation
-- Error messages as translation keys, translated via next-intl
-- Supabase for all database operations via query builder
-- Logger for server-side logging via `/src/lib/logger.ts`
+## Architecture
 
-## Supabase Clients
+### Three-Tier Role System
 
-Three Supabase client helpers for different contexts:
+Roles: `ADMIN`, `MANAGER`, `CLIENT` (defined in `/src/lib/constants.ts`).
 
-- **Browser client** (`/src/lib/supabase/client.ts`) - Used in `'use client'` components
-- **Server client** (`/src/lib/supabase/server.ts`) - Used in Server Components and Server Actions (respects RLS)
-- **Admin client** (`/src/lib/supabase/admin.ts`) - Uses service role key, bypasses RLS (for admin operations)
+- **ADMIN** — unrestricted access to all companies, all users, and all routes (including `/admin/*`)
+- **MANAGER** — can only see and manage the companies they are assigned to (via `user_companies` table) and the clients that belong to those companies; accesses `/manage/*` routes
+- **CLIENT** — can only see and interact with resources (workflows, documents, chat/trigger history) that belong to their own company; accesses `/workflow`, `/chat-history`, `/trigger-history`, `/dashboard`, `/profile`, `/settings`
 
-## Authentication & Authorization
+Auth helpers in `/src/lib/auth-helpers.ts`:
+- `checkAdminAuth()` — admin-only server actions
+- `checkAdminOrManagerAuth()` — admin + manager server actions
+- `getManagerCompanyIds(managerId)` — returns company IDs a manager is assigned to
+- `checkManagerCompanyAccess(managerId, companyId)` — verifies manager→company access
 
-- Supabase Auth handles sign-up, sign-in, password reset, email verification
-- Proxy middleware in `/src/proxy.ts` protects routes and refreshes sessions
-- User roles: `USER`, `ADMIN` (stored in `profiles.role`)
-- User status: `ACTIVE`, `INACTIVE`, `UNVERIFIED` (stored in `profiles.status`)
-- Admin routes: `/admin/*` - only accessible to ADMIN role
-- Protected routes: `/dashboard`, `/profile`, `/settings` - require authentication
-- Auth callback route: `/auth/callback` handles OAuth and email verification redirects
+Session helper in `/src/lib/auth-session.ts`: `getSession()` returns `AuthSession` with user profile data (role, status, name).
 
-## Database
+### Middleware (`/src/proxy.ts`)
 
-- Supabase PostgreSQL with RLS enabled on `profiles` table
-- `profiles` table linked to `auth.users` via UUID foreign key
-- User IDs are UUID strings (not integers)
-- Admin queries use the admin client to bypass RLS
-- Regular queries use the server client (RLS enforced)
-- `is_admin()` SECURITY DEFINER function prevents RLS recursion
+Protects routes by role, refreshes Supabase sessions. Route access:
+- `/admin/*` — ADMIN only
+- `/manage/*` — ADMIN + MANAGER
+- `/api/users*` — ADMIN only (defense in depth)
+- `/api/logs/*`, `/api/knowledge-search` — allow Bearer token auth (used by n8n)
+- All other protected routes — any authenticated ACTIVE user
+
+### Supabase Clients
+
+- **Browser** (`/src/lib/supabase/client.ts`) — `'use client'` components
+- **Server** (`/src/lib/supabase/server.ts`) — Server Components + Server Actions (respects RLS)
+- **Admin** (`/src/lib/supabase/admin.ts`) — service role key, bypasses RLS
+
+### Database
+
+Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_companies`, `workflows`, `user_workflows`, `documents`, `knowledge_base`.
+
+- User IDs are UUID strings
+- `is_admin()` and `is_admin_or_manager()` are SECURITY DEFINER functions (prevent RLS recursion)
+- pgvector extension required for `knowledge_base` (IVFFlat index)
+- Migrations in `/supabase/migrations/` (001–004)
 - Use `revalidatePath()` after mutations that affect UI
 
-## Form Patterns
+### Workflows & Document Processing
 
-All forms follow this pattern:
+- Workflow types: `CHAT` and `TRIGGER` (constants in `/src/lib/constants.ts`)
+- Webhook proxy routes: `/api/workflows/trigger` and chat via n8n
+- Document pipeline: upload → parse (pdf-parse/mammoth) → chunk (1000 chars) → embed (OpenAI `text-embedding-3-small`) → upsert to `knowledge_base`
+- `knowledge_base` schema is n8n Supabase Vector Store compatible: `{id, content, metadata, embedding, doc_id, workflow_id}`
+- Document processing API: `/api/documents/process`
+- Supabase Storage bucket `workflow-documents` must be created manually
 
+### API Routes
+
+- `/api/workflows/trigger` — webhook proxy for n8n trigger workflows
+- `/api/documents/process` — document processing pipeline
+- `/api/documents/status` — document status polling
+- `/api/logs/chat` — chat logging (Bearer auth, called by n8n)
+- `/api/knowledge-search` — vector search (Bearer auth, called by n8n)
+- `/api/users-export` — admin user export
+
+## Code Patterns
+
+### Server Components by Default
+
+Add `'use client'` only when necessary (hooks, event handlers, browser APIs).
+
+### Forms
+
+All forms use `useActionState` hook with server actions returning `FormState`:
 ```typescript
-// Define state type
 type FormState = {
   success: boolean;
   errors: Record<string, string[]>;
-  formData: { /* form fields */ };
+  formData: { /* fields */ };
   globalError: string | null;
 };
-
-// Use useActionState hook
-const [state, formAction] = useActionState(serverAction, initialState);
-
-// Server action validates with Zod, returns FormState
-// Translation keys used for error messages
 ```
 
-## Translation System
+### Server Actions (`/src/server-actions/`)
 
-- Locale stored in cookies
-- Translation files: `/messages/en.json`, `/messages/el.json`
+- Validate with Zod schemas (`/src/lib/validation-schemas.ts`)
+- Return `FormState` for forms, use `redirect()` for successful mutations
+- Auth: `checkAdminAuth()` for admin-only, `checkAdminOrManagerAuth()` for shared
+- Admin client for privileged ops, server client for user-scoped queries
+
+### Translations
+
+- Files: `/messages/en.json`, `/messages/el.json`
 - Server: `getTranslations('namespace')` from `next-intl/server`
 - Client: `useTranslations('namespace')` from `next-intl`
-- All user-facing strings must use translation keys
+- All user-facing strings must be translation keys (error messages included)
 
-## Component Conventions
+### Components
 
-- shadcn/ui components in `/src/components/ui`
-- Use existing UI components, don't create custom ones
-- InfoAlert component for success/error/warning messages
-- All admin tables use sortable headers, pagination, filters
+- shadcn/ui in `/src/components/ui` — use existing components, don't create custom ones
+- `InfoAlert` for success/error/warning messages
+- `SortableTableHeader` for admin/manage tables — extend its `SortField` type when adding new sortable columns
+- Admin/manage tables use sortable headers, pagination, and filters
 
-## Server Actions
+## File Conventions
 
-- Located in `/src/server-actions`
-- Always validate with Zod schemas
-- Return FormState objects for forms
-- Use `redirect()` for successful mutations
-- Log important actions with Winston logger
-- Check admin authorization with `checkAdminAuth()` helper
-- Use Supabase server client for user-scoped queries
-- Use Supabase admin client for privileged operations
+- kebab-case for filenames
+- Server actions in `/src/server-actions/`
+- Types in `/src/types/`
+- Supabase query builder only (no raw SQL)
+
+## Gotchas
+
+- `pdf-parse` requires `require()` + unwrap default; also stub `DOMMatrix`, `ImageData`, `Path2D` before require (pdfjs-dist accesses them at load time)
+- Supabase FK joins with multiple FKs to same table: use separate queries, not `.select('table:fk_col(...)')`
+- Build fails without `.env.local` (env vars required at build time)
+- Demo users: admin@nextlaunchkit.com / user@nextlaunchkit.com
 
 ## Environment Variables
 
 Required in `.env.local` (see `.env.example`):
-
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase public/anon key
-- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (server-only)
-- `NEXT_PUBLIC_APP_URL` - Application URL
-
-## Important Notes
-
-- Never commit `.env.local` files
-- User IDs are UUID strings, not integers
-- Demo users: admin@nextlaunchkit.com / user@nextlaunchkit.com
-- Email verification handled by Supabase Auth (via `/auth/callback` route)
-- Password reset uses Supabase's built-in flow (no custom tokens)
-- User deletion prevented for own account (admin)
-- Prettier config: single quotes, 2 spaces, trailing commas
-- Constants for Role, Status in `/src/lib/constants.ts`
-
-## File Creation
-
-When creating new files:
-
-- Use existing patterns from similar files
-- Place server actions in `/src/server-actions`
-- Place types in `/src/types`
-- Follow existing naming conventions (kebab-case for files)
-- Add translation keys to both `/messages/en.json` and `/messages/el.json`
-- Use Supabase query builder (not raw SQL) for database operations
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_APP_URL`
+- `OPENAI_API_KEY` (for document embedding)

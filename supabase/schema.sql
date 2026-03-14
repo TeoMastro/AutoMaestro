@@ -115,6 +115,16 @@ CREATE TABLE public.workflows (
   updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- 4b. template_library (shared n8n templates)
+CREATE TABLE public.template_library (
+  id            UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  title         TEXT        NOT NULL,
+  description   TEXT,
+  workflow_json JSONB       NOT NULL,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- 5. documents
 CREATE TABLE public.documents (
   id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -199,6 +209,13 @@ CREATE INDEX idx_workflows_company_id ON public.workflows(company_id);
 CREATE INDEX idx_workflows_token ON public.workflows(token);
 CREATE TRIGGER workflows_updated_at
   BEFORE UPDATE ON public.workflows
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- template_library
+CREATE INDEX idx_template_library_title ON public.template_library(title);
+CREATE INDEX idx_template_library_created_at ON public.template_library(created_at);
+CREATE TRIGGER template_library_updated_at
+  BEFORE UPDATE ON public.template_library
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 -- documents
@@ -293,6 +310,13 @@ CREATE POLICY "Managers manage company workflows" ON public.workflows
     public.is_manager()
     AND public.has_company_access(workflows.company_id)
   );
+
+-- template_library
+ALTER TABLE public.template_library ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins manage template_library" ON public.template_library
+  FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
+CREATE POLICY "Managers view template_library" ON public.template_library
+  FOR SELECT USING (public.is_admin_or_manager());
 
 -- documents
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;

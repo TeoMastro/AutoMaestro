@@ -1,4 +1,4 @@
-import { Home, Users, Bot, MessageSquare, Activity, Building2 } from 'lucide-react';
+import { Home, Users, Bot, MessageSquare, Activity, Building2, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -84,6 +84,16 @@ export async function AppSidebar() {
       url: '/trigger-history',
       icon: Activity,
     },
+    // Admin + Manager: Template Library
+    ...(isAdmin || isManager
+      ? [
+          {
+            title: t('templateLibrary'),
+            url: '/manage/templates',
+            icon: BookOpen,
+          },
+        ]
+      : []),
     // Admin-only: Users
     ...(isAdmin
       ? [

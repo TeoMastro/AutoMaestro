@@ -310,6 +310,26 @@
     "passwordChangedSuccess": "Ο κωδικός άλλαξε επιτυχώς",
     "incorrectPassword": "Ο τρέχων κωδικός είναι λανθασμένος",
     "changingPassword": "Αλλαγή...",
-    "changingEmail": "Αλλαγή..."
+    "changingEmail": "Αλλαγή...",
+    "templateLibrary": "Βιβλιοθήκη Templates",
+    "templates": "Templates",
+    "templateTitle": "Τίτλος Template",
+    "templateTitleRequired": "Ο τίτλος template είναι υποχρεωτικός",
+    "templateDescription": "Περιγραφή",
+    "createTemplateLibraryItem": "Δημιουργία Template",
+    "editTemplateLibraryItem": "Ενημέρωση Template",
+    "viewTemplateLibraryItem": "Προβολή Template",
+    "searchTemplates": "Αναζήτηση templates...",
+    "noTemplateLibraryItemsFound": "Δεν βρέθηκαν templates.",
+    "templateLibraryCreatedSuccess": "Το template δημιουργήθηκε επιτυχώς",
+    "templateLibraryUpdatedSuccess": "Το template ενημερώθηκε επιτυχώς",
+    "templateLibraryDeletedSuccess": "Το template διαγράφηκε επιτυχώς",
+    "deleteTemplateLibraryConfirmation": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί. Θα διαγράψει οριστικά το template \"{name}\".",
+    "workflowJson": "Workflow JSON",
+    "workflowJsonRequired": "Το Workflow JSON είναι υποχρεωτικό",
+    "invalidTemplateJson": "Μη έγκυρη μορφή JSON",
+    "copyToClipboard": "Αντιγραφή",
+    "copiedToClipboard": "Αντιγράφηκε",
+    "noDescriptionProvided": "Δεν υπάρχει περιγραφή."
   }
 }

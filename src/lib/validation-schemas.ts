@@ -18,6 +18,14 @@ export const createWorkflowSchema = z.object({
 
 export const updateWorkflowSchema = createWorkflowSchema;
 
+export const createTemplateLibrarySchema = z.object({
+  title: z.string().min(1, 'templateTitleRequired'),
+  description: z.string().optional(),
+  workflow_json: z.string().min(1, 'workflowJsonRequired'),
+});
+
+export const updateTemplateLibrarySchema = createTemplateLibrarySchema;
+
 export const createCompanySchema = z.object({
   name: z.string().min(1, 'companyNameRequired'),
   note: z.string().optional(),

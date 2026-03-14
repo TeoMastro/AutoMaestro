@@ -1,3 +1,6 @@
+// App-wide branding
+export const APP_NAME = 'AutoExec';
+
 // Replaces @prisma/client enums with plain string constants
 
 export const WorkflowType = {
@@ -14,7 +17,8 @@ export const DocumentStatus = {
   ERROR: 'error',
 } as const;
 
-export type DocumentStatus = (typeof DocumentStatus)[keyof typeof DocumentStatus];
+export type DocumentStatus =
+  (typeof DocumentStatus)[keyof typeof DocumentStatus];
 
 export const SUPPORTED_FILE_TYPES = ['pdf', 'txt', 'docx', 'md'] as const;
 
@@ -36,4 +40,3 @@ export const Status = {
 } as const;
 
 export type Status = (typeof Status)[keyof typeof Status];
-

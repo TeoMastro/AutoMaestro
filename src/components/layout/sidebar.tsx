@@ -19,7 +19,7 @@ import { getTranslations } from 'next-intl/server';
 import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 import { TermsDialog } from '@/components/legal/terms-dialog';
 import { getUserCompanies } from '@/server-actions/user-company';
-import { Role } from '@/lib/constants';
+import { APP_NAME, Role } from '@/lib/constants';
 
 export async function AppSidebar() {
   const session = await getSession();
@@ -119,7 +119,7 @@ export async function AppSidebar() {
               <span className="text-white font-bold text-sm">NL</span>
             </div>
             <h2 className="text-lg font-semibold text-foreground">
-              Next Launch Kit
+              {APP_NAME}
             </h2>
           </div>
         )}

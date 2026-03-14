@@ -37,6 +37,7 @@ import MobileNavigation from '@/components/marketing/mobile-navigation';
 import CopyButton from '@/components/marketing/copy-button';
 import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 import { TermsDialog } from '@/components/legal/terms-dialog';
+import { APP_NAME } from '@/lib/constants';
 
 export default function MarketingPage() {
   const navigationItems = [
@@ -62,7 +63,7 @@ export default function MarketingPage() {
               </span>
             </div>
             <span className="hidden font-bold sm:inline-block">
-              Next Launch Kit
+              {APP_NAME}
             </span>
           </Link>
 
@@ -107,7 +108,7 @@ export default function MarketingPage() {
             <div className="mx-auto max-w-4xl text-center">
               <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  Next Launch Kit
+                  {APP_NAME}
                 </span>
               </h1>
 
@@ -139,7 +140,7 @@ export default function MarketingPage() {
                   width="100%"
                   height="100%"
                   src="https://www.youtube.com/embed/M8lhutHNJJQ"
-                  title="Next Launch Kit Demo"
+                  title={`${APP_NAME} Demo`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -467,7 +468,7 @@ export default function MarketingPage() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-center md:text-left">
               <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} Next Launch Kit. All rights
+                © {new Date().getFullYear()} {APP_NAME}. All rights
                 reserved.
               </p>
               {/* Legal Links */}

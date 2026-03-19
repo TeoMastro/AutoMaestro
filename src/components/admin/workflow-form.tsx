@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useState, useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createWorkflowAction, updateWorkflowAction } from '@/server-actions/workflow';
 import { Button } from '@/components/ui/button';
@@ -16,11 +16,25 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
-import { WorkflowFormProps, WorkflowFormState } from '@/types/workflow';
+import { TriggerParamsBuilder } from '@/components/admin/trigger-params-builder';
+import { WorkflowFormProps, WorkflowFormState, WorkflowParam } from '@/types/workflow';
 import { WorkflowType } from '@/lib/constants';
+
+function parseParams(json: string): WorkflowParam[] {
+  if (!json) return [];
+  try {
+    const parsed = JSON.parse(json);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
   const t = useTranslations('app');
+  const [selectedType, setSelectedType] = useState<string>(
+    workflow?.type ?? WorkflowType.CHAT
+  );
 
   const initialState: WorkflowFormState = {
     success: false,
@@ -110,7 +124,8 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="type">{t('workflowType')}</Label>
-              <Select name="type" defaultValue={state.formData.type}>
+              <input type="hidden" name="type" value={selectedType} />
+              <Select value={selectedType} onValueChange={setSelectedType}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -164,24 +179,12 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
             <Label htmlFor="has_knowledge_base">{t('workflowHasKnowledgeBase')}</Label>
           </div>
 
-          {state.formData.type !== 'chat' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="params_json">{t('workflowParams')}</Label>
-                <Textarea
-                  id="params_json"
-                  name="params_json"
-                  defaultValue={state.formData.params_json}
-                  rows={4}
-                  className={`font-mono text-sm${state.errors.params_json ? ' border-red-500' : ''}`}
-                  placeholder='[{"key":"language","label":"Language","type":"select","options":["en","gr"],"required":true}]'
-                />
-                <p className="text-sm text-muted-foreground">{t('workflowParamsHint')}</p>
-                {err('params_json') && <p className="text-sm text-red-500">{err('params_json')}</p>}
-              </div>
-
-
-            </>
+          {selectedType !== 'chat' && (
+            <TriggerParamsBuilder
+              initialParams={parseParams(state.formData.params_json)}
+              hasError={!!state.errors.params_json}
+              errorMessage={err('params_json')}
+            />
           )}
 
           <div className="flex gap-4">

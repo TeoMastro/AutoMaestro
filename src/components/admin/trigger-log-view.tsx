@@ -12,10 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import type { TriggerLogEntry } from '@/types/trigger-log';
 import { badgeStyles } from '@/lib/badge-styles';
+import { DynamicResponse, safeParse } from '@/components/workflow/dynamic-response';
 
 interface TriggerLogViewProps {
   log: TriggerLogEntry;
@@ -25,20 +24,9 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
   const t = useTranslations('app');
   const router = useRouter();
 
-  // Safely parse potentially double-stringified JSON
-  const safeParse = (data: unknown) => {
-    if (typeof data !== 'string') return data;
-    try {
-      const parsed = JSON.parse(data);
-      return typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
-    } catch {
-      return data;
-    }
-  };
-
   const parsedParams = safeParse(log.requestParams);
   const parsedResponse = safeParse(log.responseData);
-  
+
   // Filter out internal properties from requestParams
   let filteredParams = parsedParams;
   if (typeof parsedParams === 'object' && parsedParams !== null && !Array.isArray(parsedParams)) {
@@ -46,41 +34,6 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
     delete (filteredParams as any).workflowId;
     delete (filteredParams as any).userId;
   }
-
-  // Pretty format JSON for display (fallback)
-  const renderJson = (data: unknown) => {
-    try {
-      return JSON.stringify(data, null, 2);
-    } catch {
-      return String(data);
-    }
-  };
-
-  // Dynamic renderer for object fields
-  const renderDynamicFields = (data: unknown) => {
-    if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-      return (
-        <pre className="p-4 text-sm font-mono text-muted-foreground whitespace-pre-wrap overflow-x-auto h-full">
-          {renderJson(data)}
-        </pre>
-      );
-    }
-    
-    return (
-      <div className="p-4 space-y-4">
-        {Object.entries(data).map(([key, value]) => (
-          <div key={key} className="space-y-1.5 flex flex-col">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{key}</Label>
-            <Textarea
-              readOnly
-              value={typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
-              className="resize-none min-h-[60px] bg-background/50 font-mono text-sm leading-relaxed"
-            />
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -177,11 +130,9 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
               </label>
               <div className="flex-1 bg-muted/30 border border-border rounded-md overflow-hidden min-h-[150px]">
                 {(typeof filteredParams === 'object' && filteredParams !== null ? Object.keys(filteredParams).length > 0 : !!filteredParams) ? (
-                  renderDynamicFields(filteredParams)
+                  <DynamicResponse data={filteredParams} />
                 ) : (
-                  <div className="p-8 h-full flex items-center justify-center text-muted-foreground text-sm italic">
-                    {t('noRequestParams') || 'No additional request parameters sent.'}
-                  </div>
+                  <DynamicResponse data={null} emptyMessage={t('noRequestParams') || 'No additional request parameters sent.'} />
                 )}
               </div>
             </div>
@@ -197,11 +148,9 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
                     {log.errorMessage}
                   </div>
                 ) : parsedResponse ? (
-                  renderDynamicFields(parsedResponse)
+                  <DynamicResponse data={parsedResponse} />
                 ) : (
-                  <div className="p-8 h-full flex items-center justify-center text-muted-foreground text-sm italic">
-                    {t('noResponseData') || 'No response data received.'}
-                  </div>
+                  <DynamicResponse data={null} emptyMessage={t('noResponseData') || 'No response data received.'} />
                 )}
               </div>
             </div>

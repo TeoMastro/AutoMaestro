@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Zap } from 'lucide-react';
 import { Workflow, WorkflowParam } from '@/types/workflow';
+import { DynamicResponse } from '@/components/workflow/dynamic-response';
 
 interface TriggerWorkflowProps {
   workflow: Workflow;
@@ -30,7 +31,7 @@ export function TriggerWorkflow({ workflow }: TriggerWorkflowProps) {
   );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState<string | null>(null);
+  const [response, setResponse] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
 
   const setParam = (key: string, value: string) => {
@@ -75,11 +76,7 @@ export function TriggerWorkflow({ workflow }: TriggerWorkflowProps) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = (await res.json()) as { data?: unknown };
-      setResponse(
-        typeof data.data === 'string'
-          ? data.data
-          : JSON.stringify(data.data, null, 2)
-      );
+      setResponse(data.data ?? null);
     } catch {
       setError(t('triggerError'));
     } finally {
@@ -171,10 +168,10 @@ export function TriggerWorkflow({ workflow }: TriggerWorkflowProps) {
           <p className="text-sm text-destructive">{error}</p>
         )}
 
-        {response && (
-          <div className="rounded-md border bg-muted p-4">
-            <p className="text-xs font-medium text-muted-foreground mb-2">{t('triggerResponse')}</p>
-            <pre className="text-sm whitespace-pre-wrap break-words">{response}</pre>
+        {response !== null && (
+          <div className="rounded-md border bg-muted">
+            <p className="text-xs font-medium text-muted-foreground px-4 pt-4">{t('triggerResponse')}</p>
+            <DynamicResponse data={response} />
           </div>
         )}
       </CardContent>

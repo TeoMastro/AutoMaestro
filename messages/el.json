@@ -1,6 +1,5 @@
 {
   "app": {
-
     "accountCreatedCheckEmail": "Ο λογαριασμός σας δημιουργήθηκε επιτυχώς. Ελέγξτε το email σας για επαλήθευση!",
     "accountCreationFailed": "Ο λογαριασμός σας δεν δημιουργήθηκε. Παρακαλώ δοκιμάστε ξανά αργότερα!",
     "accountDetails": "Λεπτομέρειες λογαριασμού",
@@ -169,7 +168,6 @@
     "welcomeBack": "Καλώς ήρθατε πίσω",
     "welcomeBackName": "Καλώς ήρθατε πίσω, {name}",
 
-
     "workflows": "Ροές Εργασίας",
     "workflow": "Ροή Εργασίας",
     "myWorkflows": "Οι Ροές μου",
@@ -195,6 +193,7 @@
     "noWorkflowsFound": "Δεν βρέθηκαν ροές εργασίας.",
     "noWorkflowsAssigned": "Δεν έχουν ανατεθεί ροές εργασίας. Επικοινωνήστε με τον διαχειριστή.",
     "invalidWorkflowType": "Μη έγκυρος τύπος ροής",
+    "triggerWorkflowNoKnowledgeBase": "Η βάση γνώσης δεν είναι διαθέσιμη για ροές ενεργοποίησης",
 
     "assignedUsers": "Ανατεθειμένοι Χρήστες",
     "assignUser": "Ανάθεση Χρήστη",
@@ -285,7 +284,7 @@
     "allWorkflows": "Όλες οι Ροές",
     "chatSessionDetails": "Λεπτομέρειες Συνεδρίας",
     "backToChatHistory": "Πίσω στο Ιστορικό",
-    
+
     "triggerHistory": "Ιστορικό Trigger",
     "trigger-history": "Ιστορικό Trigger",
     "executor": "Εκτελέστηκε Από",
@@ -319,7 +318,6 @@
     "emailChangeConfirmation": "Ένα email επιβεβαίωσης στάλθηκε στη νέα σας διεύθυνση. Ελέγξτε τα εισερχόμενά σας και επιβεβαιώστε την αλλαγή.",
     "changePassword": "Αλλαγή Κωδικού",
     "currentPassword": "Τρέχων Κωδικός",
-    "confirmNewPassword": "Επιβεβαίωση Νέου Κωδικού",
     "currentPasswordRequired": "Ο τρέχων κωδικός είναι υποχρεωτικός",
     "passwordChangedSuccess": "Ο κωδικός άλλαξε επιτυχώς",
     "incorrectPassword": "Ο τρέχων κωδικός είναι λανθασμένος",

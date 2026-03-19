@@ -1,7 +1,11 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
+import {
+  checkAdminOrManagerAuth,
+  getManagerCompanyIds,
+  checkManagerCompanyAccess,
+} from '@/lib/auth-helpers';
 import { revalidatePath } from 'next/cache';
 import { Role, WorkflowType } from '@/lib/constants';
 import {
@@ -63,6 +67,9 @@ export async function createWorkflowAction(
       params_json: formData.get('params_json')?.toString() ?? '',
     };
 
+    // Trigger workflows cannot have knowledge base
+    if (data.type === 'trigger') data.has_knowledge_base = false;
+
     const parsed = createWorkflowSchema.safeParse(data);
     if (!parsed.success) {
       return {
@@ -99,17 +106,21 @@ export async function createWorkflowAction(
       params: parsedParams,
     };
 
-    const { data: newWorkflow, error } = await supabase.from('workflows').insert({
-      company_id: parsed.data.company_id,
-      name: parsed.data.name.trim(),
-      description: parsed.data.description?.trim() || null,
-      type: parsed.data.type,
-      webhook_url: parsed.data.webhook_url.trim(),
-      has_knowledge_base: parsed.data.has_knowledge_base,
-      is_active: parsed.data.is_active,
-      config,
-      created_by: session.user.id,
-    }).select('id').single();
+    const { data: newWorkflow, error } = await supabase
+      .from('workflows')
+      .insert({
+        company_id: parsed.data.company_id,
+        name: parsed.data.name.trim(),
+        description: parsed.data.description?.trim() || null,
+        type: parsed.data.type,
+        webhook_url: parsed.data.webhook_url.trim(),
+        has_knowledge_base: parsed.data.has_knowledge_base,
+        is_active: parsed.data.is_active,
+        config,
+        created_by: session.user.id,
+      })
+      .select('id')
+      .single();
 
     if (error) throw error;
 
@@ -125,19 +136,26 @@ export async function createWorkflowAction(
           USING hnsw (embedding vector_cosine_ops);
       `;
       // Execute DDL via the admin client's rpc or raw SQL
-      const { error: partitionError } = await supabase.rpc('exec_sql', { sql: partitionSql });
+      const { error: partitionError } = await supabase.rpc('exec_sql', {
+        sql: partitionSql,
+      });
       if (partitionError) {
-        logger.warn('Failed to create KB partition (may need manual creation)', {
-          workflowId: newWorkflow.id,
-          error: partitionError.message,
-        });
+        logger.warn(
+          'Failed to create KB partition (may need manual creation)',
+          {
+            workflowId: newWorkflow.id,
+            error: partitionError.message,
+          }
+        );
       }
     }
 
     logger.info('Workflow created', { adminId: session.user.id });
     revalidatePath('/manage/workflows');
   } catch (error) {
-    logger.error('Error creating workflow', { error: (error as Error).message });
+    logger.error('Error creating workflow', {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       errors: {},
@@ -176,6 +194,9 @@ export async function updateWorkflowAction(
       params_json: formData.get('params_json')?.toString() ?? '',
     };
 
+    // Defense-in-depth: trigger workflows cannot have knowledge base
+    if (data.type === 'trigger') data.has_knowledge_base = false;
+
     const parsed = updateWorkflowSchema.safeParse(data);
     if (!parsed.success) {
       return {
@@ -209,10 +230,10 @@ export async function updateWorkflowAction(
 
     const supabase = createAdminClient();
 
-    // Fetch existing config to preserve any unmanaged fields
+    // Fetch existing workflow to preserve type and unmanaged config fields
     const { data: existing, error: fetchError } = await supabase
       .from('workflows')
-      .select('config')
+      .select('type, config')
       .eq('id', workflowId)
       .single();
 
@@ -225,6 +246,9 @@ export async function updateWorkflowAction(
       };
     }
 
+    // Type is immutable after creation — always use the DB value
+    const existingType = existing.type as WorkflowType;
+
     const updatedConfig = {
       ...(existing.config as Record<string, unknown>),
       params: parsedParams,
@@ -236,9 +260,9 @@ export async function updateWorkflowAction(
         company_id: parsed.data.company_id,
         name: parsed.data.name.trim(),
         description: parsed.data.description?.trim() || null,
-        type: parsed.data.type,
         webhook_url: parsed.data.webhook_url.trim(),
-        has_knowledge_base: parsed.data.has_knowledge_base,
+        has_knowledge_base:
+          existingType === 'trigger' ? false : parsed.data.has_knowledge_base,
         is_active: parsed.data.is_active,
         config: updatedConfig,
       })
@@ -250,7 +274,9 @@ export async function updateWorkflowAction(
     revalidatePath('/manage/workflows');
     revalidatePath(`/manage/workflows/${workflowId}`);
   } catch (error) {
-    logger.error('Error updating workflow', { error: (error as Error).message });
+    logger.error('Error updating workflow', {
+      error: (error as Error).message,
+    });
     return {
       success: false,
       errors: {},
@@ -309,7 +335,9 @@ export async function deleteWorkflowAction(workflowId: string) {
 
     return { success: true };
   } catch (error) {
-    logger.error('Error deleting workflow', { error: (error as Error).message });
+    logger.error('Error deleting workflow', {
+      error: (error as Error).message,
+    });
     throw error;
   }
 }
@@ -318,7 +346,9 @@ export async function deleteWorkflowAction(workflowId: string) {
 // Admin: Data fetches
 // ============================================================
 
-export async function getWorkflowById(workflowId: string): Promise<Workflow | false> {
+export async function getWorkflowById(
+  workflowId: string
+): Promise<Workflow | false> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -339,7 +369,9 @@ export async function getWorkflowById(workflowId: string): Promise<Workflow | fa
 
     return mapWorkflow(data as Record<string, unknown>);
   } catch (error) {
-    logger.error('Error fetching workflow', { error: (error as Error).message });
+    logger.error('Error fetching workflow', {
+      error: (error as Error).message,
+    });
     throw error;
   }
 }
@@ -368,7 +400,13 @@ export async function getWorkflowsWithPagination(
     if (session.user.role === Role.MANAGER) {
       const companyIds = await getManagerCompanyIds(session.user.id);
       if (companyIds.length === 0) {
-        return { workflows: [], totalCount: 0, totalPages: 0, currentPage: page, limit };
+        return {
+          workflows: [],
+          totalCount: 0,
+          totalPages: 0,
+          currentPage: page,
+          limit,
+        };
       }
       query = query.in('company_id', companyIds);
     }
@@ -380,9 +418,12 @@ export async function getWorkflowsWithPagination(
     if (typeFilter !== 'all') query = query.eq('type', typeFilter);
     if (companyFilter) query = query.eq('company_id', companyFilter);
 
-    const dbSort = sortField === 'createdAt' ? 'created_at'
-      : sortField === 'updatedAt' ? 'updated_at'
-      : sortField;
+    const dbSort =
+      sortField === 'createdAt'
+        ? 'created_at'
+        : sortField === 'updatedAt'
+          ? 'updated_at'
+          : sortField;
 
     query = query.order(dbSort, { ascending: sortDirection === 'asc' });
     query = query.range(offset, offset + limit - 1);
@@ -390,13 +431,17 @@ export async function getWorkflowsWithPagination(
     const { data, count, error } = await query;
     if (error) throw error;
 
-    const workflows = (data || []).map((w) => mapWorkflow(w as Record<string, unknown>));
+    const workflows = (data || []).map((w) =>
+      mapWorkflow(w as Record<string, unknown>)
+    );
     const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
     return { workflows, totalCount, totalPages, currentPage: page, limit };
   } catch (error) {
-    logger.error('Error fetching workflows', { error: (error as Error).message });
+    logger.error('Error fetching workflows', {
+      error: (error as Error).message,
+    });
     throw error;
   }
 }
@@ -439,7 +484,9 @@ export async function rerollWorkflowTokenAction(
     revalidatePath(`/manage/workflows/${workflowId}`);
     return { success: true, token: data.token as string };
   } catch (err) {
-    logger.error('Error rerolling workflow token', { error: (err as Error).message });
+    logger.error('Error rerolling workflow token', {
+      error: (err as Error).message,
+    });
     return { success: false, error: 'unexpectedError' };
   }
 }
@@ -448,7 +495,9 @@ export async function rerollWorkflowTokenAction(
 // User: fetch own assigned workflows (no admin check — RLS enforced)
 // ============================================================
 
-export async function getUserWorkflows(companyId?: string): Promise<Workflow[]> {
+export async function getUserWorkflows(
+  companyId?: string
+): Promise<Workflow[]> {
   try {
     const supabase = await createClient();
     let query = supabase
@@ -465,7 +514,9 @@ export async function getUserWorkflows(companyId?: string): Promise<Workflow[]> 
     if (error) throw error;
     return (data || []).map((w) => mapWorkflow(w as Record<string, unknown>));
   } catch (error) {
-    logger.error('Error fetching user workflows', { error: (error as Error).message });
+    logger.error('Error fetching user workflows', {
+      error: (error as Error).message,
+    });
     throw error;
   }
 }

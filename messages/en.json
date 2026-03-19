@@ -1,6 +1,5 @@
 {
   "app": {
-
     "accountCreatedCheckEmail": "Your account was successfully created. Check your email for verification!",
     "accountCreationFailed": "Your account was not created. Please try again later!",
     "accountDetails": "Account details",
@@ -169,7 +168,6 @@
     "welcomeBack": "Welcome back",
     "welcomeBackName": "Welcome back, {name}",
 
-
     "workflows": "Workflows",
     "workflow": "Workflow",
     "templateLibrary": "Template Library",
@@ -215,6 +213,7 @@
     "noWorkflowsFound": "No workflows found.",
     "noWorkflowsAssigned": "No workflows assigned. Contact your administrator.",
     "invalidWorkflowType": "Invalid workflow type",
+    "triggerWorkflowNoKnowledgeBase": "Knowledge base is not available for trigger workflows",
 
     "assignedUsers": "Assigned Users",
     "assignUser": "Assign User",
@@ -305,7 +304,7 @@
     "allWorkflows": "All Workflows",
     "chatSessionDetails": "Chat Session Details",
     "backToChatHistory": "Back to Chat History",
-    
+
     "triggerHistory": "Trigger History",
     "trigger-history": "Trigger History",
     "executor": "Executed By",
@@ -339,7 +338,6 @@
     "emailChangeConfirmation": "A confirmation email has been sent to your new address. Please check your inbox and confirm the change.",
     "changePassword": "Change Password",
     "currentPassword": "Current Password",
-    "confirmNewPassword": "Confirm New Password",
     "currentPasswordRequired": "Current password is required",
     "passwordChangedSuccess": "Password changed successfully",
     "incorrectPassword": "Current password is incorrect",

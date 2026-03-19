@@ -5,16 +5,23 @@ import { Role, Status } from '@/lib/constants';
 // Workflow schemas
 // ============================================================
 
-export const createWorkflowSchema = z.object({
-  company_id: z.string().min(1, 'companyRequired'),
-  name: z.string().min(1, 'workflowNameRequired'),
-  description: z.string().optional(),
-  type: z.enum(['chat', 'trigger'] as const, { error: 'invalidWorkflowType' }),
-  webhook_url: z.string().min(1, 'webhookUrlRequired'),
-  has_knowledge_base: z.boolean().optional().default(false),
-  is_active: z.boolean().optional().default(true),
-  params_json: z.string().optional(),
-});
+export const createWorkflowSchema = z
+  .object({
+    company_id: z.string().min(1, 'companyRequired'),
+    name: z.string().min(1, 'workflowNameRequired'),
+    description: z.string().optional(),
+    type: z.enum(['chat', 'trigger'] as const, {
+      error: 'invalidWorkflowType',
+    }),
+    webhook_url: z.string().min(1, 'webhookUrlRequired'),
+    has_knowledge_base: z.boolean().optional().default(false),
+    is_active: z.boolean().optional().default(true),
+    params_json: z.string().optional(),
+  })
+  .refine((data) => !(data.type === 'trigger' && data.has_knowledge_base), {
+    message: 'triggerWorkflowNoKnowledgeBase',
+    path: ['has_knowledge_base'],
+  });
 
 export const updateWorkflowSchema = createWorkflowSchema;
 
@@ -37,7 +44,6 @@ export const assignUserToCompanySchema = z.object({
   user_id: z.string().min(1, 'userIdRequired'),
   company_id: z.string().min(1, 'companyRequired'),
 });
-
 
 export const signinSchema = z.object({
   email: z.email('invalidEmail'),

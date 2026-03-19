@@ -41,12 +41,14 @@ export default async function WorkflowDashboardPage({
 
   // Determine selected workflow
   const selectedId = params.workflow ?? workflows[0].id;
-  const selectedWorkflow = workflows.find((w) => w.id === selectedId) ?? workflows[0];
+  const selectedWorkflow =
+    workflows.find((w) => w.id === selectedId) ?? workflows[0];
 
-  // Fetch documents if workflow has KB
-  const documents = selectedWorkflow.hasKnowledgeBase
-    ? await getDocumentsForWorkflow(selectedWorkflow.id)
-    : [];
+  // Fetch documents only for chat workflows with KB enabled
+  const documents =
+    selectedWorkflow.type === 'chat' && selectedWorkflow.hasKnowledgeBase
+      ? await getDocumentsForWorkflow(selectedWorkflow.id)
+      : [];
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -76,22 +78,9 @@ export default async function WorkflowDashboardPage({
             </div>
           </>
         ) : (
-          <>
-            {/* Left column — Main area */}
-            <div className="lg:col-span-2 space-y-6">
-              <TriggerWorkflow workflow={selectedWorkflow} />
-            </div>
-
-            {/* Right column — KB */}
-            <div className="space-y-6">
-              {selectedWorkflow.hasKnowledgeBase && (
-                <DocumentManager
-                  workflowId={selectedWorkflow.id}
-                  initialDocuments={documents}
-                />
-              )}
-            </div>
-          </>
+          <div className="lg:col-span-3 space-y-6">
+            <TriggerWorkflow workflow={selectedWorkflow} />
+          </div>
         )}
       </div>
     </div>

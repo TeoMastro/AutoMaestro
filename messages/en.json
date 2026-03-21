@@ -342,6 +342,18 @@
     "passwordChangedSuccess": "Password changed successfully",
     "incorrectPassword": "Current password is incorrect",
     "changingPassword": "Changing...",
-    "changingEmail": "Changing..."
+    "changingEmail": "Changing...",
+
+    "totalWorkflows": "Workflows",
+    "chatSessions": "Chat Sessions",
+    "triggerRuns": "Trigger Runs",
+    "triggerSuccessRate": "Success Rate",
+    "selectedPeriod": "Selected period",
+    "activeInactiveCount": "{active} active, {inactive} inactive",
+    "recentChatSessions": "Recent Chat Sessions",
+    "recentTriggerRuns": "Recent Trigger Runs",
+    "noRecentChats": "No recent chat sessions",
+    "noRecentTriggers": "No recent trigger runs",
+    "noDataYet": "No workflows yet. Get started by creating or getting assigned a workflow."
   }
 }

@@ -342,6 +342,18 @@
     "invalidTemplateJson": "Μη έγκυρη μορφή JSON",
     "copyToClipboard": "Αντιγραφή",
     "copiedToClipboard": "Αντιγράφηκε",
-    "noDescriptionProvided": "Δεν υπάρχει περιγραφή."
+    "noDescriptionProvided": "Δεν υπάρχει περιγραφή.",
+
+    "totalWorkflows": "Ροές Εργασίας",
+    "chatSessions": "Συνεδρίες Συνομιλίας",
+    "triggerRuns": "Εκτελέσεις Trigger",
+    "triggerSuccessRate": "Ποσοστό Επιτυχίας",
+    "selectedPeriod": "Επιλεγμένη περίοδος",
+    "activeInactiveCount": "{active} ενεργές, {inactive} ανενεργές",
+    "recentChatSessions": "Πρόσφατες Συνεδρίες Συνομιλίας",
+    "recentTriggerRuns": "Πρόσφατες Εκτελέσεις Trigger",
+    "noRecentChats": "Δεν υπάρχουν πρόσφατες συνεδρίες συνομιλίας",
+    "noRecentTriggers": "Δεν υπάρχουν πρόσφατες εκτελέσεις trigger",
+    "noDataYet": "Δεν υπάρχουν ροές εργασίας ακόμα. Ξεκινήστε δημιουργώντας ή λαμβάνοντας ανάθεση μιας ροής εργασίας."
   }
 }

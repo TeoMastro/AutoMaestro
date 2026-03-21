@@ -1,4 +1,4 @@
-import { Home, Users, Bot, MessageSquare, Activity, Building2, BookOpen } from 'lucide-react';
+import { Home, Users, Workflow, MessageSquare, Zap, Building2, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -48,7 +48,7 @@ export async function AppSidebar() {
           {
             title: t('myWorkflows'),
             url: '/workflow',
-            icon: Bot,
+            icon: Workflow,
           },
         ]
       : []),
@@ -58,7 +58,7 @@ export async function AppSidebar() {
           {
             title: t('workflows'),
             url: '/manage/workflows',
-            icon: Bot,
+            icon: Workflow,
           },
         ]
       : []),
@@ -82,7 +82,7 @@ export async function AppSidebar() {
     {
       title: t('triggerHistory'),
       url: '/trigger-history',
-      icon: Activity,
+      icon: Zap,
     },
     // Admin + Manager: Template Library
     ...(isAdmin || isManager

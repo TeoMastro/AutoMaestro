@@ -328,6 +328,7 @@
     "templateTitle": "Τίτλος Template",
     "templateTitleRequired": "Ο τίτλος template είναι υποχρεωτικός",
     "templateDescription": "Περιγραφή",
+    "templateSetupGuide": "Οδηγός ρύθμισης",
     "createTemplateLibraryItem": "Δημιουργία Template",
     "editTemplateLibraryItem": "Ενημέρωση Template",
     "viewTemplateLibraryItem": "Προβολή Template",
@@ -343,6 +344,7 @@
     "copyToClipboard": "Αντιγραφή",
     "copiedToClipboard": "Αντιγράφηκε",
     "noDescriptionProvided": "Δεν υπάρχει περιγραφή.",
+    "noSetupGuideProvided": "Δεν υπάρχει οδηγός ρύθμισης.",
 
     "totalWorkflows": "Ροές Εργασίας",
     "chatSessions": "Συνεδρίες Συνομιλίας",

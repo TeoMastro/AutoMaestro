@@ -22,6 +22,7 @@ function mapTemplateLibraryItem(row: Record<string, unknown>): TemplateLibraryIt
     id: row.id as string,
     title: row.title as string,
     description: (row.description as string | null) ?? null,
+    setupGuide: (row.setup_guide as string | null) ?? null,
     workflowJson: JSON.stringify(row.workflow_json, null, 2),
     createdAt: new Date(row.created_at as string),
     updatedAt: new Date(row.updated_at as string),
@@ -48,7 +49,7 @@ export async function getTemplateLibraryWithPagination(
 
     if (search) {
       const safe = search.replace(/[,.()]/g, '');
-      query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%`);
+      query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%,setup_guide.ilike.%${safe}%`);
     }
 
     const dbSort = sortField === 'createdAt' ? 'created_at'
@@ -101,6 +102,7 @@ export async function createTemplateLibraryItemAction(
     const data = {
       title: formData.get('title')?.toString() ?? '',
       description: formData.get('description')?.toString() ?? '',
+      setup_guide: formData.get('setup_guide')?.toString() ?? '',
       workflow_json: formData.get('workflow_json')?.toString() ?? '',
     };
 
@@ -132,6 +134,7 @@ export async function createTemplateLibraryItemAction(
       .insert({
         title: parsed.data.title.trim(),
         description: parsed.data.description?.trim() || null,
+        setup_guide: parsed.data.setup_guide?.trim() || null,
         workflow_json: parsedWorkflowJson,
       });
 
@@ -147,6 +150,7 @@ export async function createTemplateLibraryItemAction(
       formData: {
         title: formData.get('title')?.toString() ?? '',
         description: formData.get('description')?.toString() ?? '',
+        setup_guide: formData.get('setup_guide')?.toString() ?? '',
         workflow_json: formData.get('workflow_json')?.toString() ?? '',
       },
       globalError: 'unexpectedError',
@@ -166,6 +170,7 @@ export async function updateTemplateLibraryItemAction(
     const data = {
       title: formData.get('title')?.toString() ?? '',
       description: formData.get('description')?.toString() ?? '',
+      setup_guide: formData.get('setup_guide')?.toString() ?? '',
       workflow_json: formData.get('workflow_json')?.toString() ?? '',
     };
 
@@ -197,6 +202,7 @@ export async function updateTemplateLibraryItemAction(
       .update({
         title: parsed.data.title.trim(),
         description: parsed.data.description?.trim() || null,
+        setup_guide: parsed.data.setup_guide?.trim() || null,
         workflow_json: parsedWorkflowJson,
       })
       .eq('id', id);
@@ -214,6 +220,7 @@ export async function updateTemplateLibraryItemAction(
       formData: {
         title: formData.get('title')?.toString() ?? '',
         description: formData.get('description')?.toString() ?? '',
+        setup_guide: formData.get('setup_guide')?.toString() ?? '',
         workflow_json: formData.get('workflow_json')?.toString() ?? '',
       },
       globalError: 'unexpectedError',

@@ -28,6 +28,7 @@ export const updateWorkflowSchema = createWorkflowSchema;
 export const createTemplateLibrarySchema = z.object({
   title: z.string().min(1, 'templateTitleRequired'),
   description: z.string().optional(),
+  setup_guide: z.string().optional(),
   workflow_json: z.string().min(1, 'workflowJsonRequired'),
 });
 

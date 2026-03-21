@@ -2,6 +2,7 @@ export type TemplateLibraryItem = {
   id: string;
   title: string;
   description: string | null;
+  setupGuide: string | null;
   workflowJson: string;
   createdAt: Date;
   updatedAt: Date;
@@ -13,6 +14,7 @@ export type TemplateLibraryFormState = {
   formData: {
     title: string;
     description: string;
+    setup_guide: string;
     workflow_json: string;
   };
   globalError: string | null;

@@ -6,6 +6,7 @@ CREATE TABLE public.template_library (
   id            UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   title         TEXT        NOT NULL,
   description   TEXT,
+  setup_guide   TEXT,
   workflow_json JSONB       NOT NULL,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()

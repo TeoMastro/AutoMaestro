@@ -31,6 +31,7 @@ export function TemplateLibraryForm({ item, mode }: TemplateLibraryFormProps) {
     formData: {
       title: item?.title ?? '',
       description: item?.description ?? '',
+      setup_guide: item?.setupGuide ?? '',
       workflow_json: item?.workflowJson ?? '',
     },
     globalError: null,
@@ -47,12 +48,12 @@ export function TemplateLibraryForm({ item, mode }: TemplateLibraryFormProps) {
   };
 
   const [state, formAction, isPending] = useActionState(actionWrapper, initialState);
-  const [description, setDescription] = useState(initialState.formData.description);
+  const [setupGuide, setSetupGuide] = useState(initialState.formData.setup_guide);
   const colorMode = resolvedTheme === 'dark' ? 'dark' : 'light';
 
   useEffect(() => {
-    setDescription(state.formData.description);
-  }, [state.formData.description]);
+    setSetupGuide(state.formData.setup_guide);
+  }, [state.formData.setup_guide]);
 
   const err = (field: string) => {
     const errs = state.errors[field];
@@ -86,15 +87,25 @@ export function TemplateLibraryForm({ item, mode }: TemplateLibraryFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="description">{t('templateDescription')}</Label>
+            <Textarea
+              id="description"
+              name="description"
+              defaultValue={state.formData.description}
+              rows={4}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="setup_guide">{t('templateSetupGuide')}</Label>
             <div data-color-mode={colorMode}>
               <MDEditor
-                value={description}
-                onChange={(value) => setDescription(value || '')}
+                value={setupGuide}
+                onChange={(value) => setSetupGuide(value || '')}
                 preview="edit"
                 height={280}
               />
             </div>
-            <input type="hidden" name="description" value={description} />
+            <input type="hidden" name="setup_guide" value={setupGuide} />
           </div>
 
           <div className="space-y-2">

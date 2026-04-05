@@ -17,6 +17,8 @@ import {
 import { SignupFormState } from '@/types/auth';
 import { InfoAlert } from '../info-alert';
 import Link from 'next/link';
+import { TermsDialog } from '@/components/legal/terms-dialog';
+import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 
 export function SignupForm() {
   const t = useTranslations('app');
@@ -140,6 +142,34 @@ export function SignupForm() {
             {state.errors.confirmPassword && (
               <p className="text-sm text-red-500">
                 {getErrorMessage('confirmPassword')}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="accept_tos"
+                name="accept_tos"
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label
+                htmlFor="accept_tos"
+                className="text-sm text-muted-foreground"
+              >
+                {t('acceptTosPrefix')}{' '}
+                <TermsDialog title="Terms of Service" isInSidebar={false} />{' '}
+                {t('acceptTosConjunction')}{' '}
+                <PrivacyPolicyDialog
+                  title="Privacy Policy"
+                  isInSidebar={false}
+                />
+              </Label>
+            </div>
+            {state.errors.accept_tos && (
+              <p className="text-sm text-red-500">
+                {getErrorMessage('accept_tos')}
               </p>
             )}
           </div>

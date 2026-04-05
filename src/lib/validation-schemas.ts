@@ -66,6 +66,9 @@ export const signupSchema = z
         'passwordNeedsSpecialChar'
       ),
     confirmPassword: z.string(),
+    accept_tos: z.literal(true, {
+      error: 'acceptTosRequired',
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'passwordsDontMatch',

@@ -52,6 +52,7 @@ export async function signUpAction(
     email: formData.get('email')?.toString() ?? '',
     password: formData.get('password')?.toString() ?? '',
     confirmPassword: formData.get('confirmPassword')?.toString() ?? '',
+    accept_tos: formData.get('accept_tos') === 'on' ? true : false,
   };
 
   const parsed = signupSchema.safeParse(data);

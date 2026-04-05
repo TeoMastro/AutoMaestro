@@ -1,4 +1,12 @@
-import { Home, Users, Workflow, MessageSquare, Zap, Building2, BookOpen } from 'lucide-react';
+import {
+  Home,
+  Users,
+  Workflow,
+  MessageSquare,
+  Zap,
+  Building2,
+  BookOpen,
+} from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -20,13 +28,16 @@ import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 import { TermsDialog } from '@/components/legal/terms-dialog';
 import { getUserCompanies } from '@/server-actions/user-company';
 import { APP_NAME, Role } from '@/lib/constants';
+import { getCompanyLogoSignedUrl } from '@/server-actions/company';
 
 export async function AppSidebar() {
   const session = await getSession();
   const t = await getTranslations('app');
 
   const userData = {
-    name: `${session?.user.first_name || ''} ${session?.user.last_name || ''}`.trim() || 'User',
+    name:
+      `${session?.user.first_name || ''} ${session?.user.last_name || ''}`.trim() ||
+      'User',
     email: session?.user.email || 'user@example.com',
     avatar: '',
   };
@@ -106,19 +117,31 @@ export async function AppSidebar() {
       : []),
   ];
 
-  // Fetch client's company name for sidebar header
-  const clientCompanyName = isClient
-    ? (await getUserCompanies())[0]?.name
-    : undefined;
+  const userCompanies = isClient ? await getUserCompanies() : [];
+  const clientCompany = userCompanies[0];
+  const clientCompanyName = clientCompany?.name;
+
+  const clientLogoUrl =
+    isClient && clientCompany?.id
+      ? await getCompanyLogoSignedUrl(clientCompany.id)
+      : null;
 
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
         {isClient ? (
           <div className="flex items-center gap-3">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-              <Building2 className="size-4 text-white" />
-            </div>
+            {clientLogoUrl ? (
+              <img
+                src={clientLogoUrl}
+                alt={`${clientCompanyName} logo`}
+                className="w-8 h-8 object-contain rounded-lg"
+              />
+            ) : (
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                <Building2 className="size-4 text-white" />
+              </div>
+            )}
             <span className="truncate text-sm font-medium">
               {clientCompanyName ?? 'No company assigned'}
             </span>

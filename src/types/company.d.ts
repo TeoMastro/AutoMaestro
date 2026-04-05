@@ -4,6 +4,7 @@ export type Company = {
   id: string;
   name: string;
   note: string | null;
+  logoStoragePath: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -76,4 +77,5 @@ export interface CompanyViewProps {
   searchParams?: { [key: string]: string | string[] | undefined };
   currentUserId?: string;
   currentUserRole?: string;
-};
+  logoUrl?: string | null;
+}

@@ -13,11 +13,13 @@ import {
 } from '@/components/ui/breadcrumb';
 import { useTranslations } from 'next-intl';
 import { Fragment } from 'react';
+import { useBreadcrumbOverrides } from '@/components/layout/breadcrumb-context';
 
 export function DynamicBreadcrumb() {
   const [isHydrated, setIsHydrated] = useState(false);
   const pathname = usePathname();
   const t = useTranslations('app');
+  const { overrides } = useBreadcrumbOverrides();
 
   useEffect(() => {
     setIsHydrated(true);
@@ -35,6 +37,9 @@ export function DynamicBreadcrumb() {
   };
 
   const formatSegmentName = (segment: string) => {
+    const override = overrides.get(segment);
+    if (override) return override;
+
     if (isUUIDSegment(segment)) {
       return segment;
     }

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { CompanyForm } from '@/components/admin/company-form';
 import { getCompanyById, getCompanyLogoSignedUrl } from '@/server-actions/company';
 import { Role } from '@/lib/constants';
+import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 
 export default async function UpdateCompanyPage({
   params,
@@ -28,6 +29,7 @@ export default async function UpdateCompanyPage({
 
   return (
     <div className="container mx-auto py-6">
+      <BreadcrumbSetter segment={id} label={company.name} />
       <CompanyForm mode="update" company={company} logoUrl={logoUrl} />
     </div>
   );

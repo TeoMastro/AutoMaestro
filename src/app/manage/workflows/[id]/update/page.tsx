@@ -5,6 +5,7 @@ import { getWorkflowById } from '@/server-actions/workflow';
 import { getAllCompanies } from '@/server-actions/company';
 import { WorkflowPageProps } from '@/types/workflow';
 import { Role } from '@/lib/constants';
+import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 
 export default async function UpdateWorkflowPage({ params }: WorkflowPageProps) {
   const session = await getSession();
@@ -23,6 +24,7 @@ export default async function UpdateWorkflowPage({ params }: WorkflowPageProps) 
 
   return (
     <div className="container mx-auto py-6">
+      <BreadcrumbSetter segment={id} label={workflow.name} />
       <WorkflowForm mode="update" workflow={workflow} companies={companies} />
     </div>
   );

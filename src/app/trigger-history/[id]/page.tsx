@@ -2,6 +2,7 @@ import { getSession } from '@/lib/auth-session';
 import { notFound } from 'next/navigation';
 import { getTriggerLogDetail } from '@/server-actions/trigger-log';
 import { TriggerLogView } from '@/components/admin/trigger-log-view';
+import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 
 interface TriggerLogPageProps {
   params: Promise<{
@@ -23,6 +24,7 @@ export default async function TriggerLogPage({ params }: TriggerLogPageProps) {
 
     return (
       <div className="container mx-auto py-6">
+        <BreadcrumbSetter segment={id} label={logDetails.workflowName} />
         <TriggerLogView
           log={logDetails}
         />

@@ -12,7 +12,8 @@
       "Bash(cd C:/Users/TEO/Documents/VsCodeProjects/n8n-whitelabel-frontend && rm -rf .next && npx tsc --noEmit 2>&1 | grep -v \"node_modules\" | head -40)",
       "Bash(npx eslint:*)",
       "Bash(find:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

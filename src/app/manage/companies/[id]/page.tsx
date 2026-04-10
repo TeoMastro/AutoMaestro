@@ -8,6 +8,7 @@ import {
 } from '@/server-actions/company';
 import { getAllUsersForExport } from '@/server-actions/user';
 import { Role } from '@/lib/constants';
+import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 
 export default async function ManageCompanyViewPage({
   params,
@@ -37,6 +38,7 @@ export default async function ManageCompanyViewPage({
 
   return (
     <div className="container mx-auto py-6">
+      <BreadcrumbSetter segment={id} label={company.name} />
       <CompanyView
         company={company}
         assignments={assignments}

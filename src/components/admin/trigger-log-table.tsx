@@ -25,6 +25,7 @@ import { Eye, X } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TriggerLogTableProps } from '@/types/trigger-log';
 import { badgeStyles } from '@/lib/badge-styles';
 
@@ -122,11 +123,11 @@ export function TriggerLogTable({
   const hasFilters = searchLocal !== '' || workflowFilterLocal !== 'all' || companyFilterLocal !== 'all' || statusFilterLocal !== 'all';
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t('triggerHistory')}</h1>
-      </div>
-
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">{t('triggerHistory')}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
       <div className="flex flex-col md:flex-row gap-4">
         <Input
           placeholder={t('search')}
@@ -181,7 +182,7 @@ export function TriggerLogTable({
         )}
       </div>
 
-      <div className="border rounded-md">
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -251,6 +252,7 @@ export function TriggerLogTable({
         totalCount={totalCount}
         limit={limit}
       />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

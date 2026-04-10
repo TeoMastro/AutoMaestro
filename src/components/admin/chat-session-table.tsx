@@ -25,6 +25,7 @@ import { Eye, X } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChatSessionTableProps } from '@/types/chat-log';
 
 export function ChatSessionTable({
@@ -115,11 +116,11 @@ export function ChatSessionTable({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t('chatHistory')}</h1>
-      </div>
-
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">{t('chatHistory')}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
       <div className="flex flex-col md:flex-row gap-4">
         <Input
           placeholder={t('searchSessions')}
@@ -164,7 +165,7 @@ export function ChatSessionTable({
         )}
       </div>
 
-      <div className="border rounded-md">
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -238,6 +239,7 @@ export function ChatSessionTable({
         totalCount={totalCount}
         limit={limit}
       />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

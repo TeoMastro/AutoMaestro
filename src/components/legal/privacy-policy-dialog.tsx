@@ -24,7 +24,7 @@ export function PrivacyPolicyDialog({
   const TriggerComponent = isInSidebar ? (
     <SidebarMenuButton
       size="sm"
-      className="text-muted-foreground hover:text-foreground"
+      className="text-sidebar-foreground/60 hover:text-sidebar-foreground"
     >
       <Shield className="h-4 w-4" />
       <span className="text-xs">{title}</span>

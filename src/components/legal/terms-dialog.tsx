@@ -21,7 +21,7 @@ export function TermsDialog({ title, isInSidebar = true }: TermsDialogProps) {
   const TriggerComponent = isInSidebar ? (
     <SidebarMenuButton
       size="sm"
-      className="text-muted-foreground hover:text-foreground"
+      className="text-sidebar-foreground/60 hover:text-sidebar-foreground"
     >
       <FileText className="h-4 w-4" />
       <span className="text-xs">{title}</span>

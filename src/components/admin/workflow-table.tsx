@@ -38,6 +38,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
 import { InfoAlert } from '@/components/info-alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WorkflowTableProps } from '@/types/workflow';
 import { badgeStyles } from '@/lib/badge-styles';
 
@@ -140,15 +141,17 @@ export function WorkflowTable({
   const hasFilters = searchLocal !== '' || typeFilterLocal !== 'all' || companyFilterLocal !== 'all';
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t('workflows')}</h1>
-        <Button onClick={() => router.push('/manage/workflows/create')}>
-          <Plus className="h-4 w-4" />
-          <span className="hidden md:block">{t('create')}</span>
-        </Button>
-      </div>
-
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-2xl">{t('workflows')}</CardTitle>
+          <Button onClick={() => router.push('/manage/workflows/create')}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden md:block">{t('create')}</span>
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
       {message && <InfoAlert message={t(message)} type="success" />}
       {alert && <InfoAlert message={alert.message} type={alert.type} />}
 
@@ -191,7 +194,7 @@ export function WorkflowTable({
         )}
       </div>
 
-      <div className="border rounded-md">
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -306,6 +309,7 @@ export function WorkflowTable({
         totalCount={totalCount}
         limit={limit}
       />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

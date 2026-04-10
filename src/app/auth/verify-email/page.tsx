@@ -86,8 +86,8 @@ export default function VerifyEmailPage() {
 
             {status === 'pending' && (
               <div className="flex flex-col items-center space-y-4">
-                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                  <MailOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-full bg-violet-100 dark:bg-blue-900/20 flex items-center justify-center">
+                  <MailOpen className="h-6 w-6 text-violet-600 dark:text-blue-400" />
                 </div>
                 <div>
                   <CardTitle>{t('checkYourEmail')}</CardTitle>

@@ -43,6 +43,7 @@ import {
 import { Role, Status } from '@/lib/constants';
 import { UsersTableProps } from '@/types/user';
 import { InfoAlert } from '@/components/info-alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { badgeStyles } from '@/lib/badge-styles';
 
 export const getStatusBadge = (status: Status, t: (key: string) => string) => {
@@ -280,42 +281,39 @@ export function UsersTable({
     statusFilterLocal !== 'all';
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">{t('users')}</h1>
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-2xl">{t('users')}</CardTitle>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => exportFilteredUsers('csv')}
+              variant="outline"
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              .csv
+            </Button>
+            <Button
+              onClick={() => exportFilteredUsers('xlsx')}
+              variant="outline"
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              .xlsx
+            </Button>
+            <Button onClick={() => router.push('/admin/user/create')}>
+              <Plus className="h-4 w-4" />
+              <div className="hidden md:block">{t('create')}</div>
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => exportFilteredUsers('csv')}
-            variant="outline"
-            className="flex items-center gap-1"
-          >
-            <Download className="h-4 w-4" />
-            .csv
-          </Button>
-          <Button
-            onClick={() => exportFilteredUsers('xlsx')}
-            variant="outline"
-            className="flex items-center gap-1"
-          >
-            <Download className="h-4 w-4" />
-            .xlsx
-          </Button>
-          <Button onClick={() => router.push('/admin/user/create')}>
-            <Plus className="h-4 w-4" />
-            <div className="hidden md:block">{t('create')}</div>
-          </Button>
-        </div>
-      </div>
-
-      {/* Success message */}
+      </CardHeader>
+      <CardContent className="space-y-4">
       {message && <InfoAlert message={t(message) as string} type="success" />}
 
       {alert && <InfoAlert message={alert.message} type={alert.type} />}
 
-      {/* Search and filter controls */}
       <div className="flex flex-col md:flex-row gap-4">
         <Input
           placeholder={t('searchUsers')}
@@ -364,8 +362,7 @@ export function UsersTable({
         )}
       </div>
 
-      {/* Table */}
-      <div className="border rounded-md">
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -521,7 +518,6 @@ export function UsersTable({
         )}
       </div>
 
-      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -529,6 +525,7 @@ export function UsersTable({
         totalCount={totalCount}
         limit={limit}
       />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

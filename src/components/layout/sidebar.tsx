@@ -138,7 +138,7 @@ export async function AppSidebar() {
                 className="w-8 h-8 object-contain rounded-lg"
               />
             ) : (
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600">
                 <Building2 className="size-4 text-white" />
               </div>
             )}
@@ -148,10 +148,10 @@ export async function AppSidebar() {
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">NL</span>
             </div>
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-sidebar-foreground">
               {APP_NAME}
             </h2>
           </div>

@@ -69,10 +69,10 @@ export function ChatSessionView({ sessionId, workflowName, messages }: ChatSessi
 
               {/* AI response */}
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-blue-500" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-violet-500/10 flex items-center justify-center">
+                  <Bot className="h-4 w-4 text-violet-500" />
                 </div>
-                <div className="flex-1 bg-blue-50 dark:bg-blue-950/30 rounded-lg px-4 py-3">
+                <div className="flex-1 bg-violet-50 dark:bg-blue-950/30 rounded-lg px-4 py-3">
                   <p className="text-sm whitespace-pre-wrap">{msg.aiResponse}</p>
                 </div>
               </div>

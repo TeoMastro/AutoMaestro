@@ -87,7 +87,7 @@ export default function MarketingPage() {
               <NavigationMenuItem>
                 <Button
                   asChild
-                  className="bg-black text-white hover:bg-black/90 dark:bg-black dark:text-white dark:hover:bg-black/90"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <Link href="/auth/signin">Demo</Link>
                 </Button>
@@ -169,8 +169,8 @@ export default function MarketingPage() {
                 {/* Authentication Pages */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/20">
-                      <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 dark:bg-blue-900/20">
+                      <Shield className="h-5 w-5 text-violet-600 dark:text-blue-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -187,8 +187,8 @@ export default function MarketingPage() {
                 {/* RBAC */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/20">
-                      <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-100 dark:bg-green-900/20">
+                      <Users className="h-5 w-5 text-teal-600 dark:text-green-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -205,8 +205,8 @@ export default function MarketingPage() {
                 {/* User Management */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/20">
-                      <UserCog className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-purple-900/20">
+                      <UserCog className="h-5 w-5 text-indigo-600 dark:text-purple-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -223,8 +223,8 @@ export default function MarketingPage() {
                 {/* Data Export */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/20">
-                      <FileSpreadsheet className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-orange-900/20">
+                      <FileSpreadsheet className="h-5 w-5 text-amber-600 dark:text-orange-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -241,8 +241,8 @@ export default function MarketingPage() {
                 {/* Form Validation */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
-                      <CheckCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-red-900/20">
+                      <CheckCircle className="h-5 w-5 text-rose-600 dark:text-red-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -259,8 +259,8 @@ export default function MarketingPage() {
                 {/* Testing */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/20">
-                      <TestTube className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-100 dark:bg-teal-900/20">
+                      <TestTube className="h-5 w-5 text-cyan-600 dark:text-teal-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -277,8 +277,8 @@ export default function MarketingPage() {
                 {/* Logging */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/20">
-                      <FileText className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-yellow-900/20">
+                      <FileText className="h-5 w-5 text-amber-700 dark:text-yellow-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -295,8 +295,8 @@ export default function MarketingPage() {
                 {/* UI Components */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/20">
-                      <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 dark:bg-indigo-900/20">
+                      <Sparkles className="h-5 w-5 text-violet-600 dark:text-indigo-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -313,8 +313,8 @@ export default function MarketingPage() {
                 {/* UI Components */}
                 <div className="group relative overflow-hidden rounded-lg border bg-background p-6 transition-all hover:shadow-lg">
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/20">
-                      <FileJson className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 dark:bg-indigo-900/20">
+                      <FileJson className="h-5 w-5 text-violet-700 dark:text-indigo-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-foreground mb-2">
@@ -349,7 +349,7 @@ export default function MarketingPage() {
                 {/* Next.js Card */}
                 <Card className="w-full max-w-sm transition-shadow hover:shadow-lg">
                   <CardHeader className="text-center">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-black text-white mx-auto">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-foreground text-background mx-auto">
                       <Zap className="h-6 w-6" />
                     </div>
                     <CardTitle>Next.js 16</CardTitle>
@@ -369,7 +369,7 @@ export default function MarketingPage() {
                 {/* PostgreSQL Card */}
                 <Card className="w-full max-w-sm transition-shadow hover:shadow-lg">
                   <CardHeader className="text-center">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-white mx-auto">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600 text-white mx-auto">
                       <Database className="h-6 w-6" />
                     </div>
                     <CardTitle>PostgreSQL</CardTitle>
@@ -388,7 +388,7 @@ export default function MarketingPage() {
                 {/* Supabase Card */}
                 <Card className="w-full max-w-sm transition-shadow hover:shadow-lg">
                   <CardHeader className="text-center">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-800 text-white mx-auto">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800 text-white mx-auto">
                       <Layers className="h-6 w-6" />
                     </div>
                     <CardTitle>Supabase</CardTitle>
@@ -405,7 +405,7 @@ export default function MarketingPage() {
                 {/* shadcn/ui Card */}
                 <Card className="w-full max-w-sm transition-shadow hover:shadow-lg">
                   <CardHeader className="text-center">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-900 text-white mx-auto">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-violet-900 text-white mx-auto">
                       <Sparkles className="h-6 w-6" />
                     </div>
                     <CardTitle>shadcn/ui</CardTitle>
@@ -422,7 +422,7 @@ export default function MarketingPage() {
                 {/* Supabase Auth Card */}
                 <Card className="w-full max-w-sm transition-shadow hover:shadow-lg">
                   <CardHeader className="text-center">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-600 text-white mx-auto">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-teal-600 text-white mx-auto">
                       <Shield className="h-6 w-6" />
                     </div>
                     <CardTitle>Supabase Auth</CardTitle>
@@ -441,7 +441,7 @@ export default function MarketingPage() {
                 {/* Tailwind CSS Card */}
                 <Card className="w-full max-w-sm transition-shadow hover:shadow-lg">
                   <CardHeader className="text-center">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-500 text-white mx-auto">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-600 text-white mx-auto">
                       <Palette className="h-6 w-6" />
                     </div>
                     <CardTitle>Tailwind CSS</CardTitle>

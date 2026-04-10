@@ -30,6 +30,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
 import { InfoAlert } from '@/components/info-alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TemplateLibraryTableProps } from '@/types/template-library';
 
 export function TemplateLibraryTable({
@@ -109,17 +110,19 @@ export function TemplateLibraryTable({
   const hasFilters = searchLocal !== '';
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t('templateLibrary')}</h1>
-        {isAdmin && (
-          <Button onClick={() => router.push('/manage/templates/create')}>
-            <Plus className="h-4 w-4" />
-            <span className="hidden md:block">{t('create')}</span>
-          </Button>
-        )}
-      </div>
-
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-2xl">{t('templateLibrary')}</CardTitle>
+          {isAdmin && (
+            <Button onClick={() => router.push('/manage/templates/create')}>
+              <Plus className="h-4 w-4" />
+              <span className="hidden md:block">{t('create')}</span>
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
       {message && <InfoAlert message={t(message)} type="success" />}
       {alert && <InfoAlert message={alert.message} type={alert.type} />}
 
@@ -141,7 +144,7 @@ export function TemplateLibraryTable({
         )}
       </div>
 
-      <div className="border rounded-md">
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -234,6 +237,7 @@ export function TemplateLibraryTable({
         totalCount={totalCount}
         limit={limit}
       />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

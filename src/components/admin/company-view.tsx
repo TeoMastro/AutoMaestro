@@ -5,6 +5,7 @@ import { ArrowLeft, Edit, UserPlus } from 'lucide-react';
 import { CompanyViewProps } from '@/types/company';
 import { CompanyDeleteButton } from './company-delete-button';
 import { CompanyAssignments } from './company-assignments';
+import { N8nCredentialsCard } from './n8n-credentials-card';
 import Link from 'next/link';
 import { InfoAlert } from '@/components/info-alert';
 
@@ -96,6 +97,13 @@ export function CompanyView({
           </div>
         </CardContent>
       </Card>
+
+      {/* n8n Credentials */}
+      <N8nCredentialsCard
+        url={company.n8nInstanceUrl}
+        username={company.n8nInstanceUsername}
+        password={company.n8nInstancePassword}
+      />
 
       {/* Assignments */}
       <Card>

@@ -16,6 +16,7 @@ import {
 } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { encrypt, decrypt } from '@/lib/encryption';
 import type {
   Company,
   CompanyFormState,
@@ -34,11 +35,24 @@ const ALLOWED_LOGO_TYPES = [
 ] as const;
 
 function mapCompany(c: Record<string, unknown>): Company {
+  const encryptedPassword = (c.n8n_instance_password as string | null) ?? null;
+  let decryptedPassword: string | null = null;
+  if (encryptedPassword) {
+    try {
+      decryptedPassword = decrypt(encryptedPassword);
+    } catch {
+      decryptedPassword = null;
+    }
+  }
+
   return {
     id: c.id as string,
     name: c.name as string,
     note: (c.note as string | null) ?? null,
     logoStoragePath: (c.logo_storage_path as string | null) ?? null,
+    n8nInstanceUrl: (c.n8n_instance_url as string | null) ?? null,
+    n8nInstanceUsername: (c.n8n_instance_username as string | null) ?? null,
+    n8nInstancePassword: decryptedPassword,
     createdAt: new Date(c.created_at as string),
     updatedAt: new Date(c.updated_at as string),
   };
@@ -58,6 +72,9 @@ export async function createCompanyAction(
     const data = {
       name: formData.get('name')?.toString() ?? '',
       note: formData.get('note')?.toString() ?? '',
+      n8n_instance_url: formData.get('n8n_instance_url')?.toString() ?? '',
+      n8n_instance_username: formData.get('n8n_instance_username')?.toString() ?? '',
+      n8n_instance_password: formData.get('n8n_instance_password')?.toString() ?? '',
     };
 
     const parsed = createCompanySchema.safeParse(data);
@@ -65,10 +82,18 @@ export async function createCompanyAction(
       return {
         success: false,
         errors: formatZodErrors(parsed.error),
-        formData: data,
+        formData: {
+          name: data.name,
+          note: data.note,
+          n8nInstanceUrl: data.n8n_instance_url,
+          n8nInstanceUsername: data.n8n_instance_username,
+          n8nInstancePassword: data.n8n_instance_password,
+        },
         globalError: null,
       };
     }
+
+    const rawPassword = parsed.data.n8n_instance_password?.trim() || null;
 
     const supabase = createAdminClient();
     const { data: newCompany, error } = await supabase
@@ -76,6 +101,9 @@ export async function createCompanyAction(
       .insert({
         name: parsed.data.name.trim(),
         note: parsed.data.note?.trim() || null,
+        n8n_instance_url: parsed.data.n8n_instance_url?.trim() || null,
+        n8n_instance_username: parsed.data.n8n_instance_username?.trim() || null,
+        n8n_instance_password: rawPassword ? encrypt(rawPassword) : null,
       })
       .select('id')
       .single();
@@ -101,6 +129,9 @@ export async function createCompanyAction(
       formData: {
         name: formData.get('name')?.toString() ?? '',
         note: formData.get('note')?.toString() ?? '',
+        n8nInstanceUrl: formData.get('n8n_instance_url')?.toString() ?? '',
+        n8nInstanceUsername: formData.get('n8n_instance_username')?.toString() ?? '',
+        n8nInstancePassword: formData.get('n8n_instance_password')?.toString() ?? '',
       },
       globalError: 'unexpectedError',
     };
@@ -123,6 +154,9 @@ export async function updateCompanyAction(
     const data = {
       name: formData.get('name')?.toString() ?? '',
       note: formData.get('note')?.toString() ?? '',
+      n8n_instance_url: formData.get('n8n_instance_url')?.toString() ?? '',
+      n8n_instance_username: formData.get('n8n_instance_username')?.toString() ?? '',
+      n8n_instance_password: formData.get('n8n_instance_password')?.toString() ?? '',
     };
 
     const parsed = updateCompanySchema.safeParse(data);
@@ -130,10 +164,18 @@ export async function updateCompanyAction(
       return {
         success: false,
         errors: formatZodErrors(parsed.error),
-        formData: data,
+        formData: {
+          name: data.name,
+          note: data.note,
+          n8nInstanceUrl: data.n8n_instance_url,
+          n8nInstanceUsername: data.n8n_instance_username,
+          n8nInstancePassword: data.n8n_instance_password,
+        },
         globalError: null,
       };
     }
+
+    const rawPassword = parsed.data.n8n_instance_password?.trim() || null;
 
     const supabase = createAdminClient();
     const { error } = await supabase
@@ -141,6 +183,9 @@ export async function updateCompanyAction(
       .update({
         name: parsed.data.name.trim(),
         note: parsed.data.note?.trim() || null,
+        n8n_instance_url: parsed.data.n8n_instance_url?.trim() || null,
+        n8n_instance_username: parsed.data.n8n_instance_username?.trim() || null,
+        n8n_instance_password: rawPassword ? encrypt(rawPassword) : null,
       })
       .eq('id', companyId);
 
@@ -157,6 +202,9 @@ export async function updateCompanyAction(
       formData: {
         name: formData.get('name')?.toString() ?? '',
         note: formData.get('note')?.toString() ?? '',
+        n8nInstanceUrl: formData.get('n8n_instance_url')?.toString() ?? '',
+        n8nInstanceUsername: formData.get('n8n_instance_username')?.toString() ?? '',
+        n8nInstancePassword: formData.get('n8n_instance_password')?.toString() ?? '',
       },
       globalError: 'unexpectedError',
     };

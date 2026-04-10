@@ -5,6 +5,9 @@ export type Company = {
   name: string;
   note: string | null;
   logoStoragePath: string | null;
+  n8nInstanceUrl: string | null;
+  n8nInstanceUsername: string | null;
+  n8nInstancePassword: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -15,6 +18,9 @@ export type CompanyFormState = {
   formData: {
     name: string;
     note: string;
+    n8nInstanceUrl: string;
+    n8nInstanceUsername: string;
+    n8nInstancePassword: string;
   };
   globalError: string | null;
 };

@@ -25,10 +25,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Pencil, Trash2, Plus, Eye, X } from 'lucide-react';
+import { Pencil, Trash2, Plus, Eye, X, ExternalLink } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '@/components/layout/pagination';
-import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
+import {
+  SortableTableHeader,
+  SortField,
+} from '@/components/layout/sortable-table-header';
 import { InfoAlert } from '@/components/info-alert';
 import { CompanyTableProps } from '@/types/company';
 
@@ -50,7 +53,10 @@ export function CompanyTable({
   const [searchLocal, setSearchLocal] = useState(searchTerm);
   const [isPending, startTransition] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const message = searchParams.get('message');
 
@@ -69,11 +75,10 @@ export function CompanyTable({
     [searchParams, pathname, router]
   );
 
-
-
   const handleSort = useCallback(
     (field: SortField) => {
-      const newDir = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+      const newDir =
+        sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
       updateUrl({ sortField: field, sortDirection: newDir, page: '1' });
     },
     [sortField, sortDirection, updateUrl]
@@ -144,11 +149,22 @@ export function CompanyTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <SortableTableHeader field="name" currentField={sortField} direction={sortDirection} onSort={handleSort}>
+              <SortableTableHeader
+                field="name"
+                currentField={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+              >
                 {t('name')}
               </SortableTableHeader>
               <TableHead>{t('companyNote')}</TableHead>
-              <SortableTableHeader field="createdAt" currentField={sortField} direction={sortDirection} onSort={handleSort}>
+              <TableHead>{t('n8nInstance')}</TableHead>
+              <SortableTableHeader
+                field="createdAt"
+                currentField={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+              >
                 {t('created')}
               </SortableTableHeader>
               <TableHead className="text-right">{t('actions')}</TableHead>
@@ -162,6 +178,21 @@ export function CompanyTable({
                   {company.note || '—'}
                 </TableCell>
                 <TableCell>
+                  {company.n8nInstanceUrl ? (
+                    <a
+                      href={company.n8nInstanceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      n8n
+                    </a>
+                  ) : (
+                    '—'
+                  )}
+                </TableCell>
+                <TableCell>
                   {new Date(company.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: '2-digit',
@@ -173,7 +204,9 @@ export function CompanyTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/manage/companies/${company.id}`)}
+                      onClick={() =>
+                        router.push(`/manage/companies/${company.id}`)
+                      }
                       disabled={isPending}
                     >
                       <Eye className="h-4 w-4" />
@@ -181,7 +214,9 @@ export function CompanyTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/manage/companies/${company.id}/update`)}
+                      onClick={() =>
+                        router.push(`/manage/companies/${company.id}/update`)
+                      }
                       disabled={isPending}
                     >
                       <Pencil className="h-4 w-4" />
@@ -198,9 +233,13 @@ export function CompanyTable({
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            {t('confirmDelete')}
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {t('deleteCompanyConfirmation', { name: company.name })}
+                            {t('deleteCompanyConfirmation', {
+                              name: company.name,
+                            })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -222,7 +261,9 @@ export function CompanyTable({
         </Table>
 
         {companies.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">{t('noCompaniesFound')}</div>
+          <div className="text-center py-8 text-muted-foreground">
+            {t('noCompaniesFound')}
+          </div>
         )}
       </div>
 

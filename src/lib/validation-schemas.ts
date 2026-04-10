@@ -37,6 +37,9 @@ export const updateTemplateLibrarySchema = createTemplateLibrarySchema;
 export const createCompanySchema = z.object({
   name: z.string().min(1, 'companyNameRequired'),
   note: z.string().optional(),
+  n8n_instance_url: z.string().url('invalidUrl').or(z.literal('')).optional(),
+  n8n_instance_username: z.string().optional(),
+  n8n_instance_password: z.string().optional(),
 });
 
 export const updateCompanySchema = createCompanySchema;

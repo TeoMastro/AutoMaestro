@@ -10,7 +10,9 @@
       "Bash(grep -r \"Role\\\\\\\\.ADMIN\\\\|Role\\\\\\\\.USER\\\\|role.*ADMIN\\\\|role.*USER\" /c/Users/TEO/Documents/VsCodeProjects/n8n-whitelabel-frontend/src/app/admin --include=\"*.tsx\" 2>/dev/null | head -30)",
       "Bash(grep -r \"session.user.role\\\\|profile.role\\\\|\\\\.role\\\\s*!==\" /c/Users/TEO/Documents/VsCodeProjects/n8n-whitelabel-frontend/src --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null | head -20)",
       "Bash(cd C:/Users/TEO/Documents/VsCodeProjects/n8n-whitelabel-frontend && rm -rf .next && npx tsc --noEmit 2>&1 | grep -v \"node_modules\" | head -40)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(find:*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

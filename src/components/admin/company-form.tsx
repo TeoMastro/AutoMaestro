@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
 import { CompanyFormProps, CompanyFormState } from '@/types/company';
-import { Upload, Trash2 } from 'lucide-react';
+import { Upload, Trash2, Eye, EyeOff } from 'lucide-react';
 
 export function CompanyForm({
   company,
@@ -28,6 +28,7 @@ export function CompanyForm({
     initialLogoUrl ?? null
   );
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [isUploading, startUploadTransition] = useTransition();
   const [isDeleting, startDeleteTransition] = useTransition();
 
@@ -37,6 +38,9 @@ export function CompanyForm({
     formData: {
       name: company?.name ?? '',
       note: company?.note ?? '',
+      n8nInstanceUrl: company?.n8nInstanceUrl ?? '',
+      n8nInstanceUsername: company?.n8nInstanceUsername ?? '',
+      n8nInstancePassword: company?.n8nInstancePassword ?? '',
     },
     globalError: null,
   };
@@ -200,6 +204,66 @@ export function CompanyForm({
               {logoError && <p className="text-sm text-red-500">{logoError}</p>}
             </div>
           )}
+
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              {t('n8nCredentials')}
+            </h3>
+
+            <div className="space-y-2">
+              <Label htmlFor="n8n_instance_url">{t('n8nInstanceUrl')}</Label>
+              <Input
+                id="n8n_instance_url"
+                name="n8n_instance_url"
+                type="url"
+                placeholder="https://n8n.example.com"
+                defaultValue={state.formData.n8nInstanceUrl}
+                className={state.errors.n8n_instance_url ? 'border-red-500' : ''}
+              />
+              {err('n8n_instance_url') && (
+                <p className="text-sm text-red-500">{err('n8n_instance_url')}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="n8n_instance_username">
+                {t('n8nInstanceUsername')}
+              </Label>
+              <Input
+                id="n8n_instance_username"
+                name="n8n_instance_username"
+                defaultValue={state.formData.n8nInstanceUsername}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="n8n_instance_password">
+                {t('n8nInstancePassword')}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="n8n_instance_password"
+                  name="n8n_instance_password"
+                  type={showPassword ? 'text' : 'password'}
+                  defaultValue={state.formData.n8nInstancePassword}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
 
           <div className="pt-4 flex gap-4">
             <Button type="submit" disabled={isPending || isUploading}>

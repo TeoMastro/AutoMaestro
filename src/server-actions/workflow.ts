@@ -118,6 +118,8 @@ export async function createWorkflowAction(
         CREATE TABLE IF NOT EXISTS public.knowledge_base_wf_${shortId}
           PARTITION OF public.knowledge_base
           FOR VALUES IN ('${newWorkflow.id}');
+        ALTER TABLE public.knowledge_base_wf_${shortId} ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE public.knowledge_base_wf_${shortId} FORCE ROW LEVEL SECURITY;
         CREATE INDEX IF NOT EXISTS kb_wf_${shortId}_embedding_idx
           ON public.knowledge_base_wf_${shortId}
           USING hnsw (embedding vector_cosine_ops);

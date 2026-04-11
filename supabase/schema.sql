@@ -56,27 +56,30 @@ CREATE TABLE public.profiles (
 
 -- Helper: check admin role (must be after profiles table)
 CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean AS $$
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'ADMIN'
+    SELECT 1 FROM public.profiles WHERE id = (select auth.uid()) AND role = 'ADMIN'
   );
-$$ LANGUAGE sql SECURITY DEFINER;
+$$;
 
 -- Helper: check manager role
 CREATE OR REPLACE FUNCTION public.is_manager()
-RETURNS boolean AS $$
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'MANAGER'
+    SELECT 1 FROM public.profiles WHERE id = (select auth.uid()) AND role = 'MANAGER'
   );
-$$ LANGUAGE sql SECURITY DEFINER;
+$$;
 
 -- Helper: check admin or manager role
 CREATE OR REPLACE FUNCTION public.is_admin_or_manager()
-RETURNS boolean AS $$
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('ADMIN', 'MANAGER')
+    SELECT 1 FROM public.profiles WHERE id = (select auth.uid()) AND role IN ('ADMIN', 'MANAGER')
   );
-$$ LANGUAGE sql SECURITY DEFINER;
+$$;
 
 
 -- 2. companies
@@ -240,22 +243,24 @@ CREATE INDEX idx_trigger_logs_status      ON public.trigger_logs(status);
 
 -- Helper: check if current user has access to a company (bypasses RLS to avoid recursion)
 CREATE OR REPLACE FUNCTION public.has_company_access(p_company_id UUID)
-RETURNS boolean AS $$
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.user_companies
-    WHERE user_id = auth.uid() AND company_id = p_company_id
+    WHERE user_id = (select auth.uid()) AND company_id = p_company_id
   );
-$$ LANGUAGE sql SECURITY DEFINER;
+$$;
 
 -- Helper: check if two users share at least one company (bypasses RLS to avoid recursion)
 CREATE OR REPLACE FUNCTION public.shares_company(user_a UUID, user_b UUID)
-RETURNS boolean AS $$
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.user_companies uc1
     JOIN public.user_companies uc2 ON uc1.company_id = uc2.company_id
     WHERE uc1.user_id = user_a AND uc2.user_id = user_b
   );
-$$ LANGUAGE sql SECURITY DEFINER;
+$$;
 
 
 -- ============================================================
@@ -282,11 +287,16 @@ CREATE POLICY "Admins manage companies" ON public.companies
   FOR ALL USING (public.is_admin());
 CREATE POLICY "Clients view assigned companies" ON public.companies
   FOR SELECT USING (public.has_company_access(companies.id));
-CREATE POLICY "Managers manage assigned companies" ON public.companies
-  FOR ALL USING (
-    public.is_manager()
-    AND public.has_company_access(companies.id)
-  );
+CREATE POLICY "Managers view assigned companies" ON public.companies
+  FOR SELECT TO authenticated
+  USING (public.is_manager() AND public.has_company_access(companies.id));
+CREATE POLICY "Managers update assigned companies" ON public.companies
+  FOR UPDATE TO authenticated
+  USING (public.is_manager() AND public.has_company_access(companies.id))
+  WITH CHECK (public.is_manager() AND public.has_company_access(companies.id));
+CREATE POLICY "Managers delete assigned companies" ON public.companies
+  FOR DELETE TO authenticated
+  USING (public.is_manager() AND public.has_company_access(companies.id));
 
 -- user_companies
 ALTER TABLE public.user_companies ENABLE ROW LEVEL SECURITY;
@@ -353,8 +363,17 @@ CREATE POLICY "Clients view company workflow kb" ON public.knowledge_base
         AND public.has_company_access(w.company_id)
     )
   );
-CREATE POLICY "Managers view company kb" ON public.knowledge_base
-  FOR SELECT USING (
+CREATE POLICY "Managers manage company kb" ON public.knowledge_base
+  FOR ALL TO authenticated
+  USING (
+    public.is_manager()
+    AND EXISTS (
+      SELECT 1 FROM public.workflows w
+      WHERE w.id = knowledge_base.workflow_id
+        AND public.has_company_access(w.company_id)
+    )
+  )
+  WITH CHECK (
     public.is_manager()
     AND EXISTS (
       SELECT 1 FROM public.workflows w
@@ -365,8 +384,9 @@ CREATE POLICY "Managers view company kb" ON public.knowledge_base
 
 -- chat_logs
 ALTER TABLE public.chat_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Admins manage chat_logs" ON public.chat_logs
-  FOR ALL USING (public.is_admin());
+CREATE POLICY "Admins view all chat_logs" ON public.chat_logs
+  FOR SELECT TO authenticated
+  USING (public.is_admin());
 CREATE POLICY "Clients view company chat_logs" ON public.chat_logs
   FOR SELECT USING (
     EXISTS (
@@ -458,7 +478,7 @@ RETURNS TABLE (
   total_count      BIGINT
 )
 LANGUAGE plpgsql
-SECURITY DEFINER
+STABLE
 AS $$
 DECLARE
   v_total BIGINT;
@@ -621,6 +641,56 @@ BEGIN
   EXECUTE sql;
 END;
 $$;
+
+-- Lock down exec_sql: only service_role (admin client) may invoke it.
+REVOKE EXECUTE ON FUNCTION public.exec_sql(TEXT) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.exec_sql(TEXT) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.exec_sql(TEXT) FROM authenticated;
+
+
+-- ============================================================
+-- Storage policies — workflow-documents bucket
+-- Path format: {workflow_id}/{user_id}/{timestamp}_{filename}
+-- ============================================================
+
+CREATE POLICY "workflow-documents read" ON storage.objects
+  FOR SELECT TO authenticated
+  USING (
+    bucket_id = 'workflow-documents'
+    AND (
+      public.is_admin()
+      OR EXISTS (
+        SELECT 1 FROM public.workflows w
+        WHERE w.id = ((storage.foldername(name))[1])::uuid
+          AND public.has_company_access(w.company_id)
+      )
+    )
+  );
+
+CREATE POLICY "workflow-documents write" ON storage.objects
+  FOR ALL TO authenticated
+  USING (
+    bucket_id = 'workflow-documents'
+    AND (
+      public.is_admin()
+      OR EXISTS (
+        SELECT 1 FROM public.workflows w
+        WHERE w.id = ((storage.foldername(name))[1])::uuid
+          AND public.has_company_access(w.company_id)
+      )
+    )
+  )
+  WITH CHECK (
+    bucket_id = 'workflow-documents'
+    AND (
+      public.is_admin()
+      OR EXISTS (
+        SELECT 1 FROM public.workflows w
+        WHERE w.id = ((storage.foldername(name))[1])::uuid
+          AND public.has_company_access(w.company_id)
+      )
+    )
+  );
 
 
 -- ============================================================

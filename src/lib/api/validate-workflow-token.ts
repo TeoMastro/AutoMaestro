@@ -20,9 +20,13 @@ export async function validateWorkflowToken<Extra extends z.ZodRawShape = Record
   extraSchema?: z.ZodObject<Extra>
 ): Promise<ValidateResult<z.infer<z.ZodObject<Extra>>>> {
   const authHeader = req.headers.get('authorization') ?? '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const rawToken = authHeader.startsWith('Bearer ')
+    ? authHeader.slice(7)
+    : authHeader.startsWith('bearer ')
+      ? authHeader.slice(7)
+      : authHeader;
 
-  if (!token) {
+  if (!rawToken) {
     logger.error(`${context}: missing token`);
     return {
       workflow: null,
@@ -34,7 +38,7 @@ export async function validateWorkflowToken<Extra extends z.ZodRawShape = Record
   const selectFields = Object.keys(fullSchema.shape).join(', ');
 
   const supabase = createAdminClient();
-  const { data, error: wfError } = await supabase.from('workflows').select(selectFields).eq('token', token).single();
+  const { data, error: wfError } = await supabase.from('workflows').select(selectFields).eq('token', rawToken).single();
 
   if (wfError || !data) {
     logger.error(`${context}: invalid token`, { error: wfError?.message });

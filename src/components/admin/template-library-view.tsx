@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ArrowLeft, Copy, Edit } from 'lucide-react';
+import { ArrowLeft, Copy, Download, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TemplateLibraryViewProps } from '@/types/template-library';
@@ -22,6 +22,18 @@ export function TemplateLibraryView({ item, isAdmin }: TemplateLibraryViewProps)
     } catch {
       setCopied(false);
     }
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([item.workflowJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${item.title.replace(/[^a-zA-Z0-9-_ ]/g, '').replace(/\s+/g, '-')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -75,10 +87,16 @@ export function TemplateLibraryView({ item, isAdmin }: TemplateLibraryViewProps)
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>{t('workflowJson')}</CardTitle>
-          <Button variant="outline" size="sm" onClick={handleCopy}>
-            <Copy className="h-4 w-4" />
-            <span>{copied ? t('copiedToClipboard') : t('copyToClipboard')}</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="h-4 w-4" />
+              <span>{t('download')}</span>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              <Copy className="h-4 w-4" />
+              <span>{copied ? t('copiedToClipboard') : t('copyToClipboard')}</span>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <pre className="max-h-128 overflow-auto rounded-md border bg-muted p-4 text-xs leading-relaxed">

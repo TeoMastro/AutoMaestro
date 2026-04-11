@@ -209,6 +209,7 @@
     "invalidTemplateJson": "Invalid JSON format",
     "copyToClipboard": "Copy to Clipboard",
     "copiedToClipboard": "Copied",
+    "download": "Download",
     "noDescriptionProvided": "No description provided.",
     "noSetupGuideProvided": "No setup guide provided.",
     "myWorkflows": "My Workflows",

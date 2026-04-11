@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-n8n Whitelabel Frontend — a Next.js 16 full-stack app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek).
+n8n Whitelabel Frontend (branded as **AutoExec**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack SaaS that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Source is proprietary / All Rights Reserved (see `LICENCE.md`).
 
 ## Key Commands
 
@@ -29,6 +29,8 @@ Roles: `ADMIN`, `MANAGER`, `CLIENT` (defined in `/src/lib/constants.ts`).
 - **ADMIN** — unrestricted access to all companies, all users, and all routes (including `/admin/*`)
 - **MANAGER** — can only see and manage the companies they are assigned to (via `user_companies` table) and the clients that belong to those companies; accesses `/manage/*` routes
 - **CLIENT** — can only see and interact with resources (workflows, documents, chat/trigger history) that belong to their own company; accesses `/workflow`, `/chat-history`, `/trigger-history`, `/dashboard`, `/profile`, `/settings`
+
+`/manage/*` is a **shared** admin + manager route (not manager-only). The same pages render for both roles, but the data scope differs: admins see **all companies** and everything under them, while managers only see the companies they're assigned to via `user_companies` (and the clients, workflows, templates, logs that belong to those companies). Server actions enforce this via `getManagerCompanyIds()` / `checkManagerCompanyAccess()`. `/manage/*` currently includes `companies`, `clients`, `workflows`, `templates`. `/admin/*` is admin-only and currently scoped to `user` management.
 
 Auth helpers in `/src/lib/auth-helpers.ts`:
 
@@ -57,12 +59,13 @@ Protects routes by role, refreshes Supabase sessions. Route access:
 
 ### Database
 
-Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_companies`, `workflows`, `user_workflows`, `documents`, `knowledge_base`.
+Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_companies`, `workflows`, `user_workflows`, `documents`, `knowledge_base`, `template_library`, `chat_logs`, `trigger_logs`.
 
 - User IDs are UUID strings
-- `is_admin()` and `is_admin_or_manager()` are SECURITY DEFINER functions (prevent RLS recursion)
+- `is_admin()`, `is_manager()`, `is_admin_or_manager()` are SECURITY DEFINER functions (prevent RLS recursion)
 - pgvector extension required for `knowledge_base` (IVFFlat index)
-- Migrations in `/supabase/migrations/` (001–004)
+- Migrations in `/supabase/migrations/` (001–009). Notable: `005_template_library`, `006_no_kb_on_trigger`, `008_add_company_logo`, `009_add_n8n_credentials`
+- `companies` carries optional logo (Storage) and **encrypted** n8n credentials (see `/src/lib/encryption.ts`, `ENCRYPTION_KEY` env var)
 - Use `revalidatePath()` after mutations that affect UI
 
 ### Workflows & Document Processing
@@ -73,6 +76,19 @@ Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_compani
 - `knowledge_base` schema is n8n Supabase Vector Store compatible: `{id, content, metadata, embedding, doc_id, workflow_id}`
 - Document processing API: `/api/documents/process`
 - Supabase Storage bucket `workflow-documents` must be created manually
+- Trigger workflows: knowledge base is **optional** (toggleable per workflow, see migration 006). JSON params input is built via `trigger-params-builder.tsx`, and the n8n response is rendered through `dynamic-response.tsx`
+
+### Template Library
+
+Admin/manager-curated workflow templates surfaced under `/manage/templates`. Schema: `template_library` (migration 005) with a separate setup-guide field added in migration 007. Components: `template-library-{form,table,view}.tsx`. Server actions in `/src/server-actions/template-library.ts`.
+
+### Dashboard
+
+Role-aware dashboard at `/dashboard`. Stats and recent activity tables (`dashboard-stats.tsx`, `recent-chat-table.tsx`, `recent-trigger-table.tsx`) are powered by `/src/server-actions/dashboard.ts`. Types in `/src/types/dashboard.d.ts`.
+
+### Breadcrumbs
+
+Dynamic breadcrumbs use a context (`breadcrumb-context.tsx`) + per-page setter (`breadcrumb-setter.tsx`) so detail pages can show meaningful titles instead of UUIDs. When adding a new `[id]` route, render `<BreadcrumbSetter>` from the page so the resolved label flows into `dynamic-breadcrumb.tsx`.
 
 ### API Routes
 
@@ -82,6 +98,7 @@ Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_compani
 - `/api/logs/chat` — chat logging (Bearer auth, called by n8n)
 - `/api/knowledge-search` — vector search (Bearer auth, called by n8n)
 - `/api/users-export` — admin user export
+- Workflow Bearer-token validation lives in `/src/lib/api/validate-workflow-token.ts`
 
 ## Code Patterns
 
@@ -172,7 +189,9 @@ Helper exports in `user-table.tsx`: `getStatusBadge(status, t)` and `getRoleBadg
 - `pdf-parse` requires `require()` + unwrap default; also stub `DOMMatrix`, `ImageData`, `Path2D` before require (pdfjs-dist accesses them at load time)
 - Supabase FK joins with multiple FKs to same table: use separate queries, not `.select('table:fk_col(...)')`
 - Build fails without `.env.local` (env vars required at build time)
-- Demo users: admin@nextlaunchkit.com / user@nextlaunchkit.com
+- Demo users (seed): `admin@nextlaunchkit.com`, `manager@nextlaunchkit.com`, `user@nextlaunchkit.com`
+- n8n credentials on `companies` are encrypted with `ENCRYPTION_KEY` — rotating the key invalidates existing rows; decrypt + re-encrypt before changing it
+- App display name comes from `APP_NAME` in `/src/lib/constants.ts` (currently "AutoExec") — never hardcode the brand string
 
 ## Environment Variables
 
@@ -181,3 +200,4 @@ Required in `.env.local` (see `.env.example`):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_APP_URL`
 - `OPENAI_API_KEY` (for document embedding)
+- `ENCRYPTION_KEY` (for encrypting per-company n8n credentials)

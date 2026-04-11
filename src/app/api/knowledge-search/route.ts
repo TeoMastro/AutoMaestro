@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { validateWorkflowToken } from '@/lib/api/validate-workflow-token';
 import logger from '@/lib/logger';
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
   const { workflow, errorResponse } = await validateWorkflowToken(
     req,
     'api/knowledge-search',
-    'has_knowledge_base'
+    z.object({ has_knowledge_base: z.boolean() })
   );
   if (errorResponse) return errorResponse;
 

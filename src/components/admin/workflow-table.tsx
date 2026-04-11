@@ -26,6 +26,7 @@ import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
 import { InfoAlert } from '@/components/info-alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { N8nConnectionGuideDialog } from '@/components/admin/n8n-connection-guide-dialog';
 import { WorkflowTableProps } from '@/types/workflow';
 import { badgeStyles } from '@/lib/badge-styles';
 
@@ -129,10 +130,13 @@ export function WorkflowTable({
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-2xl">{t('workflows')}</CardTitle>
-          <Button onClick={() => router.push('/manage/workflows/create')}>
-            <Plus className="h-4 w-4" />
-            <span className="hidden md:block">{t('create')}</span>
-          </Button>
+          <div className="flex gap-2">
+            <N8nConnectionGuideDialog />
+            <Button onClick={() => router.push('/manage/workflows/create')}>
+              <Plus className="h-4 w-4" />
+              <span className="hidden md:block">{t('create')}</span>
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

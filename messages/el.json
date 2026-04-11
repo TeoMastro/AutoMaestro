@@ -375,6 +375,30 @@
     "recentTriggerRuns": "Πρόσφατες Εκτελέσεις Trigger",
     "noRecentChats": "Δεν υπάρχουν πρόσφατες συνεδρίες συνομιλίας",
     "noRecentTriggers": "Δεν υπάρχουν πρόσφατες εκτελέσεις trigger",
-    "noDataYet": "Δεν υπάρχουν ροές εργασίας ακόμα. Ξεκινήστε δημιουργώντας ή λαμβάνοντας ανάθεση μιας ροής εργασίας."
+    "noDataYet": "Δεν υπάρχουν ροές εργασίας ακόμα. Ξεκινήστε δημιουργώντας ή λαμβάνοντας ανάθεση μιας ροής εργασίας.",
+
+    "n8nConnectionGuide": "Οδηγός Σύνδεσης n8n",
+    "n8nConnectionGuideTitle": "Σύνδεση Ροών n8n",
+    "n8nConnectionGuideDescription": "Ακολουθήστε αυτές τις οδηγίες για να συνδέσετε τις ροές n8n σας με την πλατφόρμα.",
+    "n8nTriggerWorkflows": "Ροές Ενεργοποίησης (Trigger)",
+    "n8nWebhookAuthentication": "Πιστοποίηση Webhook",
+    "n8nTriggerAuthDescription": "Ρυθμίστε Header Auth στον κόμβο webhook του n8n για επικύρωση εισερχόμενων αιτημάτων.",
+    "n8nAuthType": "Τύπος Πιστοποίησης",
+    "n8nHeaderName": "Όνομα Header",
+    "n8nHeaderValue": "Τιμή Header",
+    "n8nTriggerTokenValue": "Χρησιμοποιήστε το UUID token της ροής ως τιμή. Αυτό το token αναγνωρίζει τη ροή στην εφαρμογή.",
+    "n8nSetFieldsNode": "Κόμβος Set Fields (Υποχρεωτικό)",
+    "n8nSetFieldsDescription": "Προσθέστε έναν κόμβο Set μετά τον Webhook για εξαγωγή των παραμέτρων ενεργοποίησης από το εισερχόμενο JSON body. Τα πεδία που ρυθμίζετε στην εφαρμογή θα είναι διαθέσιμα ως μεταβλητές μετά από αυτόν τον κόμβο.",
+    "n8nRespondNode": "Κόμβος Respond to Webhook (Καλή Πρακτική)",
+    "n8nRespondDescription": "Ολοκληρώστε τη ροή σας με έναν κόμβο Respond to Webhook για να επιστρέψετε σωστή απόκριση στον καλούντα.",
+    "n8nRespondPurpose": "Στέλνει μια δομημένη JSON απόκριση πίσω στην εφαρμογή μετά την επεξεργασία",
+    "n8nRespondType": "Τύπος Κόμβου",
+    "n8nRespondMode": "Λειτουργία Απόκρισης",
+    "n8nRespondCode": "Κωδικός HTTP Απόκρισης",
+    "n8nRespondTimeoutWarning": "Χωρίς αυτόν τον κόμβο, τα webhooks μπορεί να λήξουν πριν ολοκληρωθεί η επεξεργασία, προκαλώντας σφάλματα στην εφαρμογή.",
+    "n8nChatWorkflows": "Ροές Συνομιλίας (Chat)",
+    "n8nChatAuthDescription": "Όταν η ροή n8n κάνει κλήσεις ΠΡΟΣ αυτήν την εφαρμογή (π.χ. για καταγραφή ή αναζήτηση γνώσης), χρησιμοποιήστε πιστοποίηση Bearer Token με το API token της ροής.",
+    "n8nBearerToken": "Bearer Token",
+    "n8nChatTokenValue": "Χρησιμοποιήστε το API token της ροής ως bearer τιμή. Αυτό το token πιστοποιεί τη ροή."
   }
 }

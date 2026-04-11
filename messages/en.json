@@ -375,6 +375,30 @@
     "recentTriggerRuns": "Recent Trigger Runs",
     "noRecentChats": "No recent chat sessions",
     "noRecentTriggers": "No recent trigger runs",
-    "noDataYet": "No workflows yet. Get started by creating or getting assigned a workflow."
+    "noDataYet": "No workflows yet. Get started by creating or getting assigned a workflow.",
+
+    "n8nConnectionGuide": "How to Connect n8n",
+    "n8nConnectionGuideTitle": "Connecting n8n Workflows",
+    "n8nConnectionGuideDescription": "Follow these instructions to connect your n8n workflows to this platform.",
+    "n8nTriggerWorkflows": "Trigger Workflows",
+    "n8nWebhookAuthentication": "Webhook Authentication",
+    "n8nTriggerAuthDescription": "Configure Header Auth on your n8n webhook node to validate incoming requests.",
+    "n8nAuthType": "Auth Type",
+    "n8nHeaderName": "Header Name",
+    "n8nHeaderValue": "Header Value",
+    "n8nTriggerTokenValue": "Use the workflow UUID token as the value. This token identifies the workflow in the app.",
+    "n8nSetFieldsNode": "Set Fields Node (Required)",
+    "n8nSetFieldsDescription": "Add a Set node after your Webhook node to extract the trigger parameters from the incoming JSON body. The fields you configure in the app will be available as variables after this node.",
+    "n8nRespondNode": "Respond to Webhook Node (Best Practice)",
+    "n8nRespondDescription": "End your workflow with a Respond to Webhook node to return a proper response to the caller.",
+    "n8nRespondPurpose": "Sends a structured JSON response back to the app after processing",
+    "n8nRespondType": "Node Type",
+    "n8nRespondMode": "Response Mode",
+    "n8nRespondCode": "HTTP Response Code",
+    "n8nRespondTimeoutWarning": "Without this node, webhooks may timeout before processing completes, causing errors in the app.",
+    "n8nChatWorkflows": "Chat Workflows",
+    "n8nChatAuthDescription": "When your n8n workflow makes calls TO this app (e.g., for logging or knowledge search), use Bearer Token authentication with the workflow API token.",
+    "n8nBearerToken": "Bearer Token",
+    "n8nChatTokenValue": "Use the workflow API token as the bearer value. This token authenticates the workflow."
   }
 }

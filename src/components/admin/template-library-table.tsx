@@ -24,6 +24,7 @@ import { Pagination } from '@/components/layout/pagination';
 import { SortableTableHeader, SortField } from '@/components/layout/sortable-table-header';
 import { InfoAlert } from '@/components/info-alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { N8nConnectionGuideDialog } from '@/components/admin/n8n-connection-guide-dialog';
 import type { TemplateLibraryTableProps } from '@/types/template-library';
 
 export function TemplateLibraryTable({
@@ -104,12 +105,15 @@ export function TemplateLibraryTable({
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-2xl">{t('templateLibrary')}</CardTitle>
-          {isAdmin && (
-            <Button onClick={() => router.push('/manage/templates/create')}>
-              <Plus className="h-4 w-4" />
-              <span className="hidden md:block">{t('create')}</span>
-            </Button>
-          )}
+          <div className="flex gap-2">
+            <N8nConnectionGuideDialog />
+            {isAdmin && (
+              <Button onClick={() => router.push('/manage/templates/create')}>
+                <Plus className="h-4 w-4" />
+                <span className="hidden md:block">{t('create')}</span>
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -4,12 +4,7 @@ import { getSession } from '@/lib/auth-session';
 import { Role } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import type {
-  ChatSession,
-  ChatLogEntry,
-  GetChatSessionsParams,
-  GetChatSessionsResult,
-} from '@/types/chat-log';
+import type { ChatSession, ChatLogEntry, GetChatSessionsParams, GetChatSessionsResult } from '@/types/chat-log';
 
 async function checkAuth() {
   const session = await getSession();
@@ -26,10 +21,7 @@ async function getUserWorkflowIds(userId: string, companyId?: string): Promise<s
   const supabase = createAdminClient();
 
   // Get company IDs the user is assigned to
-  let companyQuery = supabase
-    .from('user_companies')
-    .select('company_id')
-    .eq('user_id', userId);
+  let companyQuery = supabase.from('user_companies').select('company_id').eq('user_id', userId);
 
   if (companyId) {
     companyQuery = companyQuery.eq('company_id', companyId);
@@ -56,9 +48,7 @@ async function getUserWorkflowIds(userId: string, companyId?: string): Promise<s
 // Fetch grouped chat sessions (admin sees all, users see own)
 // ============================================================
 
-export async function getChatSessionsWithPagination(
-  params: GetChatSessionsParams
-): Promise<GetChatSessionsResult> {
+export async function getChatSessionsWithPagination(params: GetChatSessionsParams): Promise<GetChatSessionsResult> {
   try {
     const session = await checkAuth();
     const isAdmin = session.user.role === Role.ADMIN;
@@ -160,11 +150,7 @@ export async function getChatSessionMessages(
     // Get workflow name from the first row
     let workflowName = '';
     if (rows.length > 0) {
-      const { data: wf } = await supabase
-        .from('workflows')
-        .select('name')
-        .eq('id', rows[0].workflow_id)
-        .single();
+      const { data: wf } = await supabase.from('workflows').select('name').eq('id', rows[0].workflow_id).single();
       workflowName = wf?.name || '';
     }
 
@@ -195,10 +181,7 @@ export async function getWorkflowsForFilter(companyId?: string): Promise<{ id: s
     const supabase = createAdminClient();
 
     if (isAdmin) {
-      let query = supabase
-        .from('workflows')
-        .select('id, name')
-        .eq('type', 'chat');
+      let query = supabase.from('workflows').select('id, name').eq('type', 'chat');
       if (companyId) {
         query = query.eq('company_id', companyId);
       }

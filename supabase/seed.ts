@@ -4,9 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !serviceRoleKey) {
-  console.error(
-    'Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment.'
-  );
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment.');
   process.exit(1);
 }
 
@@ -21,10 +19,7 @@ async function ensureProfile(userId: string, email: string, firstName: string, l
   // Upsert profile — handles both fresh creates and schema resets where auth.users survived
   const { error } = await supabase
     .from('profiles')
-    .upsert(
-      { id: userId, email, first_name: firstName, last_name: lastName, role },
-      { onConflict: 'id' }
-    );
+    .upsert({ id: userId, email, first_name: firstName, last_name: lastName, role }, { onConflict: 'id' });
   if (error) {
     console.error(`Error upserting profile for ${email}:`, error.message);
     return false;
@@ -36,16 +31,15 @@ async function seed() {
   console.log('Seeding database...');
 
   // --- Admin user ---
-  const { data: adminData, error: adminError } =
-    await supabase.auth.admin.createUser({
-      email: 'admin@nextlaunchkit.com',
-      password: 'demoadmin!1',
-      email_confirm: true,
-      user_metadata: {
-        first_name: 'Admin',
-        last_name: 'User',
-      },
-    });
+  const { data: adminData, error: adminError } = await supabase.auth.admin.createUser({
+    email: 'admin@nextlaunchkit.com',
+    password: 'demoadmin!1',
+    email_confirm: true,
+    user_metadata: {
+      first_name: 'Admin',
+      last_name: 'User',
+    },
+  });
 
   if (adminError && !adminError.message.includes('already')) {
     console.error('Error creating admin:', adminError.message);
@@ -65,16 +59,15 @@ async function seed() {
   }
 
   // --- Demo manager ---
-  const { data: managerData, error: managerError } =
-    await supabase.auth.admin.createUser({
-      email: 'manager@nextlaunchkit.com',
-      password: 'demomanager!1',
-      email_confirm: true,
-      user_metadata: {
-        first_name: 'Demo',
-        last_name: 'Manager',
-      },
-    });
+  const { data: managerData, error: managerError } = await supabase.auth.admin.createUser({
+    email: 'manager@nextlaunchkit.com',
+    password: 'demomanager!1',
+    email_confirm: true,
+    user_metadata: {
+      first_name: 'Demo',
+      last_name: 'Manager',
+    },
+  });
 
   if (managerError && !managerError.message.includes('already')) {
     console.error('Error creating manager:', managerError.message);
@@ -92,16 +85,15 @@ async function seed() {
   }
 
   // --- Demo client ---
-  const { data: userData, error: userError } =
-    await supabase.auth.admin.createUser({
-      email: 'user@nextlaunchkit.com',
-      password: 'demouser!1',
-      email_confirm: true,
-      user_metadata: {
-        first_name: 'Demo',
-        last_name: 'User',
-      },
-    });
+  const { data: userData, error: userError } = await supabase.auth.admin.createUser({
+    email: 'user@nextlaunchkit.com',
+    password: 'demouser!1',
+    email_confirm: true,
+    user_metadata: {
+      first_name: 'Demo',
+      last_name: 'User',
+    },
+  });
 
   if (userError && !userError.message.includes('already')) {
     console.error('Error creating user:', userError.message);

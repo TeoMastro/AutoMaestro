@@ -19,10 +19,7 @@ export async function POST(req: NextRequest) {
 
   if (!session_id || !human_message || !ai_response) {
     logger.error('api/logs/chat: missing required fields', { workflowId: workflow.id });
-    return NextResponse.json(
-      { error: 'session_id, human_message, and ai_response are required' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'session_id, human_message, and ai_response are required' }, { status: 400 });
   }
 
   const supabase = createAdminClient();

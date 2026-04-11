@@ -3,13 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-  SheetHeader,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 
 interface NavigationItem {
@@ -21,9 +15,7 @@ interface MobileNavigationProps {
   navigationItems: NavigationItem[];
 }
 
-export default function MobileNavigation({
-  navigationItems,
-}: MobileNavigationProps) {
+export default function MobileNavigation({ navigationItems }: MobileNavigationProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -39,11 +31,7 @@ export default function MobileNavigation({
           <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-4">
-          <Link
-            href="/"
-            className="flex items-center space-x-2 pb-4"
-            onClick={() => setOpen(false)}
-          ></Link>
+          <Link href="/" className="flex items-center space-x-2 pb-4" onClick={() => setOpen(false)}></Link>
           {navigationItems.map((item) => (
             <Link
               key={item.title}
@@ -54,10 +42,7 @@ export default function MobileNavigation({
               {item.title}
             </Link>
           ))}
-          <Button
-            asChild
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mx-5"
-          >
+          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 mx-5">
             <Link href="/auth/signin">Demo</Link>
           </Button>
         </nav>

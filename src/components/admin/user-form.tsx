@@ -6,13 +6,7 @@ import { createUserAction, updateUserAction } from '@/server-actions/user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserFormProps, UserFormState } from '@/types/user';
 import { Role, Status } from '@/lib/constants';
@@ -36,10 +30,7 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
     globalError: null,
   };
 
-  const actionWrapper = async (
-    prevState: UserFormState,
-    formData: FormData
-  ): Promise<UserFormState> => {
+  const actionWrapper = async (prevState: UserFormState, formData: FormData): Promise<UserFormState> => {
     if (mode === 'create') {
       return createUserAction(prevState, formData);
     } else {
@@ -58,15 +49,11 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>
-          {mode === 'create' ? t('createUser') : t('updateUser')}
-        </CardTitle>
+        <CardTitle>{mode === 'create' ? t('createUser') : t('updateUser')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={formAction} noValidate className="space-y-4">
-          {state.globalError && (
-            <InfoAlert message={t(state.globalError)} type="error" />
-          )}
+          {state.globalError && <InfoAlert message={t(state.globalError)} type="error" />}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -78,11 +65,7 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
                 className={state.errors.first_name ? 'border-red-500' : ''}
                 required
               />
-              {state.errors.first_name && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('first_name')}
-                </p>
-              )}
+              {state.errors.first_name && <p className="text-sm text-red-500">{getErrorMessage('first_name')}</p>}
             </div>
 
             <div className="space-y-2">
@@ -94,11 +77,7 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
                 className={state.errors.last_name ? 'border-red-500' : ''}
                 required
               />
-              {state.errors.last_name && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('last_name')}
-                </p>
-              )}
+              {state.errors.last_name && <p className="text-sm text-red-500">{getErrorMessage('last_name')}</p>}
             </div>
           </div>
 
@@ -112,18 +91,14 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
               className={state.errors.email ? 'border-red-500' : ''}
               required
             />
-            {state.errors.email && (
-              <p className="text-sm text-red-500">{getErrorMessage('email')}</p>
-            )}
+            {state.errors.email && <p className="text-sm text-red-500">{getErrorMessage('email')}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="password">
               {t('password')}
               {mode === 'update' && (
-                <span className="text-sm text-muted-foreground ml-2">
-                  ({t('leaveEmptyToKeepCurrent')})
-                </span>
+                <span className="text-sm text-muted-foreground ml-2">({t('leaveEmptyToKeepCurrent')})</span>
               )}
             </Label>
             <Input
@@ -133,11 +108,7 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
               className={state.errors.password ? 'border-red-500' : ''}
               required={mode === 'create'}
             />
-            {state.errors.password && (
-              <p className="text-sm text-red-500">
-                {getErrorMessage('password')}
-              </p>
-            )}
+            {state.errors.password && <p className="text-sm text-red-500">{getErrorMessage('password')}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -160,11 +131,7 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
                   </SelectContent>
                 </Select>
               )}
-              {state.errors.role && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('role')}
-                </p>
-              )}
+              {state.errors.role && <p className="text-sm text-red-500">{getErrorMessage('role')}</p>}
             </div>
 
             <div className="space-y-2">
@@ -175,19 +142,11 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ACTIVE">{t('activeStatus')}</SelectItem>
-                  <SelectItem value="INACTIVE">
-                    {t('inactiveStatus')}
-                  </SelectItem>
-                  <SelectItem value="UNVERIFIED">
-                    {t('unverifiedStatus')}
-                  </SelectItem>
+                  <SelectItem value="INACTIVE">{t('inactiveStatus')}</SelectItem>
+                  <SelectItem value="UNVERIFIED">{t('unverifiedStatus')}</SelectItem>
                 </SelectContent>
               </Select>
-              {state.errors.status && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('status')}
-                </p>
-              )}
+              {state.errors.status && <p className="text-sm text-red-500">{getErrorMessage('status')}</p>}
             </div>
           </div>
 
@@ -200,31 +159,21 @@ export function UserForm({ user, mode, callerRole, companies, preselectedCompany
                 </SelectTrigger>
                 <SelectContent>
                   {companies.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {state.errors.company_id && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('company_id')}
-                </p>
-              )}
+              {state.errors.company_id && <p className="text-sm text-red-500">{getErrorMessage('company_id')}</p>}
             </div>
           )}
 
           <div className="flex gap-4">
             <Button type="submit" disabled={isPending}>
-              {isPending
-                ? t('saving')
-                : mode === 'create'
-                  ? t('create')
-                  : t('update')}
+              {isPending ? t('saving') : mode === 'create' ? t('create') : t('update')}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.history.back()}
-            >
+            <Button type="button" variant="outline" onClick={() => window.history.back()}>
               {t('cancel')}
             </Button>
           </div>

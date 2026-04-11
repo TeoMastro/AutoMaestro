@@ -3,11 +3,7 @@ import { AppSidebar } from '@/components/layout/sidebar';
 import { DynamicBreadcrumb } from '@/components/layout/dynamic-breadcrumb';
 import { BreadcrumbProvider } from '@/components/layout/breadcrumb-context';
 
-export default function SidebarLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <BreadcrumbProvider>

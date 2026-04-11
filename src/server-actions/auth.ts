@@ -4,19 +4,11 @@ import { redirect } from 'next/navigation';
 import { getServerTranslation } from '@/lib/server-translations';
 import { ForgotPasswordState, ValidationState } from '@/types/auth';
 import { SignupFormState } from '@/types/auth';
-import {
-  signinSchema,
-  formatZodErrors,
-  signupSchema,
-  forgotPasswordSchema,
-} from '@/lib/validation-schemas';
+import { signinSchema, formatZodErrors, signupSchema, forgotPasswordSchema } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
-export async function validateSigninData(
-  prevState: ValidationState,
-  formData: FormData
-): Promise<ValidationState> {
+export async function validateSigninData(prevState: ValidationState, formData: FormData): Promise<ValidationState> {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -42,10 +34,7 @@ export async function validateSigninData(
   };
 }
 
-export async function signUpAction(
-  prevState: SignupFormState,
-  formData: FormData
-): Promise<SignupFormState> {
+export async function signUpAction(prevState: SignupFormState, formData: FormData): Promise<SignupFormState> {
   const data = {
     first_name: formData.get('first_name')?.toString() ?? '',
     last_name: formData.get('last_name')?.toString() ?? '',
@@ -86,10 +75,7 @@ export async function signUpAction(
     });
 
     if (error) {
-      if (
-        error.message.includes('already registered') ||
-        error.message.includes('already exists')
-      ) {
+      if (error.message.includes('already registered') || error.message.includes('already exists')) {
         return {
           success: false,
           errors: {},
@@ -138,10 +124,7 @@ export async function signUpAction(
     };
   }
 
-  const successMessage = await getServerTranslation(
-    'app',
-    'accountCreatedCheckEmail'
-  );
+  const successMessage = await getServerTranslation('app', 'accountCreatedCheckEmail');
   redirect('/auth/signin?message=' + encodeURIComponent(successMessage));
 }
 

@@ -37,20 +37,13 @@ export function UserView({ user }: UserViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push('/admin/user')}
-          >
+          <Button variant="outline" size="sm" onClick={() => router.push('/admin/user')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold">{t('viewUser')}</h1>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => router.push(`/admin/user/${user.id}/update`)}
-          >
+          <Button variant="outline" onClick={() => router.push(`/admin/user/${user.id}/update`)}>
             <Edit className="h-4 w-4" />
           </Button>
           <AlertDialog>
@@ -77,11 +70,7 @@ export function UserView({ user }: UserViewProps) {
                       await deleteUserAction(user.id);
                       router.push(`/admin/user?message=userDeletedSuccess`);
                     } catch (error) {
-                      setDeleteError(
-                        error instanceof Error
-                          ? t(error.message)
-                          : t('unexpectedError')
-                      );
+                      setDeleteError(error instanceof Error ? t(error.message) : t('unexpectedError'));
                     }
                   }}
                 >
@@ -103,16 +92,12 @@ export function UserView({ user }: UserViewProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('userId')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('userId')}</label>
                 <p className="text-lg font-mono">#{user.id}</p>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('fullName')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('fullName')}</label>
                 <p className="text-lg">
                   {user.first_name} {user.last_name}
                 </p>
@@ -134,10 +119,7 @@ export function UserView({ user }: UserViewProps) {
                   <span>{t('role')}</span>
                 </label>
                 <div className="mt-1">
-                  <Badge
-                    variant="outline"
-                    className={`text-sm ${getRoleBadgeClass(user.role)}`}
-                  >
+                  <Badge variant="outline" className={`text-sm ${getRoleBadgeClass(user.role)}`}>
                     {user.role === 'ADMIN'
                       ? t('adminRole')
                       : user.role === 'MANAGER'
@@ -148,9 +130,7 @@ export function UserView({ user }: UserViewProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('status')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('status')}</label>
                 <div className="mt-1">
                   <Badge variant="outline" className={`text-sm ${statusBadge.className}`}>
                     {statusBadge.text}
@@ -169,9 +149,7 @@ export function UserView({ user }: UserViewProps) {
                 <Calendar className="h-4 w-4" />
                 <span>{t('createdAt')}</span>
               </label>
-              <p className="text-sm text-muted-foreground mt-1">
-                {new Date(user.createdAt).toLocaleString()}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">{new Date(user.createdAt).toLocaleString()}</p>
             </div>
 
             <div>
@@ -179,9 +157,7 @@ export function UserView({ user }: UserViewProps) {
                 <Calendar className="h-4 w-4" />
                 <span>{t('updatedAt')}</span>
               </label>
-              <p className="text-sm text-muted-foreground mt-1">
-                {new Date(user.updatedAt).toLocaleString()}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">{new Date(user.updatedAt).toLocaleString()}</p>
             </div>
           </div>
         </CardContent>

@@ -11,14 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,7 +64,10 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
 
     const interval = setInterval(async () => {
       const res = await fetch(`/api/documents/status?id=${documentId}`);
-      if (!res.ok) { clearInterval(interval); return; }
+      if (!res.ok) {
+        clearInterval(interval);
+        return;
+      }
 
       const data = (await res.json()) as { status: string };
       if (data.status === 'ready' || data.status === 'error') {
@@ -86,107 +82,110 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
     }, 3000);
   };
 
-  const handleFiles = useCallback(async (files: File[]) => {
-    if (files.length === 0) return;
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return;
 
-    if (files.length > MAX_UPLOAD_FILES) {
-      setAlert({ message: t('tooManyFiles', { max: MAX_UPLOAD_FILES }), type: 'error' });
-      return;
-    }
-
-    // Client-side validation: filter valid files and collect skipped ones
-    const validFiles: File[] = [];
-    const skippedNames: string[] = [];
-
-    for (const file of files) {
-      const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-      if (!SUPPORTED_FILE_TYPES.includes(ext as (typeof SUPPORTED_FILE_TYPES)[number])) {
-        skippedNames.push(`${file.name} (${t('unsupportedFileType')})`);
-        continue;
+      if (files.length > MAX_UPLOAD_FILES) {
+        setAlert({ message: t('tooManyFiles', { max: MAX_UPLOAD_FILES }), type: 'error' });
+        return;
       }
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        skippedNames.push(`${file.name} (${t('fileTooLarge')})`);
-        continue;
-      }
-      validFiles.push(file);
-    }
 
-    if (validFiles.length === 0) {
-      setAlert({ message: skippedNames.join(', '), type: 'error' });
-      return;
-    }
+      // Client-side validation: filter valid files and collect skipped ones
+      const validFiles: File[] = [];
+      const skippedNames: string[] = [];
 
-    setUploading(true);
-    setAlert(null);
-    setUploadProgress({ current: 0, total: validFiles.length });
-
-    let successCount = 0;
-    const failedNames: string[] = [];
-
-    for (let i = 0; i < validFiles.length; i++) {
-      const file = validFiles[i];
-      setUploadProgress({ current: i + 1, total: validFiles.length });
-
-      try {
-        // Step 1: Create document record + get signed URL
-        const formData = new FormData();
-        formData.append('workflow_id', workflowId);
-        formData.append('file_name', file.name);
-        formData.append('file_size', String(file.size));
-        formData.append('file_type', file.type);
-
-        const result = await initiateDocumentUploadAction(
-          { success: false, errors: {}, formData: { workflow_id: workflowId }, globalError: null },
-          formData
-        );
-
-        if (!result.success || !result.documentId || !result.signedUploadUrl) {
-          failedNames.push(file.name);
+      for (const file of files) {
+        const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+        if (!SUPPORTED_FILE_TYPES.includes(ext as (typeof SUPPORTED_FILE_TYPES)[number])) {
+          skippedNames.push(`${file.name} (${t('unsupportedFileType')})`);
           continue;
         }
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          skippedNames.push(`${file.name} (${t('fileTooLarge')})`);
+          continue;
+        }
+        validFiles.push(file);
+      }
 
-        // Step 2: Upload directly to Supabase Storage
-        const uploadRes = await fetch(result.signedUploadUrl, {
-          method: 'PUT',
-          body: file,
-          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      if (validFiles.length === 0) {
+        setAlert({ message: skippedNames.join(', '), type: 'error' });
+        return;
+      }
+
+      setUploading(true);
+      setAlert(null);
+      setUploadProgress({ current: 0, total: validFiles.length });
+
+      let successCount = 0;
+      const failedNames: string[] = [];
+
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        setUploadProgress({ current: i + 1, total: validFiles.length });
+
+        try {
+          // Step 1: Create document record + get signed URL
+          const formData = new FormData();
+          formData.append('workflow_id', workflowId);
+          formData.append('file_name', file.name);
+          formData.append('file_size', String(file.size));
+          formData.append('file_type', file.type);
+
+          const result = await initiateDocumentUploadAction(
+            { success: false, errors: {}, formData: { workflow_id: workflowId }, globalError: null },
+            formData
+          );
+
+          if (!result.success || !result.documentId || !result.signedUploadUrl) {
+            failedNames.push(file.name);
+            continue;
+          }
+
+          // Step 2: Upload directly to Supabase Storage
+          const uploadRes = await fetch(result.signedUploadUrl, {
+            method: 'PUT',
+            body: file,
+            headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          });
+
+          if (!uploadRes.ok) {
+            failedNames.push(file.name);
+            continue;
+          }
+
+          // Step 3: Trigger processing
+          await triggerDocumentProcessingAction(result.documentId);
+
+          // Step 4: Start polling
+          startPolling(result.documentId);
+          successCount++;
+        } catch {
+          failedNames.push(file.name);
+        }
+      }
+
+      // Build result message
+      if (failedNames.length > 0 && successCount > 0) {
+        setAlert({
+          message: `${failedNames.join(', ')} ${t('uploadFailed')}. ${t('uploadSuccessCount', { count: successCount })}`,
+          type: 'error',
         });
-
-        if (!uploadRes.ok) {
-          failedNames.push(file.name);
-          continue;
-        }
-
-        // Step 3: Trigger processing
-        await triggerDocumentProcessingAction(result.documentId);
-
-        // Step 4: Start polling
-        startPolling(result.documentId);
-        successCount++;
-      } catch {
-        failedNames.push(file.name);
+      } else if (failedNames.length > 0) {
+        setAlert({ message: `${failedNames.join(', ')} ${t('uploadFailed')}`, type: 'error' });
+      } else if (skippedNames.length > 0) {
+        setAlert({
+          message: t('uploadPartialSuccess', { success: successCount, failed: skippedNames.length }),
+          type: 'success',
+        });
       }
-    }
 
-    // Build result message
-    if (failedNames.length > 0 && successCount > 0) {
-      setAlert({
-        message: `${failedNames.join(', ')} ${t('uploadFailed')}. ${t('uploadSuccessCount', { count: successCount })}`,
-        type: 'error',
-      });
-    } else if (failedNames.length > 0) {
-      setAlert({ message: `${failedNames.join(', ')} ${t('uploadFailed')}`, type: 'error' });
-    } else if (skippedNames.length > 0) {
-      setAlert({
-        message: t('uploadPartialSuccess', { success: successCount, failed: skippedNames.length }),
-        type: 'success',
-      });
-    }
-
-    router.refresh();
-    setUploading(false);
-    setUploadProgress(null);
-  }, [workflowId, t, router, startPolling]);
+      router.refresh();
+      setUploading(false);
+      setUploadProgress(null);
+    },
+    [workflowId, t, router, startPolling]
+  );
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
@@ -208,14 +207,17 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-    if (uploading || isPending) return;
-    const files = Array.from(e.dataTransfer.files);
-    await handleFiles(files);
-  }, [uploading, isPending, handleFiles]);
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragOver(false);
+      if (uploading || isPending) return;
+      const files = Array.from(e.dataTransfer.files);
+      await handleFiles(files);
+    },
+    [uploading, isPending, handleFiles]
+  );
 
   const handleDelete = (documentId: string) => {
     startTransition(async () => {
@@ -249,11 +251,10 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
           className={`
             relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
             transition-colors duration-200
-            ${isDragOver
-              ? 'border-primary bg-primary/5'
-              : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+            ${
+              isDragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-muted-foreground/50'
             }
-            ${(uploading || isPending) ? 'opacity-50 cursor-not-allowed' : ''}
+            ${uploading || isPending ? 'opacity-50 cursor-not-allowed' : ''}
           `}
         >
           <input
@@ -270,9 +271,7 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
               ? t('uploadingProgress', { current: uploadProgress.current, total: uploadProgress.total })
               : t('dropFilesHere')}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {t('uploadDocumentsHint')}
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">{t('uploadDocumentsHint')}</p>
         </div>
 
         {/* Documents list */}
@@ -301,7 +300,11 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={STATUS_STYLE[doc.status]}>
-                      {t(`documentStatus${doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}` as Parameters<typeof t>[0])}
+                      {t(
+                        `documentStatus${doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}` as Parameters<
+                          typeof t
+                        >[0]
+                      )}
                     </Badge>
                     {pollingIds.has(doc.id) && (
                       <span className="ml-1 text-xs text-muted-foreground animate-pulse">…</span>

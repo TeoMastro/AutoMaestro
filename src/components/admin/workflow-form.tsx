@@ -2,29 +2,16 @@
 
 import { useState, useActionState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  createWorkflowAction,
-  updateWorkflowAction,
-} from '@/server-actions/workflow';
+import { createWorkflowAction, updateWorkflowAction } from '@/server-actions/workflow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
 import { TriggerParamsBuilder } from '@/components/admin/trigger-params-builder';
-import {
-  WorkflowFormProps,
-  WorkflowFormState,
-  WorkflowParam,
-} from '@/types/workflow';
+import { WorkflowFormProps, WorkflowFormState, WorkflowParam } from '@/types/workflow';
 import { WorkflowType } from '@/lib/constants';
 
 function parseParams(json: string): WorkflowParam[] {
@@ -39,9 +26,7 @@ function parseParams(json: string): WorkflowParam[] {
 
 export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
   const t = useTranslations('app');
-  const [selectedType, setSelectedType] = useState<string>(
-    workflow?.type ?? WorkflowType.CHAT
-  );
+  const [selectedType, setSelectedType] = useState<string>(workflow?.type ?? WorkflowType.CHAT);
 
   const initialState: WorkflowFormState = {
     success: false,
@@ -54,27 +39,19 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
       webhook_url: workflow?.webhookUrl ?? '',
       has_knowledge_base: workflow?.hasKnowledgeBase ?? false,
       is_active: workflow?.isActive ?? true,
-      params_json: workflow?.config?.params?.length
-        ? JSON.stringify(workflow.config.params, null, 2)
-        : '',
+      params_json: workflow?.config?.params?.length ? JSON.stringify(workflow.config.params, null, 2) : '',
     },
     globalError: null,
   };
 
-  const actionWrapper = async (
-    prevState: WorkflowFormState,
-    formData: FormData
-  ): Promise<WorkflowFormState> => {
+  const actionWrapper = async (prevState: WorkflowFormState, formData: FormData): Promise<WorkflowFormState> => {
     if (mode === 'create') {
       return createWorkflowAction(prevState, formData);
     }
     return updateWorkflowAction(workflow!.id, prevState, formData);
   };
 
-  const [state, formAction, isPending] = useActionState(
-    actionWrapper,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(actionWrapper, initialState);
 
   const err = (field: string) => {
     const errs = state.errors[field];
@@ -84,22 +61,16 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>
-          {mode === 'create' ? t('createWorkflow') : t('updateWorkflow')}
-        </CardTitle>
+        <CardTitle>{mode === 'create' ? t('createWorkflow') : t('updateWorkflow')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={formAction} noValidate className="space-y-4">
-          {state.globalError && (
-            <InfoAlert message={t(state.globalError)} type="error" />
-          )}
+          {state.globalError && <InfoAlert message={t(state.globalError)} type="error" />}
 
           <div className="space-y-2">
             <Label htmlFor="company_id">{t('company')}</Label>
             <Select name="company_id" defaultValue={state.formData.company_id}>
-              <SelectTrigger
-                className={state.errors.company_id ? 'border-red-500' : ''}
-              >
+              <SelectTrigger className={state.errors.company_id ? 'border-red-500' : ''}>
                 <SelectValue placeholder={t('selectCompany')} />
               </SelectTrigger>
               <SelectContent>
@@ -110,9 +81,7 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
                 ))}
               </SelectContent>
             </Select>
-            {err('company_id') && (
-              <p className="text-sm text-red-500">{err('company_id')}</p>
-            )}
+            {err('company_id') && <p className="text-sm text-red-500">{err('company_id')}</p>}
           </div>
 
           <div className="space-y-2">
@@ -124,19 +93,12 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
               className={state.errors.name ? 'border-red-500' : ''}
               required
             />
-            {err('name') && (
-              <p className="text-sm text-red-500">{err('name')}</p>
-            )}
+            {err('name') && <p className="text-sm text-red-500">{err('name')}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">{t('description')}</Label>
-            <Textarea
-              id="description"
-              name="description"
-              defaultValue={state.formData.description}
-              rows={2}
-            />
+            <Textarea id="description" name="description" defaultValue={state.formData.description} rows={2} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -149,12 +111,8 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="chat">
-                      {t('workflowTypeChat')}
-                    </SelectItem>
-                    <SelectItem value="trigger">
-                      {t('workflowTypeTrigger')}
-                    </SelectItem>
+                    <SelectItem value="chat">{t('workflowTypeChat')}</SelectItem>
+                    <SelectItem value="trigger">{t('workflowTypeTrigger')}</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
@@ -163,12 +121,8 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="chat">
-                      {t('workflowTypeChat')}
-                    </SelectItem>
-                    <SelectItem value="trigger">
-                      {t('workflowTypeTrigger')}
-                    </SelectItem>
+                    <SelectItem value="chat">{t('workflowTypeChat')}</SelectItem>
+                    <SelectItem value="trigger">{t('workflowTypeTrigger')}</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -176,10 +130,7 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="is_active">{t('status')}</Label>
-              <Select
-                name="is_active"
-                defaultValue={state.formData.is_active ? 'on' : 'off'}
-              >
+              <Select name="is_active" defaultValue={state.formData.is_active ? 'on' : 'off'}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -202,9 +153,7 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
               placeholder="https://your-n8n-instance.com/webhook/..."
               required
             />
-            {err('webhook_url') && (
-              <p className="text-sm text-red-500">{err('webhook_url')}</p>
-            )}
+            {err('webhook_url') && <p className="text-sm text-red-500">{err('webhook_url')}</p>}
           </div>
 
           {selectedType === 'chat' && (
@@ -217,9 +166,7 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
                 defaultChecked={state.formData.has_knowledge_base}
                 className="h-4 w-4"
               />
-              <Label htmlFor="has_knowledge_base">
-                {t('workflowHasKnowledgeBase')}
-              </Label>
+              <Label htmlFor="has_knowledge_base">{t('workflowHasKnowledgeBase')}</Label>
             </div>
           )}
 
@@ -233,17 +180,9 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
 
           <div className="flex gap-4">
             <Button type="submit" disabled={isPending}>
-              {isPending
-                ? t('saving')
-                : mode === 'create'
-                  ? t('create')
-                  : t('update')}
+              {isPending ? t('saving') : mode === 'create' ? t('create') : t('update')}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.history.back()}
-            >
+            <Button type="button" variant="outline" onClick={() => window.history.back()}>
               {t('cancel')}
             </Button>
           </div>

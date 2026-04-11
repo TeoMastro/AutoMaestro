@@ -98,10 +98,7 @@ export function DynamicBreadcrumb() {
 
           // If admin is in the first segment of our pathname, use it in the actual url.
           if (adminIndex !== -1) {
-            const segmentsForHref = allSegments.slice(
-              0,
-              allSegments.indexOf(segment) + 1
-            );
+            const segmentsForHref = allSegments.slice(0, allSegments.indexOf(segment) + 1);
             href = '/' + segmentsForHref.join('/');
           } else {
             href = '/' + pathSegments.slice(0, index + 1).join('/');

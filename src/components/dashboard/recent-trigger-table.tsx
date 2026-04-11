@@ -3,14 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { badgeStyles } from '@/lib/badge-styles';
@@ -36,11 +29,7 @@ function formatDuration(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
-export function RecentTriggerTable({
-  triggers,
-}: {
-  triggers: RecentTriggerRun[];
-}) {
+export function RecentTriggerTable({ triggers }: { triggers: RecentTriggerRun[] }) {
   const t = useTranslations('app');
   const router = useRouter();
 
@@ -54,9 +43,7 @@ export function RecentTriggerTable({
       </CardHeader>
       <CardContent>
         {triggers.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            {t('noRecentTriggers')}
-          </p>
+          <p className="text-muted-foreground text-sm">{t('noRecentTriggers')}</p>
         ) : (
           <Table>
             <TableHeader>
@@ -73,32 +60,17 @@ export function RecentTriggerTable({
                 <TableRow key={tr.id}>
                   <TableCell>{tr.workflowName}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        tr.status === 'success'
-                          ? badgeStyles.green
-                          : badgeStyles.red
-                      }
-                    >
+                    <Badge variant="outline" className={tr.status === 'success' ? badgeStyles.green : badgeStyles.red}>
                       {tr.status === 'success' ? t('success') : t('error')}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-xs">
-                    {formatDuration(tr.durationMs)}
-                  </TableCell>
+                  <TableCell className="text-muted-foreground text-xs">{formatDuration(tr.durationMs)}</TableCell>
                   <TableCell className="text-muted-foreground text-xs">
                     {formatRelativeTime(new Date(tr.createdAt))}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(`/trigger-history/${tr.id}`)
-                        }
-                      >
+                      <Button variant="outline" size="sm" onClick={() => router.push(`/trigger-history/${tr.id}`)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </div>

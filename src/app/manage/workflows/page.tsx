@@ -9,16 +9,15 @@ import { Role } from '@/lib/constants';
 export default async function ManageWorkflowsPage({ searchParams }: AdminWorkflowPageProps) {
   const session = await getSession();
 
-  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 
   const params = await searchParams;
-  const [{ workflows, totalCount, totalPages, currentPage, limit }, companies] =
-    await Promise.all([
-      getWorkflowsWithPagination(params),
-      getAllCompanies(),
-    ]);
+  const [{ workflows, totalCount, totalPages, currentPage, limit }, companies] = await Promise.all([
+    getWorkflowsWithPagination(params),
+    getAllCompanies(),
+  ]);
 
   return (
     <div className="container mx-auto py-6">

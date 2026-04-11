@@ -18,13 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
 
-export function CompanyDeleteButton({
-  companyId,
-  companyName,
-}: {
-  companyId: string;
-  companyName: string;
-}) {
+export function CompanyDeleteButton({ companyId, companyName }: { companyId: string; companyName: string }) {
   const router = useRouter();
   const t = useTranslations('app');
   const [isPending, startTransition] = useTransition();
@@ -51,9 +45,7 @@ export function CompanyDeleteButton({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('deleteCompanyConfirmation', { name: companyName })}
-          </AlertDialogDescription>
+          <AlertDialogDescription>{t('deleteCompanyConfirmation', { name: companyName })}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>

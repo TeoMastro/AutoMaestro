@@ -3,11 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { Role } from '@/lib/constants';
-import {
-  checkAdminOrManagerAuth,
-  getManagerCompanyIds,
-  checkManagerCompanyAccess,
-} from '@/lib/auth-helpers';
+import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
 import {
   createCompanySchema,
   updateCompanySchema,
@@ -27,12 +23,7 @@ import type {
 
 const LOGO_BUCKET = 'company-logos';
 const MAX_LOGO_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
-const ALLOWED_LOGO_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/svg+xml',
-  'image/webp',
-] as const;
+const ALLOWED_LOGO_TYPES = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] as const;
 
 function mapCompany(c: Record<string, unknown>): Company {
   const encryptedPassword = (c.n8n_instance_password as string | null) ?? null;
@@ -62,10 +53,7 @@ function mapCompany(c: Record<string, unknown>): Company {
 // Admin / Manager: CRUD
 // ============================================================
 
-export async function createCompanyAction(
-  prevState: CompanyFormState,
-  formData: FormData
-): Promise<CompanyFormState> {
+export async function createCompanyAction(prevState: CompanyFormState, formData: FormData): Promise<CompanyFormState> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -221,10 +209,7 @@ export async function deleteCompanyAction(companyId: string) {
     }
 
     const supabase = createAdminClient();
-    const { error } = await supabase
-      .from('companies')
-      .delete()
-      .eq('id', companyId);
+    const { error } = await supabase.from('companies').delete().eq('id', companyId);
 
     if (error) throw error;
 
@@ -305,10 +290,7 @@ export async function assignUserToCompanyAction(
   }
 }
 
-export async function unassignUserFromCompanyAction(
-  userId: string,
-  companyId: string
-) {
+export async function unassignUserFromCompanyAction(userId: string, companyId: string) {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -322,11 +304,7 @@ export async function unassignUserFromCompanyAction(
     }
 
     const supabase = createAdminClient();
-    const { error } = await supabase
-      .from('user_companies')
-      .delete()
-      .eq('user_id', userId)
-      .eq('company_id', companyId);
+    const { error } = await supabase.from('user_companies').delete().eq('user_id', userId).eq('company_id', companyId);
 
     if (error) throw error;
 
@@ -344,9 +322,7 @@ export async function unassignUserFromCompanyAction(
 // Admin / Manager: Data fetches
 // ============================================================
 
-export async function getCompanyById(
-  companyId: string
-): Promise<Company | false> {
+export async function getCompanyById(companyId: string): Promise<Company | false> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -355,11 +331,7 @@ export async function getCompanyById(
     }
 
     const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*')
-      .eq('id', companyId)
-      .single();
+    const { data, error } = await supabase.from('companies').select('*').eq('id', companyId).single();
 
     if (error || !data) return false;
     return mapCompany(data as Record<string, unknown>);
@@ -369,9 +341,7 @@ export async function getCompanyById(
   }
 }
 
-export async function getCompaniesWithPagination(
-  params: GetCompaniesParams
-): Promise<GetCompaniesResult> {
+export async function getCompaniesWithPagination(params: GetCompaniesParams): Promise<GetCompaniesResult> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -405,12 +375,7 @@ export async function getCompaniesWithPagination(
       query = query.or(`name.ilike.%${safe}%,note.ilike.%${safe}%`);
     }
 
-    const dbSort =
-      sortField === 'createdAt'
-        ? 'created_at'
-        : sortField === 'updatedAt'
-          ? 'updated_at'
-          : sortField;
+    const dbSort = sortField === 'createdAt' ? 'created_at' : sortField === 'updatedAt' ? 'updated_at' : sortField;
 
     query = query.order(dbSort, { ascending: sortDirection === 'asc' });
     query = query.range(offset, offset + limit - 1);
@@ -418,9 +383,7 @@ export async function getCompaniesWithPagination(
     const { data, count, error } = await query;
     if (error) throw error;
 
-    const companies = (data || []).map((c) =>
-      mapCompany(c as Record<string, unknown>)
-    );
+    const companies = (data || []).map((c) => mapCompany(c as Record<string, unknown>));
     const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
@@ -433,9 +396,7 @@ export async function getCompaniesWithPagination(
   }
 }
 
-export async function getAllCompanies(): Promise<
-  { id: string; name: string }[]
-> {
+export async function getAllCompanies(): Promise<{ id: string; name: string }[]> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -551,11 +512,7 @@ export async function uploadCompanyLogoAction(
     }
 
     const mimeType = file.type.toLowerCase();
-    if (
-      !ALLOWED_LOGO_TYPES.includes(
-        mimeType as (typeof ALLOWED_LOGO_TYPES)[number]
-      )
-    ) {
+    if (!ALLOWED_LOGO_TYPES.includes(mimeType as (typeof ALLOWED_LOGO_TYPES)[number])) {
       return { success: false, error: 'logoInvalidType' };
     }
 
@@ -572,19 +529,15 @@ export async function uploadCompanyLogoAction(
       .single();
 
     if (existing?.logo_storage_path) {
-      await supabase.storage
-        .from(LOGO_BUCKET)
-        .remove([existing.logo_storage_path]);
+      await supabase.storage.from(LOGO_BUCKET).remove([existing.logo_storage_path]);
     }
 
     // Upload file directly server-side
     const buffer = Buffer.from(await file.arrayBuffer());
-    const { error: uploadError } = await supabase.storage
-      .from(LOGO_BUCKET)
-      .upload(storagePath, buffer, {
-        contentType: mimeType,
-        upsert: true,
-      });
+    const { error: uploadError } = await supabase.storage.from(LOGO_BUCKET).upload(storagePath, buffer, {
+      contentType: mimeType,
+      upsert: true,
+    });
 
     if (uploadError) throw uploadError;
 
@@ -597,9 +550,7 @@ export async function uploadCompanyLogoAction(
     if (updateError) throw updateError;
 
     // Get signed URL to return to client
-    const { data: urlData } = await supabase.storage
-      .from(LOGO_BUCKET)
-      .createSignedUrl(storagePath, 3600);
+    const { data: urlData } = await supabase.storage.from(LOGO_BUCKET).createSignedUrl(storagePath, 3600);
 
     logger.info('Company logo uploaded', { companyId, storagePath });
     revalidatePath('/manage/companies');
@@ -614,9 +565,7 @@ export async function uploadCompanyLogoAction(
   }
 }
 
-export async function deleteCompanyLogoAction(
-  companyId: string
-): Promise<{ success: boolean; error?: string }> {
+export async function deleteCompanyLogoAction(companyId: string): Promise<{ success: boolean; error?: string }> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -633,15 +582,10 @@ export async function deleteCompanyLogoAction(
       .single();
 
     if (existing?.logo_storage_path) {
-      await supabase.storage
-        .from(LOGO_BUCKET)
-        .remove([existing.logo_storage_path]);
+      await supabase.storage.from(LOGO_BUCKET).remove([existing.logo_storage_path]);
     }
 
-    const { error } = await supabase
-      .from('companies')
-      .update({ logo_storage_path: null })
-      .eq('id', companyId);
+    const { error } = await supabase.from('companies').update({ logo_storage_path: null }).eq('id', companyId);
 
     if (error) throw error;
 
@@ -658,23 +602,15 @@ export async function deleteCompanyLogoAction(
   }
 }
 
-export async function getCompanyLogoSignedUrl(
-  companyId: string
-): Promise<string | null> {
+export async function getCompanyLogoSignedUrl(companyId: string): Promise<string | null> {
   try {
     const supabase = createAdminClient();
 
-    const { data, error } = await supabase
-      .from('companies')
-      .select('logo_storage_path')
-      .eq('id', companyId)
-      .single();
+    const { data, error } = await supabase.from('companies').select('logo_storage_path').eq('id', companyId).single();
 
     if (error || !data?.logo_storage_path) return null;
 
-    const { data: urlData } = await supabase.storage
-      .from(LOGO_BUCKET)
-      .createSignedUrl(data.logo_storage_path, 3600);
+    const { data: urlData } = await supabase.storage.from(LOGO_BUCKET).createSignedUrl(data.logo_storage_path, 3600);
 
     return urlData?.signedUrl ?? null;
   } catch {

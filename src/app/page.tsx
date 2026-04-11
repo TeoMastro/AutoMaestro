@@ -1,12 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -58,13 +52,9 @@ export default function MarketingPage() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded bg-primary">
-              <span className="text-sm font-bold text-primary-foreground">
-                NL
-              </span>
+              <span className="text-sm font-bold text-primary-foreground">NL</span>
             </div>
-            <span className="hidden font-bold sm:inline-block">
-              {APP_NAME}
-            </span>
+            <span className="hidden font-bold sm:inline-block">{APP_NAME}</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -85,10 +75,7 @@ export default function MarketingPage() {
                 </NavigationMenuItem>
               ))}
               <NavigationMenuItem>
-                <Button
-                  asChild
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
-                >
+                <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
                   <Link href="/auth/signin">Demo</Link>
                 </Button>
               </NavigationMenuItem>
@@ -113,20 +100,16 @@ export default function MarketingPage() {
               </h1>
 
               <p className="mb-8 text-lg text-muted-foreground sm:text-xl md:text-2xl mx-auto max-w-2xl">
-                An open source Next.js starter kit to launch your projects with
-                ease
+                An open source Next.js starter kit to launch your projects with ease
               </p>
 
               <div className="mb-12 space-y-4">
-                <h3 className="text-lg font-semibold text-center">
-                  Get Started
-                </h3>
+                <h3 className="text-lg font-semibold text-center">Get Started</h3>
                 <div className="mx-auto max-w-2xl">
                   <div className="relative">
                     <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4">
                       <code className="text-sm text-foreground font-mono break-all">
-                        git clone
-                        https://github.com/TeoMastro/next-launch-kit.git
+                        git clone https://github.com/TeoMastro/next-launch-kit.git
                       </code>
                       <CopyButton textToCopy="git clone https://github.com/TeoMastro/next-launch-kit.git" />
                     </div>
@@ -156,12 +139,9 @@ export default function MarketingPage() {
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="mx-auto max-w-6xl">
               <div className="mb-12 text-center md:mb-16">
-                <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-                  Features
-                </h2>
+                <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">Features</h2>
                 <p className="text-lg text-muted-foreground md:text-xl mx-auto max-w-2xl">
-                  Everything you need to build production-ready applications out
-                  of the box
+                  Everything you need to build production-ready applications out of the box
                 </p>
               </div>
 
@@ -173,12 +153,9 @@ export default function MarketingPage() {
                       <Shield className="h-5 w-5 text-violet-600 dark:text-blue-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Complete Auth System
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Complete Auth System</h3>
                       <p className="text-sm text-muted-foreground">
-                        Sign in, sign up, email verification, and password reset
-                        pages ready to use
+                        Sign in, sign up, email verification, and password reset pages ready to use
                       </p>
                     </div>
                   </div>
@@ -191,12 +168,9 @@ export default function MarketingPage() {
                       <Users className="h-5 w-5 text-teal-600 dark:text-green-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Role-Based Access Control
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Role-Based Access Control</h3>
                       <p className="text-sm text-muted-foreground">
-                        User and admin roles with proper access control
-                        throughout the application
+                        User and admin roles with proper access control throughout the application
                       </p>
                     </div>
                   </div>
@@ -209,12 +183,9 @@ export default function MarketingPage() {
                       <UserCog className="h-5 w-5 text-indigo-600 dark:text-purple-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        User CRUD Operations
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">User CRUD Operations</h3>
                       <p className="text-sm text-muted-foreground">
-                        Complete user management system available for admin
-                        users only
+                        Complete user management system available for admin users only
                       </p>
                     </div>
                   </div>
@@ -227,12 +198,9 @@ export default function MarketingPage() {
                       <FileSpreadsheet className="h-5 w-5 text-amber-600 dark:text-orange-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Data Export Ready
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Data Export Ready</h3>
                       <p className="text-sm text-muted-foreground">
-                        Export your data to CSV and Excel formats with built-in
-                        functionality
+                        Export your data to CSV and Excel formats with built-in functionality
                       </p>
                     </div>
                   </div>
@@ -245,12 +213,9 @@ export default function MarketingPage() {
                       <CheckCircle className="h-5 w-5 text-rose-600 dark:text-red-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Zod Form Validation
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Zod Form Validation</h3>
                       <p className="text-sm text-muted-foreground">
-                        Type-safe form validation with Zod schemas for reliable
-                        data handling
+                        Type-safe form validation with Zod schemas for reliable data handling
                       </p>
                     </div>
                   </div>
@@ -263,12 +228,9 @@ export default function MarketingPage() {
                       <TestTube className="h-5 w-5 text-cyan-600 dark:text-teal-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Playwright Testing
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Playwright Testing</h3>
                       <p className="text-sm text-muted-foreground">
-                        End-to-end testing setup with Playwright for reliable
-                        application testing
+                        End-to-end testing setup with Playwright for reliable application testing
                       </p>
                     </div>
                   </div>
@@ -281,12 +243,9 @@ export default function MarketingPage() {
                       <FileText className="h-5 w-5 text-amber-700 dark:text-yellow-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Winston
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Winston</h3>
                       <p className="text-sm text-muted-foreground">
-                        Professional logging system with Winston for debugging
-                        and monitoring
+                        Professional logging system with Winston for debugging and monitoring
                       </p>
                     </div>
                   </div>
@@ -299,12 +258,9 @@ export default function MarketingPage() {
                       <Sparkles className="h-5 w-5 text-violet-600 dark:text-indigo-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Consistent UI & Tables
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Consistent UI & Tables</h3>
                       <p className="text-sm text-muted-foreground">
-                        Beautiful, consistent interface with shadcn/ui
-                        components and data tables
+                        Beautiful, consistent interface with shadcn/ui components and data tables
                       </p>
                     </div>
                   </div>
@@ -317,12 +273,9 @@ export default function MarketingPage() {
                       <FileJson className="h-5 w-5 text-violet-700 dark:text-indigo-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-foreground mb-2">
-                        Side menu and responsive design
-                      </h3>
+                      <h3 className="font-semibold text-foreground mb-2">Side menu and responsive design</h3>
                       <p className="text-sm text-muted-foreground">
-                        Side menu that works out of the box with responsive
-                        layout and a burger menu on mobile.
+                        Side menu that works out of the box with responsive layout and a burger menu on mobile.
                       </p>
                     </div>
                   </div>
@@ -337,9 +290,7 @@ export default function MarketingPage() {
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="mx-auto max-w-6xl">
               <div className="mb-12 text-center md:mb-16">
-                <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-                  Technology
-                </h2>
+                <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">Technology</h2>
                 <p className="text-lg text-muted-foreground md:text-xl mx-auto max-w-2xl">
                   Everything you need to build modern web applications
                 </p>
@@ -353,15 +304,12 @@ export default function MarketingPage() {
                       <Zap className="h-6 w-6" />
                     </div>
                     <CardTitle>Next.js 16</CardTitle>
-                    <CardDescription>
-                      A React framework with the App Router
-                    </CardDescription>
+                    <CardDescription>A React framework with the App Router</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground text-center">
-                      Built with the latest Next.js features including App
-                      Router, Server Components, and optimized performance out
-                      of the box.
+                      Built with the latest Next.js features including App Router, Server Components, and optimized
+                      performance out of the box.
                     </p>
                   </CardContent>
                 </Card>
@@ -373,14 +321,12 @@ export default function MarketingPage() {
                       <Database className="h-6 w-6" />
                     </div>
                     <CardTitle>PostgreSQL</CardTitle>
-                    <CardDescription>
-                      Robust relational database
-                    </CardDescription>
+                    <CardDescription>Robust relational database</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground text-center">
-                      Production-ready PostgreSQL setup with optimized queries,
-                      indexing, and built-in backup strategies.
+                      Production-ready PostgreSQL setup with optimized queries, indexing, and built-in backup
+                      strategies.
                     </p>
                   </CardContent>
                 </Card>
@@ -396,8 +342,8 @@ export default function MarketingPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground text-center">
-                      Complete backend platform with PostgreSQL database, real-time subscriptions,
-                      storage, and Row Level Security for secure data access.
+                      Complete backend platform with PostgreSQL database, real-time subscriptions, storage, and Row
+                      Level Security for secure data access.
                     </p>
                   </CardContent>
                 </Card>
@@ -413,8 +359,8 @@ export default function MarketingPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground text-center">
-                      Beautifully designed components built with Radix UI and
-                      Tailwind CSS. Copy, paste, and customize to your needs.
+                      Beautifully designed components built with Radix UI and Tailwind CSS. Copy, paste, and customize
+                      to your needs.
                     </p>
                   </CardContent>
                 </Card>
@@ -426,14 +372,12 @@ export default function MarketingPage() {
                       <Shield className="h-6 w-6" />
                     </div>
                     <CardTitle>Supabase Auth</CardTitle>
-                    <CardDescription>
-                      Complete authentication solution
-                    </CardDescription>
+                    <CardDescription>Complete authentication solution</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground text-center">
-                      Secure authentication with email/password, OAuth providers,
-                      and built-in user management with Row Level Security.
+                      Secure authentication with email/password, OAuth providers, and built-in user management with Row
+                      Level Security.
                     </p>
                   </CardContent>
                 </Card>
@@ -445,14 +389,12 @@ export default function MarketingPage() {
                       <Palette className="h-6 w-6" />
                     </div>
                     <CardTitle>Tailwind CSS</CardTitle>
-                    <CardDescription>
-                      Utility-first CSS framework
-                    </CardDescription>
+                    <CardDescription>Utility-first CSS framework</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground text-center">
-                      Rapidly build custom designs with utility classes.
-                      Pre-configured with dark mode and responsive breakpoints.
+                      Rapidly build custom designs with utility classes. Pre-configured with dark mode and responsive
+                      breakpoints.
                     </p>
                   </CardContent>
                 </Card>
@@ -468,15 +410,11 @@ export default function MarketingPage() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-center md:text-left">
               <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} {APP_NAME}. All rights
-                reserved.
+                © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
               </p>
               {/* Legal Links */}
               <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-2">
-                <PrivacyPolicyDialog
-                  title="Privacy Policy"
-                  isInSidebar={false}
-                />
+                <PrivacyPolicyDialog title="Privacy Policy" isInSidebar={false} />
                 <TermsDialog title="Terms of Service" isInSidebar={false} />
               </div>
             </div>

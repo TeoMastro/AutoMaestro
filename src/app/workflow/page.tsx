@@ -15,9 +15,7 @@ interface WorkflowDashboardPageProps {
   searchParams: Promise<{ workflow?: string }>;
 }
 
-export default async function WorkflowDashboardPage({
-  searchParams,
-}: WorkflowDashboardPageProps) {
+export default async function WorkflowDashboardPage({ searchParams }: WorkflowDashboardPageProps) {
   const session = await getSession();
   if (!session) redirect('/auth/signin');
 
@@ -31,9 +29,7 @@ export default async function WorkflowDashboardPage({
     return (
       <div className="container mx-auto py-6">
         <Card className="max-w-lg mx-auto">
-          <CardContent className="py-12 text-center text-muted-foreground">
-            {t('noWorkflowsAssigned')}
-          </CardContent>
+          <CardContent className="py-12 text-center text-muted-foreground">{t('noWorkflowsAssigned')}</CardContent>
         </Card>
       </div>
     );
@@ -41,8 +37,7 @@ export default async function WorkflowDashboardPage({
 
   // Determine selected workflow
   const selectedId = params.workflow ?? workflows[0].id;
-  const selectedWorkflow =
-    workflows.find((w) => w.id === selectedId) ?? workflows[0];
+  const selectedWorkflow = workflows.find((w) => w.id === selectedId) ?? workflows[0];
 
   // Fetch documents only for chat workflows with KB enabled
   const documents =
@@ -53,12 +48,7 @@ export default async function WorkflowDashboardPage({
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Workflow selector — only shown when multiple workflows */}
-      {workflows.length > 1 && (
-        <WorkflowSelector
-          workflows={workflows}
-          selectedId={selectedWorkflow.id}
-        />
-      )}
+      {workflows.length > 1 && <WorkflowSelector workflows={workflows} selectedId={selectedWorkflow.id} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {selectedWorkflow.type === 'chat' ? (
@@ -66,10 +56,7 @@ export default async function WorkflowDashboardPage({
             {/* Left column — KB */}
             <div className="space-y-6">
               {selectedWorkflow.hasKnowledgeBase && (
-                <DocumentManager
-                  workflowId={selectedWorkflow.id}
-                  initialDocuments={documents}
-                />
+                <DocumentManager workflowId={selectedWorkflow.id} initialDocuments={documents} />
               )}
             </div>
             {/* Right column — Main area */}

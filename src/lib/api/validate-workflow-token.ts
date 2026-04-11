@@ -14,9 +14,7 @@ type ValidateSuccess<T> = { workflow: BaseWorkflow & T; errorResponse: null };
 type ValidateFailure = { workflow: null; errorResponse: NextResponse };
 type ValidateResult<T> = ValidateSuccess<T> | ValidateFailure;
 
-export async function validateWorkflowToken<
-  Extra extends z.ZodRawShape = Record<string, never>,
->(
+export async function validateWorkflowToken<Extra extends z.ZodRawShape = Record<string, never>>(
   req: NextRequest,
   context: string,
   extraSchema?: z.ZodObject<Extra>
@@ -28,33 +26,21 @@ export async function validateWorkflowToken<
     logger.error(`${context}: missing token`);
     return {
       workflow: null,
-      errorResponse: NextResponse.json(
-        { error: 'Missing token' },
-        { status: 401 }
-      ),
+      errorResponse: NextResponse.json({ error: 'Missing token' }, { status: 401 }),
     };
   }
 
-  const fullSchema = extraSchema
-    ? baseWorkflowSchema.extend(extraSchema.shape)
-    : baseWorkflowSchema;
+  const fullSchema = extraSchema ? baseWorkflowSchema.extend(extraSchema.shape) : baseWorkflowSchema;
   const selectFields = Object.keys(fullSchema.shape).join(', ');
 
   const supabase = createAdminClient();
-  const { data, error: wfError } = await supabase
-    .from('workflows')
-    .select(selectFields)
-    .eq('token', token)
-    .single();
+  const { data, error: wfError } = await supabase.from('workflows').select(selectFields).eq('token', token).single();
 
   if (wfError || !data) {
     logger.error(`${context}: invalid token`, { error: wfError?.message });
     return {
       workflow: null,
-      errorResponse: NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      ),
+      errorResponse: NextResponse.json({ error: 'Invalid token' }, { status: 401 }),
     };
   }
 
@@ -65,10 +51,7 @@ export async function validateWorkflowToken<
     });
     return {
       workflow: null,
-      errorResponse: NextResponse.json(
-        { error: 'Invalid workflow data' },
-        { status: 500 }
-      ),
+      errorResponse: NextResponse.json({ error: 'Invalid workflow data' }, { status: 500 }),
     };
   }
 
@@ -78,10 +61,7 @@ export async function validateWorkflowToken<
     logger.error(`${context}: workflow inactive`, { workflowId: workflow.id });
     return {
       workflow: null,
-      errorResponse: NextResponse.json(
-        { error: 'Workflow inactive' },
-        { status: 403 }
-      ),
+      errorResponse: NextResponse.json({ error: 'Workflow inactive' }, { status: 403 }),
     };
   }
 

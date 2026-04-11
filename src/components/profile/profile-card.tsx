@@ -9,12 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
 import { Pencil } from 'lucide-react';
 import { updateProfileAction } from '@/server-actions/profile';
@@ -52,8 +47,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const fullName =
-    `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+  const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
 
   const initials = fullName
     .split(' ')
@@ -169,11 +163,10 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
         Object.assign(allErrors, formatZodErrors(passwordParsed.error));
       } else {
         try {
-          const { error: signInError } =
-            await supabase.auth.signInWithPassword({
-              email: user.email,
-              password: passwordParsed.data.currentPassword,
-            });
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: passwordParsed.data.currentPassword,
+          });
 
           if (signInError) {
             allErrors.currentPassword = ['incorrectPassword'];
@@ -249,9 +242,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarFallback className="text-2xl">
-                  {initials}
-                </AvatarFallback>
+                <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <h3 className="text-lg font-semibold">{fullName}</h3>
@@ -260,7 +251,9 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                   <Badge variant="outline" className={getRoleBadgeStyle(user.role)}>
                     {getRoleLabel(user.role)}
                   </Badge>
-                  <Badge variant="outline" className={badgeStyles.green}>{t('active')}</Badge>
+                  <Badge variant="outline" className={badgeStyles.green}>
+                    {t('active')}
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -269,27 +262,19 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('firstName')}
-                </p>
+                <p className="text-sm font-medium text-muted-foreground">{t('firstName')}</p>
                 <p className="text-sm">{user.first_name || '—'}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('lastName')}
-                </p>
+                <p className="text-sm font-medium text-muted-foreground">{t('lastName')}</p>
                 <p className="text-sm">{user.last_name || '—'}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('email')}
-                </p>
+                <p className="text-sm font-medium text-muted-foreground">{t('email')}</p>
                 <p className="text-sm">{user.email}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {t('password')}
-                </p>
+                <p className="text-sm font-medium text-muted-foreground">{t('password')}</p>
                 <p className="text-sm">••••••••</p>
               </div>
             </div>
@@ -299,9 +284,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                 <Separator />
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">
-                    {user.role === Role.CLIENT
-                      ? t('yourCompany')
-                      : t('yourCompanies')}
+                    {user.role === Role.CLIENT ? t('yourCompany') : t('yourCompanies')}
                   </p>
                   {companies.length > 0 ? (
                     user.role === Role.CLIENT ? (
@@ -316,30 +299,27 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                       </div>
                     )
                   ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {t('noCompanyAssigned')}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{t('noCompanyAssigned')}</p>
                   )}
                 </div>
               </>
             )}
-
           </div>
         ) : (
           /* ==================== EDIT MODE ==================== */
           <form action={handleSave} noValidate className="space-y-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarFallback className="text-2xl">
-                  {initials}
-                </AvatarFallback>
+                <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <div className="flex gap-2">
                   <Badge variant="outline" className={getRoleBadgeStyle(user.role)}>
                     {getRoleLabel(user.role)}
                   </Badge>
-                  <Badge variant="outline" className={badgeStyles.green}>{t('active')}</Badge>
+                  <Badge variant="outline" className={badgeStyles.green}>
+                    {t('active')}
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -348,9 +328,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
 
             {/* Name fields */}
             <div>
-              <h4 className="text-sm font-semibold mb-3">
-                {t('personalInformation')}
-              </h4>
+              <h4 className="text-sm font-semibold mb-3">{t('personalInformation')}</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="first_name">{t('firstName')}</Label>
@@ -359,15 +337,9 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                     name="first_name"
                     defaultValue={user.first_name || ''}
                     disabled={isSubmitting}
-                    className={
-                      fieldErrors.first_name ? 'border-red-500' : ''
-                    }
+                    className={fieldErrors.first_name ? 'border-red-500' : ''}
                   />
-                  {fieldErrors.first_name && (
-                    <p className="text-sm text-red-500">
-                      {t(fieldErrors.first_name[0])}
-                    </p>
-                  )}
+                  {fieldErrors.first_name && <p className="text-sm text-red-500">{t(fieldErrors.first_name[0])}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="last_name">{t('lastName')}</Label>
@@ -376,15 +348,9 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                     name="last_name"
                     defaultValue={user.last_name || ''}
                     disabled={isSubmitting}
-                    className={
-                      fieldErrors.last_name ? 'border-red-500' : ''
-                    }
+                    className={fieldErrors.last_name ? 'border-red-500' : ''}
                   />
-                  {fieldErrors.last_name && (
-                    <p className="text-sm text-red-500">
-                      {t(fieldErrors.last_name[0])}
-                    </p>
-                  )}
+                  {fieldErrors.last_name && <p className="text-sm text-red-500">{t(fieldErrors.last_name[0])}</p>}
                 </div>
               </div>
             </div>
@@ -393,9 +359,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
 
             {/* Email field */}
             <div>
-              <h4 className="text-sm font-semibold mb-3">
-                {t('changeEmail')}
-              </h4>
+              <h4 className="text-sm font-semibold mb-3">{t('changeEmail')}</h4>
               <div className="space-y-2">
                 <Label htmlFor="email">{t('email')}</Label>
                 <Input
@@ -406,11 +370,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                   disabled={isSubmitting}
                   className={fieldErrors.email ? 'border-red-500' : ''}
                 />
-                {fieldErrors.email && (
-                  <p className="text-sm text-red-500">
-                    {t(fieldErrors.email[0])}
-                  </p>
-                )}
+                {fieldErrors.email && <p className="text-sm text-red-500">{t(fieldErrors.email[0])}</p>}
               </div>
             </div>
 
@@ -418,30 +378,20 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
 
             {/* Password fields */}
             <div>
-              <h4 className="text-sm font-semibold mb-3">
-                {t('changePassword')}
-              </h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                {t('leaveEmptyToKeepCurrent')}
-              </p>
+              <h4 className="text-sm font-semibold mb-3">{t('changePassword')}</h4>
+              <p className="text-sm text-muted-foreground mb-3">{t('leaveEmptyToKeepCurrent')}</p>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword">
-                    {t('currentPassword')}
-                  </Label>
+                  <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
                   <Input
                     id="currentPassword"
                     name="currentPassword"
                     type="password"
                     disabled={isSubmitting}
-                    className={
-                      fieldErrors.currentPassword ? 'border-red-500' : ''
-                    }
+                    className={fieldErrors.currentPassword ? 'border-red-500' : ''}
                   />
                   {fieldErrors.currentPassword && (
-                    <p className="text-sm text-red-500">
-                      {t(fieldErrors.currentPassword[0])}
-                    </p>
+                    <p className="text-sm text-red-500">{t(fieldErrors.currentPassword[0])}</p>
                   )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -453,33 +403,21 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                       type="password"
                       placeholder={t('passwordPlaceholder')}
                       disabled={isSubmitting}
-                      className={
-                        fieldErrors.newPassword ? 'border-red-500' : ''
-                      }
+                      className={fieldErrors.newPassword ? 'border-red-500' : ''}
                     />
-                    {fieldErrors.newPassword && (
-                      <p className="text-sm text-red-500">
-                        {t(fieldErrors.newPassword[0])}
-                      </p>
-                    )}
+                    {fieldErrors.newPassword && <p className="text-sm text-red-500">{t(fieldErrors.newPassword[0])}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">
-                      {t('confirmNewPassword')}
-                    </Label>
+                    <Label htmlFor="confirmPassword">{t('confirmNewPassword')}</Label>
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
                       disabled={isSubmitting}
-                      className={
-                        fieldErrors.confirmPassword ? 'border-red-500' : ''
-                      }
+                      className={fieldErrors.confirmPassword ? 'border-red-500' : ''}
                     />
                     {fieldErrors.confirmPassword && (
-                      <p className="text-sm text-red-500">
-                        {t(fieldErrors.confirmPassword[0])}
-                      </p>
+                      <p className="text-sm text-red-500">{t(fieldErrors.confirmPassword[0])}</p>
                     )}
                   </div>
                 </div>
@@ -491,9 +429,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                 <Separator />
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">
-                    {user.role === Role.CLIENT
-                      ? t('yourCompany')
-                      : t('yourCompanies')}
+                    {user.role === Role.CLIENT ? t('yourCompany') : t('yourCompanies')}
                   </p>
                   {companies.length > 0 ? (
                     user.role === Role.CLIENT ? (
@@ -508,9 +444,7 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                       </div>
                     )
                   ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {t('noCompanyAssigned')}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{t('noCompanyAssigned')}</p>
                   )}
                 </div>
               </>

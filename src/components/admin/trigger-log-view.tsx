@@ -6,12 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TriggerLogEntry } from '@/types/trigger-log';
 import { badgeStyles } from '@/lib/badge-styles';
 import { DynamicResponse, safeParse } from '@/components/workflow/dynamic-response';
@@ -40,11 +35,7 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push('/trigger-history')}
-          >
+          <Button variant="outline" size="sm" onClick={() => router.push('/trigger-history')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold">{t('triggerHistory')}</h1>
@@ -58,9 +49,7 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('workflowName')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('workflowName')}</label>
                 <div className="mt-1">
                   <Badge variant="outline" className="text-base font-normal">
                     {log.workflowName}
@@ -97,23 +86,20 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('status')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('status')}</label>
                 <div className="mt-1">
-                  <Badge variant="outline" className={`text-sm ${log.status === 'success' ? badgeStyles.green : badgeStyles.red}`}>
+                  <Badge
+                    variant="outline"
+                    className={`text-sm ${log.status === 'success' ? badgeStyles.green : badgeStyles.red}`}
+                  >
                     {t(log.status)}
                   </Badge>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('createdAt')}
-                </label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {new Date(log.createdAt).toLocaleString()}
-                </p>
+                <label className="text-sm font-medium text-muted-foreground">{t('createdAt')}</label>
+                <p className="text-sm text-muted-foreground mt-1">{new Date(log.createdAt).toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -122,17 +108,23 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
 
           {/* Request / Response JSON payloads */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             <div className="space-y-4 flex flex-col min-h-0">
               <label className="text-sm font-medium text-muted-foreground flex items-center space-x-1">
                 <Settings className="h-4 w-4 text-primary" />
                 <span>{t('requestData')}</span>
               </label>
               <div className="flex-1 bg-muted/30 border border-border rounded-md overflow-hidden min-h-[150px]">
-                {(typeof filteredParams === 'object' && filteredParams !== null ? Object.keys(filteredParams).length > 0 : !!filteredParams) ? (
+                {(
+                  typeof filteredParams === 'object' && filteredParams !== null
+                    ? Object.keys(filteredParams).length > 0
+                    : !!filteredParams
+                ) ? (
                   <DynamicResponse data={filteredParams} />
                 ) : (
-                  <DynamicResponse data={null} emptyMessage={t('noRequestParams') || 'No additional request parameters sent.'} />
+                  <DynamicResponse
+                    data={null}
+                    emptyMessage={t('noRequestParams') || 'No additional request parameters sent.'}
+                  />
                 )}
               </div>
             </div>
@@ -154,7 +146,6 @@ export function TriggerLogView({ log }: TriggerLogViewProps) {
                 )}
               </div>
             </div>
-
           </div>
         </CardContent>
       </Card>

@@ -7,7 +7,7 @@ import { Role } from '@/lib/constants';
 export default async function CreateWorkflowPage() {
   const session = await getSession();
 
-  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 

@@ -24,11 +24,7 @@ export function BreadcrumbProvider({ children }: { children: React.ReactNode }) 
     });
   }, []);
 
-  return (
-    <BreadcrumbContext.Provider value={{ overrides, setOverride }}>
-      {children}
-    </BreadcrumbContext.Provider>
-  );
+  return <BreadcrumbContext.Provider value={{ overrides, setOverride }}>{children}</BreadcrumbContext.Provider>;
 }
 
 export function useBreadcrumbOverrides() {

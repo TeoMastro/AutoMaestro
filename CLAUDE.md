@@ -31,6 +31,7 @@ Roles: `ADMIN`, `MANAGER`, `CLIENT` (defined in `/src/lib/constants.ts`).
 - **CLIENT** — can only see and interact with resources (workflows, documents, chat/trigger history) that belong to their own company; accesses `/workflow`, `/chat-history`, `/trigger-history`, `/dashboard`, `/profile`, `/settings`
 
 Auth helpers in `/src/lib/auth-helpers.ts`:
+
 - `checkAdminAuth()` — admin-only server actions
 - `checkAdminOrManagerAuth()` — admin + manager server actions
 - `getManagerCompanyIds(managerId)` — returns company IDs a manager is assigned to
@@ -41,6 +42,7 @@ Session helper in `/src/lib/auth-session.ts`: `getSession()` returns `AuthSessio
 ### Middleware (`/src/proxy.ts`)
 
 Protects routes by role, refreshes Supabase sessions. Route access:
+
 - `/admin/*` — ADMIN only
 - `/manage/*` — ADMIN + MANAGER
 - `/api/users*` — ADMIN only (defense in depth)
@@ -90,11 +92,14 @@ Add `'use client'` only when necessary (hooks, event handlers, browser APIs).
 ### Forms
 
 All forms use `useActionState` hook with server actions returning `FormState`:
+
 ```typescript
 type FormState = {
   success: boolean;
   errors: Record<string, string[]>;
-  formData: { /* fields */ };
+  formData: {
+    /* fields */
+  };
   globalError: string | null;
 };
 ```
@@ -131,25 +136,25 @@ Indigo-based palette via CSS custom properties in `globals.css`. Dark mode suppo
 
 ### Button Hierarchy
 
-| Action | Variant | Examples |
-|--------|---------|---------|
-| Create / Submit / Save | `default` (indigo fill) | "Create", form submit buttons |
-| Delete | `destructive` (red fill) | All Trash2 icon buttons |
-| View / Edit / Navigate | `outline` | Eye, Pencil, ArrowLeft buttons |
-| Cancel / Back | `outline` | Cancel buttons in forms |
-| Toggle / Dismiss | `ghost` | Theme toggle, close alert |
+| Action                 | Variant                  | Examples                       |
+| ---------------------- | ------------------------ | ------------------------------ |
+| Create / Submit / Save | `default` (indigo fill)  | "Create", form submit buttons  |
+| Delete                 | `destructive` (red fill) | All Trash2 icon buttons        |
+| View / Edit / Navigate | `outline`                | Eye, Pencil, ArrowLeft buttons |
+| Cancel / Back          | `outline`                | Cancel buttons in forms        |
+| Toggle / Dismiss       | `ghost`                  | Theme toggle, close alert      |
 
 ### Badge Color System (`/src/lib/badge-styles.ts`)
 
 5 semantic colors applied via `variant="outline"` + `className={badgeStyles.X}`:
 
-| Color | Style | Usage |
-|-------|-------|-------|
-| **Green** (emerald) | `badgeStyles.green` | ACTIVE, active workflow, CHAT, ready |
-| **Indigo** | `badgeStyles.indigo` | ADMIN, MANAGER |
-| **Amber** | `badgeStyles.amber` | UNVERIFIED, pending, processing |
-| **Red** | `badgeStyles.red` | INACTIVE, inactive workflow, error |
-| **Slate** (zinc) | `badgeStyles.slate` | CLIENT, TRIGGER |
+| Color               | Style                | Usage                                |
+| ------------------- | -------------------- | ------------------------------------ |
+| **Green** (emerald) | `badgeStyles.green`  | ACTIVE, active workflow, CHAT, ready |
+| **Indigo**          | `badgeStyles.indigo` | ADMIN, MANAGER                       |
+| **Amber**           | `badgeStyles.amber`  | UNVERIFIED, pending, processing      |
+| **Red**             | `badgeStyles.red`    | INACTIVE, inactive workflow, error   |
+| **Slate** (zinc)    | `badgeStyles.slate`  | CLIENT, TRIGGER                      |
 
 Each style includes light + dark mode classes. Always use `variant="outline"` as the base — the className colors override via `tw-merge` in `cn()`.
 
@@ -172,6 +177,7 @@ Helper exports in `user-table.tsx`: `getStatusBadge(status, t)` and `getRoleBadg
 ## Environment Variables
 
 Required in `.env.local` (see `.env.example`):
+
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_APP_URL`
 - `OPENAI_API_KEY` (for document embedding)

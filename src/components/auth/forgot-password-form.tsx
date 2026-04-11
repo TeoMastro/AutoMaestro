@@ -3,13 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 import { forgotPasswordAction } from '@/server-actions/auth';
@@ -27,10 +21,7 @@ export function ForgotPasswordForm() {
     globalError: null,
   };
 
-  const [state, formAction, isPending] = useActionState(
-    forgotPasswordAction,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(forgotPasswordAction, initialState);
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -40,13 +31,9 @@ export function ForgotPasswordForm() {
 
       <form action={formAction} noValidate>
         <CardContent className="space-y-4 mb-5">
-          {state.globalError && (
-            <InfoAlert message={t(state.globalError)} type="error" />
-          )}
+          {state.globalError && <InfoAlert message={t(state.globalError)} type="error" />}
 
-          {state.success && state.message && (
-            <InfoAlert message={state.message} type="success" />
-          )}
+          {state.success && state.message && <InfoAlert message={state.message} type="success" />}
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -70,20 +57,13 @@ export function ForgotPasswordForm() {
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4">
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isPending || state.success}
-          >
+          <Button type="submit" className="w-full" disabled={isPending || state.success}>
             {isPending ? t('sending') : t('sendResetLink')}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
             {t('rememberPassword')}{' '}
-            <Link
-              href="/auth/signin"
-              className="font-medium text-primary hover:underline"
-            >
+            <Link href="/auth/signin" className="font-medium text-primary hover:underline">
               {t('signIn')}
             </Link>
           </p>
@@ -92,4 +72,3 @@ export function ForgotPasswordForm() {
     </Card>
   );
 }
-

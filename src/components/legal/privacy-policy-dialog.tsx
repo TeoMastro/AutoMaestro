@@ -17,22 +17,14 @@ interface PrivacyPolicyDialogProps {
   isInSidebar?: boolean;
 }
 
-export function PrivacyPolicyDialog({
-  title,
-  isInSidebar = true,
-}: PrivacyPolicyDialogProps) {
+export function PrivacyPolicyDialog({ title, isInSidebar = true }: PrivacyPolicyDialogProps) {
   const TriggerComponent = isInSidebar ? (
-    <SidebarMenuButton
-      size="sm"
-      className="text-sidebar-foreground/60 hover:text-sidebar-foreground"
-    >
+    <SidebarMenuButton size="sm" className="text-sidebar-foreground/60 hover:text-sidebar-foreground">
       <Shield className="h-4 w-4" />
       <span className="text-xs">{title}</span>
     </SidebarMenuButton>
   ) : (
-    <button className="text-xs text-muted-foreground hover:text-foreground transition-colors underline">
-      {title}
-    </button>
+    <button className="text-xs text-muted-foreground hover:text-foreground transition-colors underline">{title}</button>
   );
 
   return (
@@ -48,14 +40,11 @@ export function PrivacyPolicyDialog({
             <section>
               <h3 className="font-semibold mb-2">1. Information We Collect</h3>
               <p>
-                We collect information you provide directly to us, information
-                collected automatically through your use of the Service, and
-                information from third-party sources.
+                We collect information you provide directly to us, information collected automatically through your use
+                of the Service, and information from third-party sources.
               </p>
 
-              <h4 className="font-medium mt-3 mb-1">
-                1.1 Account Registration Information
-              </h4>
+              <h4 className="font-medium mt-3 mb-1">1.1 Account Registration Information</h4>
               <p>When you create an account, we collect:</p>
               <ul className="list-disc pl-5 mt-1 space-y-1">
                 <li>First name and last name</li>
@@ -65,63 +54,44 @@ export function PrivacyPolicyDialog({
                 <li>Account status (Active, Inactive, Unverified)</li>
               </ul>
 
-              <h4 className="font-medium mt-3 mb-1">
-                1.2 Company and Organization Data
-              </h4>
+              <h4 className="font-medium mt-3 mb-1">1.2 Company and Organization Data</h4>
               <p>
-                If you are an Admin or Manager, you may create and manage
-                company profiles containing company names and notes.
+                If you are an Admin or Manager, you may create and manage company profiles containing company names and
+                notes.
               </p>
 
-              <h4 className="font-medium mt-3 mb-1">
-                1.3 Workflow and Execution Data
-              </h4>
+              <h4 className="font-medium mt-3 mb-1">1.3 Workflow and Execution Data</h4>
               <p>When you use the workflow features, we collect:</p>
               <ul className="list-disc pl-5 mt-1 space-y-1">
                 <li>
-                  <strong>Chat messages</strong> — Messages exchanged in chat
-                  workflows, stored with session identifiers
+                  <strong>Chat messages</strong> — Messages exchanged in chat workflows, stored with session identifiers
                 </li>
                 <li>
-                  <strong>Trigger parameters</strong> — Input data you provide
-                  when executing trigger workflows
+                  <strong>Trigger parameters</strong> — Input data you provide when executing trigger workflows
                 </li>
                 <li>
-                  <strong>Execution logs</strong> — Status, duration, request
-                  parameters, response data, and error messages from workflow
-                  executions
+                  <strong>Execution logs</strong> — Status, duration, request parameters, response data, and error
+                  messages from workflow executions
                 </li>
                 <li>
-                  <strong>Workflow configurations</strong> — Names,
-                  descriptions, webhook URLs, parameter schemas, and system
-                  prompts
+                  <strong>Workflow configurations</strong> — Names, descriptions, webhook URLs, parameter schemas, and
+                  system prompts
                 </li>
               </ul>
 
-              <h4 className="font-medium mt-3 mb-1">
-                1.4 Documents and Knowledge Base
-              </h4>
-              <p>
-                When you upload documents for knowledge base processing, we
-                collect and process:
-              </p>
+              <h4 className="font-medium mt-3 mb-1">1.4 Documents and Knowledge Base</h4>
+              <p>When you upload documents for knowledge base processing, we collect and process:</p>
               <ul className="list-disc pl-5 mt-1 space-y-1">
                 <li>Document files (PDF, TXT, DOCX, MD) up to 10 MB each</li>
                 <li>Extracted text content from uploaded documents</li>
                 <li>Text chunks (approximately 1,000 characters each)</li>
-                <li>
-                  AI embeddings generated by OpenAI (vector representations)
-                </li>
-                <li>
-                  Metadata including filename, file type, and upload timestamp
-                </li>
+                <li>AI embeddings generated by OpenAI (vector representations)</li>
+                <li>Metadata including filename, file type, and upload timestamp</li>
               </ul>
             </section>
 
             <section>
-              <h3 className="font-semibold mb-2">
-                2. How We Use Your Information
-              </h3>
+              <h3 className="font-semibold mb-2">2. How We Use Your Information</h3>
               <p>We use the information we collect to:</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>Provide, maintain, and improve the Service</li>
@@ -132,9 +102,7 @@ export function PrivacyPolicyDialog({
                 <li>Process uploaded documents for knowledge base search</li>
                 <li>Generate text embeddings using OpenAI</li>
                 <li>Display analytics and reporting dashboards</li>
-                <li>
-                  Send transactional emails (verification, password reset)
-                </li>
+                <li>Send transactional emails (verification, password reset)</li>
                 <li>Notify users of important service-related information</li>
                 <li>Detect, prevent, and address technical security issues</li>
                 <li>Comply with legal obligations</li>
@@ -142,135 +110,110 @@ export function PrivacyPolicyDialog({
             </section>
 
             <section>
-              <h3 className="font-semibold mb-2">
-                3. Information Sharing and Third Parties
-              </h3>
+              <h3 className="font-semibold mb-2">3. Information Sharing and Third Parties</h3>
               <p>
-                We do not sell, trade, or rent your personal information to
-                third parties. We share information only in the following
-                circumstances:
+                We do not sell, trade, or rent your personal information to third parties. We share information only in
+                the following circumstances:
               </p>
 
               <h4 className="font-medium mt-3 mb-1">3.1 Service Providers</h4>
               <p>We use third-party services to operate the platform:</p>
               <ul className="list-disc pl-5 mt-1 space-y-1">
                 <li>
-                  <strong>Supabase</strong> — Database, authentication, and file
-                  storage. Supabase processes data according to its own privacy
-                  policy and terms of service.
+                  <strong>Supabase</strong> — Database, authentication, and file storage. Supabase processes data
+                  according to its own privacy policy and terms of service.
                 </li>
                 <li>
-                  <strong>OpenAI</strong> — Text embeddings for knowledge base
-                  processing. Document content is sent to OpenAI for embedding
-                  generation. OpenAI retains API data in accordance with its
-                  privacy policy.
+                  <strong>OpenAI</strong> — Text embeddings for knowledge base processing. Document content is sent to
+                  OpenAI for embedding generation. OpenAI retains API data in accordance with its privacy policy.
                 </li>
                 <li>
-                  <strong>n8n</strong> — Workflow automation. When you execute
-                  workflows, data is sent to your configured n8n webhook URLs.
-                  We are not responsible for the privacy practices of your n8n
-                  instance.
+                  <strong>n8n</strong> — Workflow automation. When you execute workflows, data is sent to your
+                  configured n8n webhook URLs. We are not responsible for the privacy practices of your n8n instance.
                 </li>
                 <li>
-                  <strong>Google</strong> — OAuth sign-in provider (if used).
-                  Google&apos;s privacy practices govern any data shared during
-                  OAuth authentication.
+                  <strong>Google</strong> — OAuth sign-in provider (if used). Google&apos;s privacy practices govern any
+                  data shared during OAuth authentication.
                 </li>
               </ul>
 
               <h4 className="font-medium mt-3 mb-1">3.2 Legal Requirements</h4>
               <p>
-                We may disclose your information if required by law, court
-                order, or governmental regulation, or if we believe disclosure
-                is necessary to protect our rights, your safety, or the safety
-                of others.
+                We may disclose your information if required by law, court order, or governmental regulation, or if we
+                believe disclosure is necessary to protect our rights, your safety, or the safety of others.
               </p>
             </section>
 
             <section>
               <h3 className="font-semibold mb-2">4. Data Retention</h3>
               <p>
-                We retain your personal information and data for as long as your
-                account is active, or as long as necessary to provide the
-                Service. Specifically:
+                We retain your personal information and data for as long as your account is active, or as long as
+                necessary to provide the Service. Specifically:
               </p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>
-                  <strong>Account data</strong> — Retained until account
-                  deletion
+                  <strong>Account data</strong> — Retained until account deletion
                 </li>
                 <li>
-                  <strong>Chat logs</strong> — Retained until deleted by user or
-                  administrator
+                  <strong>Chat logs</strong> — Retained until deleted by user or administrator
                 </li>
                 <li>
-                  <strong>Trigger logs</strong> — Retained until deleted by user
-                  or administrator
+                  <strong>Trigger logs</strong> — Retained until deleted by user or administrator
                 </li>
                 <li>
-                  <strong>Documents</strong> — Retained until deleted by user or
-                  administrator
+                  <strong>Documents</strong> — Retained until deleted by user or administrator
                 </li>
                 <li>
-                  <strong>Knowledge base chunks and embeddings</strong> —
-                  Retained until the associated document is deleted
+                  <strong>Knowledge base chunks and embeddings</strong> — Retained until the associated document is
+                  deleted
                 </li>
               </ul>
               <p className="mt-2">
-                When you delete your account, we will delete your personal
-                information and data within a reasonable timeframe, subject to
-                legal retention requirements.
+                When you delete your account, we will delete your personal information and data within a reasonable
+                timeframe, subject to legal retention requirements.
               </p>
             </section>
 
             <section>
               <h3 className="font-semibold mb-2">5. Data Security</h3>
-              <p>
-                We implement appropriate technical and organizational measures
-                to protect your data:
-              </p>
+              <p>We implement appropriate technical and organizational measures to protect your data:</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>
-                  <strong>Encryption</strong> — Data is encrypted at rest by
-                  Supabase infrastructure. All network communications use HTTPS.
+                  <strong>Encryption</strong> — Data is encrypted at rest by Supabase infrastructure. All network
+                  communications use HTTPS.
                 </li>
                 <li>
-                  <strong>Row Level Security (RLS)</strong> — Database access is
-                  restricted at the row level based on user identity and role.
+                  <strong>Row Level Security (RLS)</strong> — Database access is restricted at the row level based on
+                  user identity and role.
                 </li>
                 <li>
-                  <strong>Role-based access control</strong> — Three-tier system
-                  (Admin, Manager, Client) enforced at both application and
-                  database levels.
+                  <strong>Role-based access control</strong> — Three-tier system (Admin, Manager, Client) enforced at
+                  both application and database levels.
                 </li>
                 <li>
-                  <strong>Authentication</strong> — Email/password
-                  authentication with secure hashing. Email verification
-                  required before first login.
+                  <strong>Authentication</strong> — Email/password authentication with secure hashing. Email
+                  verification required before first login.
                 </li>
                 <li>
-                  <strong>Session management</strong> — HTTP-only, secure
-                  session cookies managed by Supabase Auth.
+                  <strong>Session management</strong> — HTTP-only, secure session cookies managed by Supabase Auth.
                 </li>
               </ul>
               <p className="mt-2">
-                While we strive to protect your information, no method of
-                transmission over the Internet or electronic storage is 100%
-                secure. We cannot guarantee absolute security.
+                While we strive to protect your information, no method of transmission over the Internet or electronic
+                storage is 100% secure. We cannot guarantee absolute security.
               </p>
             </section>
 
             <section>
               <h3 className="font-semibold mb-2">6. Cookies and Tracking</h3>
               <p>
-                We use session cookies for authentication and session
-                management. These cookies are essential for the Service to
-                function properly and are set when you sign in. They are
-                HTTP-only, secure, and expire when you sign out.
+                We use session cookies for authentication and session management. These cookies are essential for the
+                Service to function properly and are set when you sign in. They are HTTP-only, secure, and expire when
+                you sign out.
               </p>
               <p className="mt-2">
-                We do not use advertising cookies, analytics cookies, or
-                tracking technologies beyond essential session management.
+                We do not use advertising cookies, analytics cookies, or tracking technologies beyond essential session
+                management.
               </p>
             </section>
 
@@ -279,71 +222,57 @@ export function PrivacyPolicyDialog({
               <p>You have the following rights regarding your personal data:</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>
-                  <strong>Access</strong> — View your personal information and
-                  account data through the profile settings
+                  <strong>Access</strong> — View your personal information and account data through the profile settings
                 </li>
                 <li>
-                  <strong>Correction</strong> — Update your first name, last
-                  name, and email through profile settings
+                  <strong>Correction</strong> — Update your first name, last name, and email through profile settings
                 </li>
                 <li>
-                  <strong>Deletion</strong> — Contact an administrator to
-                  request deletion of your account and associated data
+                  <strong>Deletion</strong> — Contact an administrator to request deletion of your account and
+                  associated data
                 </li>
                 <li>
-                  <strong>Data portability</strong> — Request an export of your
-                  data in a machine-readable format (contact administrator)
+                  <strong>Data portability</strong> — Request an export of your data in a machine-readable format
+                  (contact administrator)
                 </li>
               </ul>
               <p className="mt-2">
-                To exercise any of these rights, please contact your account
-                administrator or the platform operator.
+                To exercise any of these rights, please contact your account administrator or the platform operator.
               </p>
             </section>
 
             <section>
-              <h3 className="font-semibold mb-2">
-                8. International Data Transfers
-              </h3>
+              <h3 className="font-semibold mb-2">8. International Data Transfers</h3>
               <p>
-                The platform is hosted on Supabase, which may store data in
-                various regions depending on your Supabase project
-                configuration. If you are located outside the data storage
-                region, data may be transferred internationally. By using the
-                Service, you consent to such transfers.
+                The platform is hosted on Supabase, which may store data in various regions depending on your Supabase
+                project configuration. If you are located outside the data storage region, data may be transferred
+                internationally. By using the Service, you consent to such transfers.
               </p>
             </section>
 
             <section>
               <h3 className="font-semibold mb-2">9. Children&apos;s Privacy</h3>
               <p>
-                The Service is not intended for individuals under the age of 18.
-                We do not knowingly collect personal information from children.
-                If we learn that we have collected personal information from a
-                child under 18, we will take steps to delete that information
-                promptly.
+                The Service is not intended for individuals under the age of 18. We do not knowingly collect personal
+                information from children. If we learn that we have collected personal information from a child under
+                18, we will take steps to delete that information promptly.
               </p>
             </section>
 
             <section>
-              <h3 className="font-semibold mb-2">
-                10. Changes to This Privacy Policy
-              </h3>
+              <h3 className="font-semibold mb-2">10. Changes to This Privacy Policy</h3>
               <p>
-                We may update this Privacy Policy from time to time. We will
-                notify you of any material changes by posting the updated policy
-                and updating the &quot;Last updated&quot; date at the top of
-                this page. Continued use of the Service after changes
-                constitutes acceptance of the updated Privacy Policy.
+                We may update this Privacy Policy from time to time. We will notify you of any material changes by
+                posting the updated policy and updating the &quot;Last updated&quot; date at the top of this page.
+                Continued use of the Service after changes constitutes acceptance of the updated Privacy Policy.
               </p>
             </section>
 
             <section>
               <h3 className="font-semibold mb-2">11. Contact Information</h3>
               <p>
-                If you have any questions or concerns about this Privacy Policy
-                or our data practices, please contact the platform
-                administrator.
+                If you have any questions or concerns about this Privacy Policy or our data practices, please contact
+                the platform administrator.
               </p>
             </section>
           </div>

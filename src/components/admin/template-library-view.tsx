@@ -10,10 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TemplateLibraryViewProps } from '@/types/template-library';
 
-export function TemplateLibraryView({
-  item,
-  isAdmin,
-}: TemplateLibraryViewProps) {
+export function TemplateLibraryView({ item, isAdmin }: TemplateLibraryViewProps) {
   const t = useTranslations('app');
   const [copied, setCopied] = useState(false);
 
@@ -53,13 +50,9 @@ export function TemplateLibraryView({
         </CardHeader>
         <CardContent>
           {item.description ? (
-            <p className="whitespace-pre-wrap wrap-break-word">
-              {item.description}
-            </p>
+            <p className="whitespace-pre-wrap wrap-break-word">{item.description}</p>
           ) : (
-            <p className="text-muted-foreground">
-              {t('noDescriptionProvided')}
-            </p>
+            <p className="text-muted-foreground">{t('noDescriptionProvided')}</p>
           )}
         </CardContent>
       </Card>
@@ -71,9 +64,7 @@ export function TemplateLibraryView({
         <CardContent>
           {item.setupGuide ? (
             <article className="prose max-w-none dark:prose-invert">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {item.setupGuide}
-              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.setupGuide}</ReactMarkdown>
             </article>
           ) : (
             <p className="text-muted-foreground">{t('noSetupGuideProvided')}</p>
@@ -86,9 +77,7 @@ export function TemplateLibraryView({
           <CardTitle>{t('workflowJson')}</CardTitle>
           <Button variant="outline" size="sm" onClick={handleCopy}>
             <Copy className="h-4 w-4" />
-            <span>
-              {copied ? t('copiedToClipboard') : t('copyToClipboard')}
-            </span>
+            <span>{copied ? t('copiedToClipboard') : t('copyToClipboard')}</span>
           </Button>
         </CardHeader>
         <CardContent>

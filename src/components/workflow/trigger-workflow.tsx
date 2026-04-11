@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Zap } from 'lucide-react';
 import { Workflow, WorkflowParam } from '@/types/workflow';
@@ -87,10 +81,7 @@ export function TriggerWorkflow({ workflow }: TriggerWorkflowProps) {
   const renderParamInput = (param: WorkflowParam) => {
     if (param.type === 'select' && param.options?.length) {
       return (
-        <Select
-          value={paramValues[param.key] ?? ''}
-          onValueChange={(v) => setParam(param.key, v)}
-        >
+        <Select value={paramValues[param.key] ?? ''} onValueChange={(v) => setParam(param.key, v)}>
           <SelectTrigger className={fieldErrors[param.key] ? 'border-destructive' : ''}>
             <SelectValue />
           </SelectTrigger>
@@ -135,9 +126,7 @@ export function TriggerWorkflow({ workflow }: TriggerWorkflowProps) {
           <Zap className="h-5 w-5" />
           {workflow.name}
         </CardTitle>
-        {workflow.description && (
-          <p className="text-sm text-muted-foreground">{workflow.description}</p>
-        )}
+        {workflow.description && <p className="text-sm text-muted-foreground">{workflow.description}</p>}
       </CardHeader>
       <CardContent className="space-y-4">
         {params.map((param) => (
@@ -148,25 +137,17 @@ export function TriggerWorkflow({ workflow }: TriggerWorkflowProps) {
             </Label>
             {renderParamInput(param)}
             {fieldErrors[param.key] && (
-              <p className="text-[0.8rem] font-medium text-destructive">
-                {fieldErrors[param.key]}
-              </p>
+              <p className="text-[0.8rem] font-medium text-destructive">{fieldErrors[param.key]}</p>
             )}
           </div>
         ))}
 
-        <Button
-          onClick={handleTrigger}
-          disabled={isLoading}
-          className="w-full"
-        >
+        <Button onClick={handleTrigger} disabled={isLoading} className="w-full">
           <Play className="h-4 w-4 mr-2" />
           {isLoading ? t('triggering') : t('triggerWorkflow')}
         </Button>
 
-        {error && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
         {response !== null && (
           <div className="rounded-md border bg-muted">

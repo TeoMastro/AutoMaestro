@@ -25,9 +25,7 @@ export default async function TriggerLogPage({ params }: TriggerLogPageProps) {
     return (
       <div className="container mx-auto py-6">
         <BreadcrumbSetter segment={id} label={logDetails.workflowName} />
-        <TriggerLogView
-          log={logDetails}
-        />
+        <TriggerLogView log={logDetails} />
       </div>
     );
   } catch (error) {

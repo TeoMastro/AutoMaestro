@@ -27,11 +27,7 @@ export default async function ChatSessionPage({ params }: ChatSessionPageProps) 
   return (
     <div className="container mx-auto py-6">
       <BreadcrumbSetter segment={sessionId} label={workflowName} />
-      <ChatSessionView
-        sessionId={decodedSessionId}
-        workflowName={workflowName}
-        messages={messages}
-      />
+      <ChatSessionView sessionId={decodedSessionId} workflowName={workflowName} messages={messages} />
     </div>
   );
 }

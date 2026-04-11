@@ -4,9 +4,7 @@ import { UsersTable } from '@/components/admin/user-table';
 import { getUsersWithPagination } from '@/server-actions/user';
 import { AdminUsersPageProps } from '@/types/user';
 
-export default async function AdminUsersPage({
-  searchParams,
-}: AdminUsersPageProps) {
+export default async function AdminUsersPage({ searchParams }: AdminUsersPageProps) {
   const session = await getSession();
 
   if (!session || session.user.role !== 'ADMIN') {
@@ -14,8 +12,7 @@ export default async function AdminUsersPage({
   }
 
   const params = await searchParams;
-  const { users, totalCount, totalPages, currentPage, limit } =
-    await getUsersWithPagination(params);
+  const { users, totalCount, totalPages, currentPage, limit } = await getUsersWithPagination(params);
 
   return (
     <div className="container mx-auto py-6">

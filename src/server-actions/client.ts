@@ -3,22 +3,13 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { UserFormState } from '@/types/user';
-import {
-  createUserSchema,
-  formatZodErrors,
-} from '@/lib/validation-schemas';
+import { createUserSchema, formatZodErrors } from '@/lib/validation-schemas';
 import { Role, Status } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import {
-  checkAdminOrManagerAuth,
-  getManagerCompanyIds,
-} from '@/lib/auth-helpers';
+import { checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
 
-export async function createClientAction(
-  prevState: UserFormState,
-  formData: FormData
-): Promise<UserFormState> {
+export async function createClientAction(prevState: UserFormState, formData: FormData): Promise<UserFormState> {
   let companyId = '';
 
   try {
@@ -67,22 +58,18 @@ export async function createClientAction(
     const supabaseAdmin = createAdminClient();
 
     // Create the auth user via admin API
-    const { data: authData, error: authError } =
-      await supabaseAdmin.auth.admin.createUser({
-        email: trimmedEmail,
-        password: parsed.data.password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: parsed.data.first_name.trim(),
-          last_name: parsed.data.last_name.trim(),
-        },
-      });
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: trimmedEmail,
+      password: parsed.data.password,
+      email_confirm: true,
+      user_metadata: {
+        first_name: parsed.data.first_name.trim(),
+        last_name: parsed.data.last_name.trim(),
+      },
+    });
 
     if (authError) {
-      if (
-        authError.message.includes('already') ||
-        authError.message.includes('duplicate')
-      ) {
+      if (authError.message.includes('already') || authError.message.includes('duplicate')) {
         return {
           success: false,
           errors: {},

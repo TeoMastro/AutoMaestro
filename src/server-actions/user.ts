@@ -2,31 +2,14 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import {
-  GetUsersParams,
-  GetUsersResult,
-  GetUsersResultWithoutPagination,
-  User,
-  UserFormState,
-} from '@/types/user';
-import {
-  createUserSchema,
-  formatZodErrors,
-  updateUserSchema,
-} from '@/lib/validation-schemas';
+import { GetUsersParams, GetUsersResult, GetUsersResultWithoutPagination, User, UserFormState } from '@/types/user';
+import { createUserSchema, formatZodErrors, updateUserSchema } from '@/lib/validation-schemas';
 import { Role, Status } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import {
-  checkAdminAuth,
-  checkAdminOrManagerAuth,
-  getManagerCompanyIds,
-} from '@/lib/auth-helpers';
+import { checkAdminAuth, checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
 
-export async function createUserAction(
-  prevState: UserFormState,
-  formData: FormData
-): Promise<UserFormState> {
+export async function createUserAction(prevState: UserFormState, formData: FormData): Promise<UserFormState> {
   try {
     const session = await checkAdminOrManagerAuth();
     const isManager = session.user.role === Role.MANAGER;
@@ -78,22 +61,18 @@ export async function createUserAction(
     const supabaseAdmin = createAdminClient();
 
     // Create the auth user via admin API
-    const { data: authData, error: authError } =
-      await supabaseAdmin.auth.admin.createUser({
-        email: trimmedEmail,
-        password: parsed.data.password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: parsed.data.first_name.trim(),
-          last_name: parsed.data.last_name.trim(),
-        },
-      });
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: trimmedEmail,
+      password: parsed.data.password,
+      email_confirm: true,
+      user_metadata: {
+        first_name: parsed.data.first_name.trim(),
+        last_name: parsed.data.last_name.trim(),
+      },
+    });
 
     if (authError) {
-      if (
-        authError.message.includes('already') ||
-        authError.message.includes('duplicate')
-      ) {
+      if (authError.message.includes('already') || authError.message.includes('duplicate')) {
         return {
           success: false,
           errors: {},
@@ -178,11 +157,7 @@ export async function updateUserAction(
     if (isManager) {
       data.role = Role.CLIENT;
       const supabaseCheck = createAdminClient();
-      const { data: targetUser } = await supabaseCheck
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
+      const { data: targetUser } = await supabaseCheck.from('profiles').select('role').eq('id', userId).single();
       if (!targetUser || targetUser.role !== Role.CLIENT) {
         throw new Error('Unauthorized');
       }
@@ -214,11 +189,7 @@ export async function updateUserAction(
     const supabaseAdmin = createAdminClient();
 
     // Check user exists
-    const { data: existingUser } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('id', userId)
-      .single();
+    const { data: existingUser } = await supabaseAdmin.from('profiles').select('id').eq('id', userId).single();
 
     if (!existingUser) {
       return {
@@ -316,11 +287,7 @@ export async function deleteUserAction(userId: string) {
     const supabaseAdmin = createAdminClient();
 
     // Check user exists and verify manager access
-    const { data: existingUser } = await supabaseAdmin
-      .from('profiles')
-      .select('id, role')
-      .eq('id', userId)
-      .single();
+    const { data: existingUser } = await supabaseAdmin.from('profiles').select('id, role').eq('id', userId).single();
 
     if (!existingUser) {
       throw new Error('User not found');
@@ -376,9 +343,7 @@ export async function getUserById(userId: string) {
 
     const { data: user, error } = await supabaseAdmin
       .from('profiles')
-      .select(
-        'id, first_name, last_name, email, role, status, created_at, updated_at'
-      )
+      .select('id, first_name, last_name, email, role, status, created_at, updated_at')
       .eq('id', userId)
       .single();
 
@@ -406,11 +371,7 @@ export async function getUserById(userId: string) {
   }
 }
 
-async function fetchUsers(
-  params: GetUsersParams & { paginate?: boolean },
-  callerRole?: string,
-  callerId?: string
-) {
+async function fetchUsers(params: GetUsersParams & { paginate?: boolean }, callerRole?: string, callerId?: string) {
   const page = parseInt(params.page || '1');
   const limit = parseInt(params.limit || '10');
   const search = params.search || '';
@@ -445,9 +406,7 @@ async function fetchUsers(
   if (callerRole === Role.MANAGER && callerId) {
     const managerCompanyIds = await getManagerCompanyIds(callerId);
     if (managerCompanyIds.length === 0) {
-      return paginate
-        ? { users: [], totalCount: 0, totalPages: 0, currentPage: page, limit }
-        : { users: [] };
+      return paginate ? { users: [], totalCount: 0, totalPages: 0, currentPage: page, limit } : { users: [] };
     }
     // Get user IDs in manager's companies
     const { data: companyUsers } = await supabaseAdmin
@@ -456,9 +415,7 @@ async function fetchUsers(
       .in('company_id', managerCompanyIds);
     const userIds = (companyUsers || []).map((cu) => cu.user_id);
     if (userIds.length === 0) {
-      return paginate
-        ? { users: [], totalCount: 0, totalPages: 0, currentPage: page, limit }
-        : { users: [] };
+      return paginate ? { users: [], totalCount: 0, totalPages: 0, currentPage: page, limit } : { users: [] };
     }
     query = query.in('id', userIds).eq('role', Role.CLIENT);
   }
@@ -531,25 +488,13 @@ async function fetchUsers(
   }
 }
 
-export async function getUsersWithPagination(
-  params: GetUsersParams
-): Promise<GetUsersResult> {
+export async function getUsersWithPagination(params: GetUsersParams): Promise<GetUsersResult> {
   const session = await checkAdminOrManagerAuth();
-  return fetchUsers(
-    { ...params, paginate: true },
-    session.user.role,
-    session.user.id
-  ) as Promise<GetUsersResult>;
+  return fetchUsers({ ...params, paginate: true }, session.user.role, session.user.id) as Promise<GetUsersResult>;
 }
 
-export async function getAllUsersForExport(
-  params: Omit<GetUsersParams, 'page' | 'limit'>
-): Promise<User[]> {
+export async function getAllUsersForExport(params: Omit<GetUsersParams, 'page' | 'limit'>): Promise<User[]> {
   const session = await checkAdminOrManagerAuth();
-  const result = await fetchUsers(
-    { ...params, paginate: false },
-    session.user.role,
-    session.user.id
-  );
+  const result = await fetchUsers({ ...params, paginate: false }, session.user.role, session.user.id);
   return (result as GetUsersResultWithoutPagination).users;
 }

@@ -64,10 +64,7 @@ export const signupSchema = z
       .min(8, 'passwordTooShort')
       .regex(/[a-z]/, 'passwordNeedsLowercase')
       .regex(/\d/, 'passwordNeedsNumber')
-      .regex(
-        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
-        'passwordNeedsSpecialChar'
-      ),
+      .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/, 'passwordNeedsSpecialChar'),
     confirmPassword: z.string(),
     accept_tos: z.literal(true, {
       error: 'acceptTosRequired',
@@ -87,10 +84,7 @@ export const createUserSchema = z.object({
     .min(8, 'passwordTooShort')
     .regex(/[a-z]/, 'passwordNeedsLowercase')
     .regex(/\d/, 'passwordNeedsNumber')
-    .regex(
-      /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
-      'passwordNeedsSpecialChar'
-    ),
+    .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/, 'passwordNeedsSpecialChar'),
   role: z.enum([Role.ADMIN, Role.MANAGER, Role.CLIENT]),
   status: z.enum([Status.ACTIVE, Status.INACTIVE, Status.UNVERIFIED]),
 });
@@ -141,10 +135,7 @@ export const resetPasswordSchema = z
       .min(8, 'passwordTooShort')
       .regex(/[a-z]/, 'passwordNeedsLowercase')
       .regex(/\d/, 'passwordNeedsNumber')
-      .regex(
-        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
-        'passwordNeedsSpecialChar'
-      ),
+      .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/, 'passwordNeedsSpecialChar'),
     confirmPassword: z.string().min(1, 'confirmPasswordRequired'),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -165,10 +156,7 @@ export const changePasswordSchema = z
       .min(8, 'passwordTooShort')
       .regex(/[a-z]/, 'passwordNeedsLowercase')
       .regex(/\d/, 'passwordNeedsNumber')
-      .regex(
-        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
-        'passwordNeedsSpecialChar'
-      ),
+      .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/, 'passwordNeedsSpecialChar'),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

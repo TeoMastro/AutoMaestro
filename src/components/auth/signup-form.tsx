@@ -6,14 +6,7 @@ import { signUpAction } from '@/server-actions/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { SignupFormState } from '@/types/auth';
 import { InfoAlert } from '../info-alert';
 import Link from 'next/link';
@@ -37,10 +30,7 @@ export function SignupForm() {
     globalError: null,
   };
 
-  const actionWrapper = async (
-    prevState: SignupFormState,
-    formData: FormData
-  ): Promise<SignupFormState> => {
+  const actionWrapper = async (prevState: SignupFormState, formData: FormData): Promise<SignupFormState> => {
     return signUpAction(prevState, formData);
   };
 
@@ -62,9 +52,7 @@ export function SignupForm() {
 
       <form action={formAction} noValidate>
         <CardContent className="space-y-4 mb-5">
-          {state.globalError && (
-            <InfoAlert message={t(state.globalError)} type="error" />
-          )}
+          {state.globalError && <InfoAlert message={t(state.globalError)} type="error" />}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="first_name">{t('firstName')}</Label>
@@ -75,11 +63,7 @@ export function SignupForm() {
                 defaultValue={state.formData.first_name}
                 className={state.errors.first_name ? 'border-red-500' : ''}
               />
-              {state.errors.first_name && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('first_name')}
-                </p>
-              )}
+              {state.errors.first_name && <p className="text-sm text-red-500">{getErrorMessage('first_name')}</p>}
             </div>
 
             <div className="space-y-2">
@@ -91,11 +75,7 @@ export function SignupForm() {
                 defaultValue={state.formData.last_name}
                 className={state.errors.last_name ? 'border-red-500' : ''}
               />
-              {state.errors.last_name && (
-                <p className="text-sm text-red-500">
-                  {getErrorMessage('last_name')}
-                </p>
-              )}
+              {state.errors.last_name && <p className="text-sm text-red-500">{getErrorMessage('last_name')}</p>}
             </div>
           </div>
 
@@ -109,9 +89,7 @@ export function SignupForm() {
               defaultValue={state.formData.email}
               className={state.errors.email ? 'border-red-500' : ''}
             />
-            {state.errors.email && (
-              <p className="text-sm text-red-500">{getErrorMessage('email')}</p>
-            )}
+            {state.errors.email && <p className="text-sm text-red-500">{getErrorMessage('email')}</p>}
           </div>
 
           <div className="space-y-2">
@@ -123,11 +101,7 @@ export function SignupForm() {
               placeholder={t('passwordPlaceholder')}
               className={state.errors.password ? 'border-red-500' : ''}
             />
-            {state.errors.password && (
-              <p className="text-sm text-red-500">
-                {getErrorMessage('password')}
-              </p>
-            )}
+            {state.errors.password && <p className="text-sm text-red-500">{getErrorMessage('password')}</p>}
           </div>
 
           <div className="space-y-2">
@@ -140,9 +114,7 @@ export function SignupForm() {
               className={state.errors.confirmPassword ? 'border-red-500' : ''}
             />
             {state.errors.confirmPassword && (
-              <p className="text-sm text-red-500">
-                {getErrorMessage('confirmPassword')}
-              </p>
+              <p className="text-sm text-red-500">{getErrorMessage('confirmPassword')}</p>
             )}
           </div>
 
@@ -154,24 +126,12 @@ export function SignupForm() {
                 name="accept_tos"
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
-              <Label
-                htmlFor="accept_tos"
-                className="text-sm text-muted-foreground"
-              >
-                {t('acceptTosPrefix')}{' '}
-                <TermsDialog title="Terms of Service" isInSidebar={false} />{' '}
-                {t('acceptTosConjunction')}{' '}
-                <PrivacyPolicyDialog
-                  title="Privacy Policy"
-                  isInSidebar={false}
-                />
+              <Label htmlFor="accept_tos" className="text-sm text-muted-foreground">
+                {t('acceptTosPrefix')} <TermsDialog title="Terms of Service" isInSidebar={false} />{' '}
+                {t('acceptTosConjunction')} <PrivacyPolicyDialog title="Privacy Policy" isInSidebar={false} />
               </Label>
             </div>
-            {state.errors.accept_tos && (
-              <p className="text-sm text-red-500">
-                {getErrorMessage('accept_tos')}
-              </p>
-            )}
+            {state.errors.accept_tos && <p className="text-sm text-red-500">{getErrorMessage('accept_tos')}</p>}
           </div>
         </CardContent>
 
@@ -182,10 +142,7 @@ export function SignupForm() {
 
           <p className="text-center text-sm text-muted-foreground">
             {t('alreadyHaveAccount')}{' '}
-            <Link
-              href="/auth/signin"
-              className="font-medium text-primary hover:underline"
-            >
+            <Link href="/auth/signin" className="font-medium text-primary hover:underline">
               {tSignIn('signIn')}
             </Link>
           </p>

@@ -3,12 +3,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Status } from '@/lib/constants';
 import { getDashboardData } from '@/server-actions/dashboard';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardStatsCards } from '@/components/dashboard/dashboard-stats';
 import { RecentChatTable } from '@/components/dashboard/recent-chat-table';
 import { RecentTriggerTable } from '@/components/dashboard/recent-trigger-table';
@@ -30,10 +25,7 @@ export default async function DashboardPage() {
   const now = new Date();
   now.setHours(23, 59, 59, 999);
 
-  const data = await getDashboardData(
-    startOfMonth.toISOString(),
-    now.toISOString()
-  );
+  const data = await getDashboardData(startOfMonth.toISOString(), now.toISOString());
 
   const hasWorkflows = data.stats.totalWorkflows > 0;
 
@@ -42,9 +34,7 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold">
           {t('welcomeBackName', {
-            name:
-              `${session.user.first_name || ''} ${session.user.last_name || ''}`.trim() ||
-              session.user.email,
+            name: `${session.user.first_name || ''} ${session.user.last_name || ''}`.trim() || session.user.email,
           })}
         </h1>
       </div>
@@ -67,9 +57,7 @@ export default async function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {data.stats.totalWorkflows}
-              </div>
+              <div className="text-2xl font-bold">{data.stats.totalWorkflows}</div>
               <p className="text-xs text-muted-foreground">
                 {t('activeInactiveCount', {
                   active: data.stats.activeWorkflows,

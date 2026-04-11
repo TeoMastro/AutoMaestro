@@ -15,7 +15,7 @@ export default async function ManageWorkflowViewPage({
 }) {
   const session = await getSession();
 
-  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 
@@ -24,9 +24,7 @@ export default async function ManageWorkflowViewPage({
 
   if (!workflow) notFound();
 
-  const documents = workflow.hasKnowledgeBase
-    ? await getDocumentsForWorkflow(workflow.id)
-    : [];
+  const documents = workflow.hasKnowledgeBase ? await getDocumentsForWorkflow(workflow.id) : [];
 
   return (
     <div className="container mx-auto py-6">

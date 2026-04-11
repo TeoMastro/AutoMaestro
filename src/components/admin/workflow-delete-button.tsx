@@ -18,13 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
 
-export function WorkflowDeleteButton({
-  workflowId,
-  workflowName,
-}: {
-  workflowId: string;
-  workflowName: string;
-}) {
+export function WorkflowDeleteButton({ workflowId, workflowName }: { workflowId: string; workflowName: string }) {
   const router = useRouter();
   const t = useTranslations('app');
   const [isPending, startTransition] = useTransition();
@@ -51,9 +45,7 @@ export function WorkflowDeleteButton({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('deleteWorkflowConfirmation', { name: workflowName })}
-          </AlertDialogDescription>
+          <AlertDialogDescription>{t('deleteWorkflowConfirmation', { name: workflowName })}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>

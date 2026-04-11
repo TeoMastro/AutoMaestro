@@ -12,18 +12,12 @@ export default async function CreateClientPage({
 }) {
   const session = await getSession();
 
-  if (
-    !session ||
-    (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)
-  ) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 
   const resolvedSearchParams = await searchParams;
-  const companyId =
-    typeof resolvedSearchParams.company_id === 'string'
-      ? resolvedSearchParams.company_id
-      : undefined;
+  const companyId = typeof resolvedSearchParams.company_id === 'string' ? resolvedSearchParams.company_id : undefined;
 
   if (!companyId) {
     notFound();

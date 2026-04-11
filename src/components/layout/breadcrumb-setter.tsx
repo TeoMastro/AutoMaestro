@@ -3,13 +3,7 @@
 import { useEffect } from 'react';
 import { useBreadcrumbOverrides } from '@/components/layout/breadcrumb-context';
 
-export function BreadcrumbSetter({
-  segment,
-  label,
-}: {
-  segment: string;
-  label: string;
-}) {
+export function BreadcrumbSetter({ segment, label }: { segment: string; label: string }) {
   const { setOverride } = useBreadcrumbOverrides();
 
   useEffect(() => {

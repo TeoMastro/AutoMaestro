@@ -1,27 +1,14 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import {
-  checkAdminOrManagerAuth,
-  getManagerCompanyIds,
-  checkManagerCompanyAccess,
-} from '@/lib/auth-helpers';
+import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
 import { revalidatePath } from 'next/cache';
 import { Role, WorkflowType } from '@/lib/constants';
-import {
-  createWorkflowSchema,
-  updateWorkflowSchema,
-  formatZodErrors,
-} from '@/lib/validation-schemas';
+import { createWorkflowSchema, updateWorkflowSchema, formatZodErrors } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
-import type {
-  Workflow,
-  WorkflowFormState,
-  GetWorkflowsParams,
-  GetWorkflowsResult,
-} from '@/types/workflow';
+import type { Workflow, WorkflowFormState, GetWorkflowsParams, GetWorkflowsResult } from '@/types/workflow';
 
 function mapWorkflow(w: Record<string, unknown>): Workflow {
   const config = (w.config as Record<string, unknown>) ?? {};
@@ -140,13 +127,10 @@ export async function createWorkflowAction(
         sql: partitionSql,
       });
       if (partitionError) {
-        logger.warn(
-          'Failed to create KB partition (may need manual creation)',
-          {
-            workflowId: newWorkflow.id,
-            error: partitionError.message,
-          }
-        );
+        logger.warn('Failed to create KB partition (may need manual creation)', {
+          workflowId: newWorkflow.id,
+          error: partitionError.message,
+        });
       }
     }
 
@@ -261,8 +245,7 @@ export async function updateWorkflowAction(
         name: parsed.data.name.trim(),
         description: parsed.data.description?.trim() || null,
         webhook_url: parsed.data.webhook_url.trim(),
-        has_knowledge_base:
-          existingType === 'trigger' ? false : parsed.data.has_knowledge_base,
+        has_knowledge_base: existingType === 'trigger' ? false : parsed.data.has_knowledge_base,
         is_active: parsed.data.is_active,
         config: updatedConfig,
       })
@@ -323,10 +306,7 @@ export async function deleteWorkflowAction(workflowId: string) {
       // Ignore errors — partition may not exist
     }
 
-    const { error } = await supabase
-      .from('workflows')
-      .delete()
-      .eq('id', workflowId);
+    const { error } = await supabase.from('workflows').delete().eq('id', workflowId);
 
     if (error) throw error;
 
@@ -346,18 +326,12 @@ export async function deleteWorkflowAction(workflowId: string) {
 // Admin: Data fetches
 // ============================================================
 
-export async function getWorkflowById(
-  workflowId: string
-): Promise<Workflow | false> {
+export async function getWorkflowById(workflowId: string): Promise<Workflow | false> {
   try {
     const session = await checkAdminOrManagerAuth();
 
     const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from('workflows')
-      .select('*, companies(name)')
-      .eq('id', workflowId)
-      .single();
+    const { data, error } = await supabase.from('workflows').select('*, companies(name)').eq('id', workflowId).single();
 
     if (error || !data) return false;
 
@@ -376,9 +350,7 @@ export async function getWorkflowById(
   }
 }
 
-export async function getWorkflowsWithPagination(
-  params: GetWorkflowsParams
-): Promise<GetWorkflowsResult> {
+export async function getWorkflowsWithPagination(params: GetWorkflowsParams): Promise<GetWorkflowsResult> {
   try {
     const session = await checkAdminOrManagerAuth();
 
@@ -392,9 +364,7 @@ export async function getWorkflowsWithPagination(
     const offset = (page - 1) * limit;
 
     const supabase = createAdminClient();
-    let query = supabase
-      .from('workflows')
-      .select('*, companies(name)', { count: 'exact' });
+    let query = supabase.from('workflows').select('*, companies(name)', { count: 'exact' });
 
     // If MANAGER, auto-filter by their company IDs
     if (session.user.role === Role.MANAGER) {
@@ -418,12 +388,7 @@ export async function getWorkflowsWithPagination(
     if (typeFilter !== 'all') query = query.eq('type', typeFilter);
     if (companyFilter) query = query.eq('company_id', companyFilter);
 
-    const dbSort =
-      sortField === 'createdAt'
-        ? 'created_at'
-        : sortField === 'updatedAt'
-          ? 'updated_at'
-          : sortField;
+    const dbSort = sortField === 'createdAt' ? 'created_at' : sortField === 'updatedAt' ? 'updated_at' : sortField;
 
     query = query.order(dbSort, { ascending: sortDirection === 'asc' });
     query = query.range(offset, offset + limit - 1);
@@ -431,9 +396,7 @@ export async function getWorkflowsWithPagination(
     const { data, count, error } = await query;
     if (error) throw error;
 
-    const workflows = (data || []).map((w) =>
-      mapWorkflow(w as Record<string, unknown>)
-    );
+    const workflows = (data || []).map((w) => mapWorkflow(w as Record<string, unknown>));
     const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
@@ -495,15 +458,10 @@ export async function rerollWorkflowTokenAction(
 // User: fetch own assigned workflows (no admin check — RLS enforced)
 // ============================================================
 
-export async function getUserWorkflows(
-  companyId?: string
-): Promise<Workflow[]> {
+export async function getUserWorkflows(companyId?: string): Promise<Workflow[]> {
   try {
     const supabase = await createClient();
-    let query = supabase
-      .from('workflows')
-      .select('*, companies(name)')
-      .eq('is_active', true);
+    let query = supabase.from('workflows').select('*, companies(name)').eq('is_active', true);
 
     if (companyId) {
       query = query.eq('company_id', companyId);

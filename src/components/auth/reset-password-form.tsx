@@ -4,13 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
@@ -55,10 +49,7 @@ export function ResetPasswordForm() {
         return;
       }
 
-      router.push(
-        '/auth/signin?message=' +
-          encodeURIComponent(t('passwordResetSuccess'))
-      );
+      router.push('/auth/signin?message=' + encodeURIComponent(t('passwordResetSuccess')));
     } catch {
       setGlobalError(t('somethingWentWrong'));
       setIsSubmitting(false);
@@ -73,9 +64,7 @@ export function ResetPasswordForm() {
 
       <form action={handleSubmit} noValidate>
         <CardContent className="space-y-4 mb-5">
-          {globalError && (
-            <InfoAlert message={globalError} type="error" />
-          )}
+          {globalError && <InfoAlert message={globalError} type="error" />}
 
           <div className="space-y-2">
             <Label htmlFor="password">{t('newPassword')}</Label>
@@ -87,11 +76,7 @@ export function ResetPasswordForm() {
               disabled={isSubmitting}
               className={fieldErrors.password ? 'border-red-500' : ''}
             />
-            {fieldErrors.password && (
-              <p className="text-sm text-red-500">
-                {t(fieldErrors.password[0])}
-              </p>
-            )}
+            {fieldErrors.password && <p className="text-sm text-red-500">{t(fieldErrors.password[0])}</p>}
           </div>
 
           <div className="space-y-2">
@@ -104,11 +89,7 @@ export function ResetPasswordForm() {
               disabled={isSubmitting}
               className={fieldErrors.confirmPassword ? 'border-red-500' : ''}
             />
-            {fieldErrors.confirmPassword && (
-              <p className="text-sm text-red-500">
-                {t(fieldErrors.confirmPassword[0])}
-              </p>
-            )}
+            {fieldErrors.confirmPassword && <p className="text-sm text-red-500">{t(fieldErrors.confirmPassword[0])}</p>}
           </div>
         </CardContent>
 
@@ -119,10 +100,7 @@ export function ResetPasswordForm() {
 
           <p className="text-center text-sm text-muted-foreground">
             {t('rememberPassword')}{' '}
-            <Link
-              href="/auth/signin"
-              className="font-medium text-primary hover:underline"
-            >
+            <Link href="/auth/signin" className="font-medium text-primary hover:underline">
               {t('signIn')}
             </Link>
           </p>

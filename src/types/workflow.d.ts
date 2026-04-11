@@ -2,7 +2,6 @@ import { WorkflowType, DocumentStatus } from '@/lib/constants';
 import { User } from '@/types/user';
 import { Company } from '@/types/company';
 
-
 export type WorkflowParam = {
   key: string;
   label: string;

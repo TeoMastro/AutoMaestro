@@ -14,11 +14,7 @@ import Link from 'next/link';
 
 import { InfoAlert } from '@/components/info-alert';
 
-export function WorkflowView({
-  workflow,
-  documents = [],
-  searchParams,
-}: WorkflowViewProps) {
+export function WorkflowView({ workflow, documents = [], searchParams }: WorkflowViewProps) {
   const t = useTranslations('app');
   const errorMsg = searchParams?.error as string | undefined;
 
@@ -40,10 +36,7 @@ export function WorkflowView({
               <Edit className="h-4 w-4" />
             </Link>
           </Button>
-          <WorkflowDeleteButton
-            workflowId={workflow.id}
-            workflowName={workflow.name}
-          />
+          <WorkflowDeleteButton workflowId={workflow.id} workflowName={workflow.name} />
         </div>
       </div>
 
@@ -68,45 +61,23 @@ export function WorkflowView({
               )}
               {workflow.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    {t('description')}
-                  </label>
+                  <label className="text-sm font-medium text-muted-foreground">{t('description')}</label>
                   <p className="mt-1">{workflow.description}</p>
                 </div>
               )}
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('workflowType')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('workflowType')}</label>
                 <div className="mt-1">
-                  <Badge
-                    variant="outline"
-                    className={
-                      workflow.type === 'chat'
-                        ? badgeStyles.green
-                        : badgeStyles.slate
-                    }
-                  >
-                    {workflow.type === 'chat'
-                      ? t('workflowTypeChat')
-                      : t('workflowTypeTrigger')}
+                  <Badge variant="outline" className={workflow.type === 'chat' ? badgeStyles.green : badgeStyles.slate}>
+                    {workflow.type === 'chat' ? t('workflowTypeChat') : t('workflowTypeTrigger')}
                   </Badge>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  {t('status')}
-                </label>
+                <label className="text-sm font-medium text-muted-foreground">{t('status')}</label>
                 <div className="mt-1">
-                  <Badge
-                    variant="outline"
-                    className={
-                      workflow.isActive ? badgeStyles.green : badgeStyles.red
-                    }
-                  >
-                    {workflow.isActive
-                      ? t('activeStatus')
-                      : t('inactiveStatus')}
+                  <Badge variant="outline" className={workflow.isActive ? badgeStyles.green : badgeStyles.red}>
+                    {workflow.isActive ? t('activeStatus') : t('inactiveStatus')}
                   </Badge>
                 </div>
               </div>
@@ -117,9 +88,7 @@ export function WorkflowView({
                   <Globe className="h-3 w-3" />
                   {t('workflowWebhookUrl')}
                 </label>
-                <p className="mt-1 text-sm font-mono break-all text-muted-foreground">
-                  {workflow.webhookUrl}
-                </p>
+                <p className="mt-1 text-sm font-mono break-all text-muted-foreground">{workflow.webhookUrl}</p>
               </div>
               {workflow.type === 'chat' && (
                 <div>
@@ -130,23 +99,14 @@ export function WorkflowView({
                   <div className="mt-1">
                     <Badge
                       variant="outline"
-                      className={
-                        workflow.hasKnowledgeBase
-                          ? badgeStyles.green
-                          : badgeStyles.slate
-                      }
+                      className={workflow.hasKnowledgeBase ? badgeStyles.green : badgeStyles.slate}
                     >
-                      {workflow.hasKnowledgeBase
-                        ? t('active')
-                        : t('inactiveStatus')}
+                      {workflow.hasKnowledgeBase ? t('active') : t('inactiveStatus')}
                     </Badge>
                   </div>
                 </div>
               )}
-              <WorkflowTokenPanel
-                workflowId={workflow.id}
-                initialToken={workflow.token}
-              />
+              <WorkflowTokenPanel workflowId={workflow.id} initialToken={workflow.token} />
             </div>
           </div>
         </CardContent>
@@ -158,12 +118,7 @@ export function WorkflowView({
         {workflow.type === 'chat' ? (
           <>
             <div className="space-y-6">
-              {workflow.hasKnowledgeBase && (
-                <DocumentManager
-                  workflowId={workflow.id}
-                  initialDocuments={documents}
-                />
-              )}
+              {workflow.hasKnowledgeBase && <DocumentManager workflowId={workflow.id} initialDocuments={documents} />}
             </div>
             <div className="space-y-6">
               <HostedChat workflow={workflow} />

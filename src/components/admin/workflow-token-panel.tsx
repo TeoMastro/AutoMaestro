@@ -45,16 +45,8 @@ export function WorkflowTokenPanel({ workflowId, initialToken }: WorkflowTokenPa
       </label>
       <p className="text-xs text-muted-foreground mt-0.5 mb-2">{t('workflowTokenHint')}</p>
       <div className="flex items-center gap-2">
-        <code className="flex-1 rounded bg-muted px-3 py-2 text-xs font-mono break-all select-all">
-          {token}
-        </code>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          title={t('copyToken')}
-          onClick={handleCopy}
-        >
+        <code className="flex-1 rounded bg-muted px-3 py-2 text-xs font-mono break-all select-all">{token}</code>
+        <Button type="button" variant="outline" size="icon" title={t('copyToken')} onClick={handleCopy}>
           {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
         </Button>
         <Button
@@ -68,9 +60,7 @@ export function WorkflowTokenPanel({ workflowId, initialToken }: WorkflowTokenPa
           <RefreshCw className={`h-4 w-4 ${isPending ? 'animate-spin' : ''}`} />
         </Button>
       </div>
-      {rerollError && (
-        <p className="text-xs text-destructive mt-1">{t('error')}</p>
-      )}
+      {rerollError && <p className="text-xs text-destructive mt-1">{t('error')}</p>}
     </div>
   );
 }

@@ -6,11 +6,7 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MessageSquare, Zap, CheckCircle2, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDashboardStats } from '@/server-actions/dashboard';
@@ -29,11 +25,7 @@ function getEndOfDay(date: Date): Date {
   return d;
 }
 
-export function DashboardStatsCards({
-  initialStats,
-}: {
-  initialStats: DashboardStats;
-}) {
+export function DashboardStatsCards({ initialStats }: { initialStats: DashboardStats }) {
   const t = useTranslations('app');
   const [stats, setStats] = useState(initialStats);
   const [dateFrom, setDateFrom] = useState<Date>(getStartOfMonth());
@@ -66,10 +58,7 @@ export function DashboardStatsCards({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={cn(
-                'justify-start text-left font-normal',
-                !dateFrom && 'text-muted-foreground'
-              )}
+              className={cn('justify-start text-left font-normal', !dateFrom && 'text-muted-foreground')}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {format(dateFrom, 'MMM d, yyyy')}
@@ -91,10 +80,7 @@ export function DashboardStatsCards({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={cn(
-                'justify-start text-left font-normal',
-                !dateTo && 'text-muted-foreground'
-              )}
+              className={cn('justify-start text-left font-normal', !dateTo && 'text-muted-foreground')}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {format(dateTo, 'MMM d, yyyy')}
@@ -113,12 +99,7 @@ export function DashboardStatsCards({
         </Popover>
       </div>
 
-      <div
-        className={cn(
-          'grid grid-cols-1 sm:grid-cols-3 gap-4 transition-opacity',
-          isPending && 'opacity-50'
-        )}
-      >
+      <div className={cn('grid grid-cols-1 sm:grid-cols-3 gap-4 transition-opacity', isPending && 'opacity-50')}>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -128,9 +109,7 @@ export function DashboardStatsCards({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.chatSessions}</div>
-            <p className="text-xs text-muted-foreground">
-              {t('selectedPeriod')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('selectedPeriod')}</p>
           </CardContent>
         </Card>
 
@@ -143,9 +122,7 @@ export function DashboardStatsCards({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.triggerRuns}</div>
-            <p className="text-xs text-muted-foreground">
-              {t('selectedPeriod')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('selectedPeriod')}</p>
           </CardContent>
         </Card>
 
@@ -157,12 +134,8 @@ export function DashboardStatsCards({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${successRateColor}`}>
-              {stats.triggerSuccessRate}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t('selectedPeriod')}
-            </p>
+            <div className={`text-2xl font-bold ${successRateColor}`}>{stats.triggerSuccessRate}%</div>
+            <p className="text-xs text-muted-foreground">{t('selectedPeriod')}</p>
           </CardContent>
         </Card>
       </div>

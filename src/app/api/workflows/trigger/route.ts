@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -47,7 +50,7 @@ export async function POST(req: NextRequest) {
     let responseText = '';
     let responseData: unknown;
     let fetchError: Error | null = null;
-    
+
     try {
       // Forward to n8n webhook
       n8nResponse = await fetch(workflow.webhook_url, {
@@ -68,12 +71,14 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       fetchError = err as Error;
     }
-    
+
     const durationMs = Math.round(performance.now() - startTime);
     const status = fetchError || (n8nResponse && !n8nResponse.ok) ? 'error' : 'success';
-    const errorMessage = fetchError 
-      ? fetchError.message 
-      : (n8nResponse && !n8nResponse.ok ? `HTTP ${n8nResponse.status}: ${responseText.substring(0, 200)}` : null);
+    const errorMessage = fetchError
+      ? fetchError.message
+      : n8nResponse && !n8nResponse.ok
+        ? `HTTP ${n8nResponse.status}: ${responseText.substring(0, 200)}`
+        : null;
 
     // Extract execution_id if returned by n8n
     let executionId = null;
@@ -92,7 +97,7 @@ export async function POST(req: NextRequest) {
         request_params: params,
         response_data: responseData || null,
         error_message: errorMessage,
-        duration_ms: durationMs
+        duration_ms: durationMs,
       });
 
     if (insertError) {

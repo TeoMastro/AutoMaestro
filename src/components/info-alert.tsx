@@ -52,20 +52,12 @@ export function InfoAlert({ message, type = 'success' }: InfoAlertProps) {
     }
   };
 
-  const {
-    alertClasses,
-    iconClasses,
-    textClasses,
-    buttonHoverClasses,
-    icon: IconComponent,
-  } = getAlertStyles();
+  const { alertClasses, iconClasses, textClasses, buttonHoverClasses, icon: IconComponent } = getAlertStyles();
 
   return (
     <Alert className={`${alertClasses} relative`}>
       <IconComponent className={`h-4 w-4 ${iconClasses}`} />
-      <AlertDescription className={`${textClasses} pr-8`}>
-        {message}
-      </AlertDescription>
+      <AlertDescription className={`${textClasses} pr-8`}>{message}</AlertDescription>
       <Button
         variant="ghost"
         size="sm"

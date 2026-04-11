@@ -16,9 +16,8 @@ export default async function CreateUserPage({
   const companies = callerRole === Role.MANAGER ? await getAllCompanies() : undefined;
 
   const resolvedSearchParams = await searchParams;
-  const preselectedCompanyId = typeof resolvedSearchParams.company_id === 'string'
-    ? resolvedSearchParams.company_id
-    : undefined;
+  const preselectedCompanyId =
+    typeof resolvedSearchParams.company_id === 'string' ? resolvedSearchParams.company_id : undefined;
 
   return (
     <div className="container mx-auto py-6">

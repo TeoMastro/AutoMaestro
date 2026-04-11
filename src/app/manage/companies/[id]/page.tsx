@@ -1,11 +1,7 @@
 import { getSession } from '@/lib/auth-session';
 import { notFound } from 'next/navigation';
 import { CompanyView } from '@/components/admin/company-view';
-import {
-  getCompanyById,
-  getCompanyAssignments,
-  getCompanyLogoSignedUrl,
-} from '@/server-actions/company';
+import { getCompanyById, getCompanyAssignments, getCompanyLogoSignedUrl } from '@/server-actions/company';
 import { getAllUsersForExport } from '@/server-actions/user';
 import { Role } from '@/lib/constants';
 import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
@@ -19,10 +15,7 @@ export default async function ManageCompanyViewPage({
 }) {
   const session = await getSession();
 
-  if (
-    !session ||
-    (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)
-  ) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 

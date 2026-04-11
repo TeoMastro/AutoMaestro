@@ -4,20 +4,14 @@ import { useActionState, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
-import {
-  createTemplateLibraryItemAction,
-  updateTemplateLibraryItemAction,
-} from '@/server-actions/template-library';
+import { createTemplateLibraryItemAction, updateTemplateLibraryItemAction } from '@/server-actions/template-library';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
-import type {
-  TemplateLibraryFormProps,
-  TemplateLibraryFormState,
-} from '@/types/template-library';
+import type { TemplateLibraryFormProps, TemplateLibraryFormState } from '@/types/template-library';
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
@@ -63,15 +57,11 @@ export function TemplateLibraryForm({ item, mode }: TemplateLibraryFormProps) {
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>
-          {mode === 'create' ? t('createTemplateLibraryItem') : t('editTemplateLibraryItem')}
-        </CardTitle>
+        <CardTitle>{mode === 'create' ? t('createTemplateLibraryItem') : t('editTemplateLibraryItem')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={formAction} noValidate className="space-y-4">
-          {state.globalError && (
-            <InfoAlert message={t(state.globalError)} type="error" />
-          )}
+          {state.globalError && <InfoAlert message={t(state.globalError)} type="error" />}
 
           <div className="space-y-2">
             <Label htmlFor="title">{t('templateTitle')}</Label>
@@ -87,12 +77,7 @@ export function TemplateLibraryForm({ item, mode }: TemplateLibraryFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="description">{t('templateDescription')}</Label>
-            <Textarea
-              id="description"
-              name="description"
-              defaultValue={state.formData.description}
-              rows={4}
-            />
+            <Textarea id="description" name="description" defaultValue={state.formData.description} rows={4} />
           </div>
 
           <div className="space-y-2">

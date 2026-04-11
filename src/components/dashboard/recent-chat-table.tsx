@@ -3,14 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Eye } from 'lucide-react';
 import type { RecentChatSession } from '@/types/dashboard';
@@ -29,11 +22,7 @@ function formatRelativeTime(date: Date): string {
   return date.toLocaleDateString();
 }
 
-export function RecentChatTable({
-  sessions,
-}: {
-  sessions: RecentChatSession[];
-}) {
+export function RecentChatTable({ sessions }: { sessions: RecentChatSession[] }) {
   const t = useTranslations('app');
   const router = useRouter();
 
@@ -62,9 +51,7 @@ export function RecentChatTable({
             <TableBody>
               {sessions.map((s) => (
                 <TableRow key={s.sessionId}>
-                  <TableCell className="font-mono text-xs">
-                    {s.sessionId.slice(0, 8)}...
-                  </TableCell>
+                  <TableCell className="font-mono text-xs">{s.sessionId.slice(0, 8)}...</TableCell>
                   <TableCell>{s.workflowName}</TableCell>
                   <TableCell>{s.messageCount}</TableCell>
                   <TableCell className="text-muted-foreground text-xs">
@@ -72,13 +59,7 @@ export function RecentChatTable({
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(`/chat-history/${s.sessionId}`)
-                        }
-                      >
+                      <Button variant="outline" size="sm" onClick={() => router.push(`/chat-history/${s.sessionId}`)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </div>

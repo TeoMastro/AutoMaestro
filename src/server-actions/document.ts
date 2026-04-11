@@ -47,7 +47,12 @@ export async function initiateDocumentUploadAction(
     const fileSize = parseInt(formData.get('file_size')?.toString() ?? '0');
 
     if (!workflowId) {
-      return { success: false, errors: { workflow_id: ['workflowIdRequired'] }, formData: { workflow_id: '' }, globalError: null };
+      return {
+        success: false,
+        errors: { workflow_id: ['workflowIdRequired'] },
+        formData: { workflow_id: '' },
+        globalError: null,
+      };
     }
 
     // Validate file type
@@ -66,11 +71,7 @@ export async function initiateDocumentUploadAction(
     // Admins can access any workflow; regular users must be assigned via company
     if (isAdminOrManager) {
       const adminClient = createAdminClient();
-      const { data: workflow } = await adminClient
-        .from('workflows')
-        .select('id')
-        .eq('id', workflowId)
-        .single();
+      const { data: workflow } = await adminClient.from('workflows').select('id').eq('id', workflowId).single();
 
       if (!workflow) {
         return { success: false, errors: {}, formData: { workflow_id: workflowId }, globalError: 'workflowNotFound' };
@@ -234,10 +235,7 @@ export async function deleteDocumentAction(documentId: string) {
     await adminClient.storage.from(STORAGE_BUCKET).remove([doc.storage_path]);
 
     // Delete document record (cascades any remaining relations)
-    const { error: deleteError } = await adminClient
-      .from('documents')
-      .delete()
-      .eq('id', documentId);
+    const { error: deleteError } = await adminClient.from('documents').delete().eq('id', documentId);
 
     if (deleteError) throw deleteError;
 

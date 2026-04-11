@@ -34,7 +34,6 @@ A [Next.js 16](https://nextjs.org) full-stack starter kit with Supabase and inte
    ```
 
 3. **Set up Supabase**
-
    - Create a project at [supabase.com](https://supabase.com)
    - Go to **Project Settings → API** and copy your keys
    - Create `.env.local` from the example:
@@ -52,7 +51,6 @@ A [Next.js 16](https://nextjs.org) full-stack starter kit with Supabase and inte
    ```
 
 4. **Run the database migration**
-
    - Open **Supabase Dashboard → SQL Editor**
    - Paste the contents of `supabase/migrations/001_initial.sql` and run it
 
@@ -112,12 +110,12 @@ npm run format:check     # Check formatting without changes
 
 Required in `.env.local` (see `.env.example`):
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public/anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-only) |
-| `NEXT_PUBLIC_APP_URL` | Your app URL (e.g. `http://localhost:3000`) |
+| Variable                        | Description                                 |
+| ------------------------------- | ------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL                        |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public/anon key                    |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Supabase service role key (server-only)     |
+| `NEXT_PUBLIC_APP_URL`           | Your app URL (e.g. `http://localhost:3000`) |
 
 ## Translations
 

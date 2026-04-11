@@ -19,10 +19,7 @@ function chunkText(text: string): string[] {
   return chunks.filter((c) => c.length > 0);
 }
 
-async function parseFileToText(
-  buffer: Buffer,
-  fileType: string,
-): Promise<string> {
+async function parseFileToText(buffer: Buffer, fileType: string): Promise<string> {
   if (fileType === 'pdf') {
     await import('pdf-parse/worker');
     const { PDFParse, VerbosityLevel } = await import('pdf-parse');
@@ -52,16 +49,14 @@ async function parseFileToText(
  *
  * Can be called directly from server actions or from an API route.
  */
-export async function processDocument(documentId: string): Promise<{ success: boolean; chunks?: number; error?: string }> {
+export async function processDocument(
+  documentId: string
+): Promise<{ success: boolean; chunks?: number; error?: string }> {
   try {
     const supabase = createAdminClient();
 
     // Fetch document
-    const { data: doc, error: docError } = await supabase
-      .from('documents')
-      .select('*')
-      .eq('id', documentId)
-      .single();
+    const { data: doc, error: docError } = await supabase.from('documents').select('*').eq('id', documentId).single();
 
     if (docError || !doc) {
       return { success: false, error: 'Document not found' };
@@ -134,17 +129,12 @@ export async function processDocument(documentId: string): Promise<{ success: bo
     const DB_BATCH = 50;
     for (let i = 0; i < rows.length; i += DB_BATCH) {
       const batch = rows.slice(i, i + DB_BATCH);
-      const { error: insertError } = await supabase
-        .from('knowledge_base')
-        .insert(batch);
+      const { error: insertError } = await supabase.from('knowledge_base').insert(batch);
       if (insertError) throw insertError;
     }
 
     // Mark document as ready
-    await supabase
-      .from('documents')
-      .update({ status: 'ready', chunk_count: chunks.length })
-      .eq('id', documentId);
+    await supabase.from('documents').update({ status: 'ready', chunk_count: chunks.length }).eq('id', documentId);
 
     logger.info('Document processed', { documentId, chunks: chunks.length });
 

@@ -9,7 +9,7 @@ import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 export default async function ManageTemplateLibraryViewPage({ params }: TemplateLibraryPageProps) {
   const session = await getSession();
 
-  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 

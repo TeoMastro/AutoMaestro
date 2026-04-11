@@ -3,13 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -95,13 +89,9 @@ export function SigninForm({ error, message }: LoginFormProps) {
 
       <form action={formAction} noValidate>
         <CardContent className="space-y-4 mb-5">
-          {(error || authError) && (
-            <InfoAlert message={error || authError} type="error" />
-          )}
+          {(error || authError) && <InfoAlert message={error || authError} type="error" />}
 
-          {message && showMessage && (
-            <InfoAlert message={message} type="success" />
-          )}
+          {message && showMessage && <InfoAlert message={message} type="success" />}
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -114,9 +104,7 @@ export function SigninForm({ error, message }: LoginFormProps) {
               defaultValue={state.formData?.email || ''}
               className={state.errors.email ? 'border-red-500' : ''}
             />
-            {state.errors.email && (
-              <p className="text-sm text-red-500">{t(state.errors.email[0])}</p>
-            )}
+            {state.errors.email && <p className="text-sm text-red-500">{t(state.errors.email[0])}</p>}
           </div>
 
           <div className="space-y-2">
@@ -130,18 +118,11 @@ export function SigninForm({ error, message }: LoginFormProps) {
               defaultValue={state.formData?.password || ''}
               className={state.errors.password ? 'border-red-500' : ''}
             />
-            {state.errors.password && (
-              <p className="text-sm text-red-500">
-                {t(state.errors.password[0])}
-              </p>
-            )}
+            {state.errors.password && <p className="text-sm text-red-500">{t(state.errors.password[0])}</p>}
           </div>
 
           <div className="flex items-center justify-end">
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm font-medium text-primary hover:underline"
-            >
+            <Link href="/auth/forgot-password" className="text-sm font-medium text-primary hover:underline">
               {t('forgotPassword')}
             </Link>
           </div>
@@ -157,9 +138,7 @@ export function SigninForm({ error, message }: LoginFormProps) {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-background px-2 text-muted-foreground">
-                {t('orContinueWith')}
-              </span>
+              <span className="bg-background px-2 text-muted-foreground">{t('orContinueWith')}</span>
             </div>
           </div>
 
@@ -193,10 +172,7 @@ export function SigninForm({ error, message }: LoginFormProps) {
 
           <p className="text-center text-sm text-muted-foreground">
             {t('dontHaveAccount')}{' '}
-            <Link
-              href="/auth/signup"
-              className="font-medium text-primary hover:underline"
-            >
+            <Link href="/auth/signup" className="font-medium text-primary hover:underline">
               {t('signUp')}
             </Link>
           </p>

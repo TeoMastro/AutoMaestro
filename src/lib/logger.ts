@@ -5,11 +5,7 @@ const { createLogger, format, transports } = winston;
 
 const logger = createLogger({
   level: 'info',
-  format: format.combine(
-    format.timestamp(),
-    format.errors({ stack: true }),
-    format.json()
-  ),
+  format: format.combine(format.timestamp(), format.errors({ stack: true }), format.json()),
   defaultMeta: { service: 'nextjs-app' },
   transports: [
     new transports.DailyRotateFile({

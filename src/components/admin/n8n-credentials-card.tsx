@@ -17,11 +17,7 @@ function CopyButton({ value }: { value: string }) {
 
   return (
     <Button variant="ghost" size="sm" onClick={handleCopy} className="h-7 w-7 p-0">
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-green-500" />
-      ) : (
-        <Copy className="h-3.5 w-3.5" />
-      )}
+      {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
     </Button>
   );
 }
@@ -45,9 +41,7 @@ export function N8nCredentialsCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-sm font-medium text-muted-foreground">
-            {t('n8nInstanceUrl')}
-          </label>
+          <label className="text-sm font-medium text-muted-foreground">{t('n8nInstanceUrl')}</label>
           <div className="mt-1 flex items-center gap-1">
             {url ? (
               <>
@@ -69,9 +63,7 @@ export function N8nCredentialsCard({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-muted-foreground">
-            {t('n8nInstanceUsername')}
-          </label>
+          <label className="text-sm font-medium text-muted-foreground">{t('n8nInstanceUsername')}</label>
           <div className="mt-1 flex items-center gap-1">
             {username ? (
               <>
@@ -85,15 +77,11 @@ export function N8nCredentialsCard({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-muted-foreground">
-            {t('n8nInstancePassword')}
-          </label>
+          <label className="text-sm font-medium text-muted-foreground">{t('n8nInstancePassword')}</label>
           <div className="mt-1 flex items-center gap-1">
             {password ? (
               <>
-                <span className="font-mono text-sm">
-                  {showPassword ? password : '\u2022'.repeat(12)}
-                </span>
+                <span className="font-mono text-sm">{showPassword ? password : '\u2022'.repeat(12)}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -101,11 +89,7 @@ export function N8nCredentialsCard({
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-3.5 w-3.5" />
-                  ) : (
-                    <Eye className="h-3.5 w-3.5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </Button>
                 <CopyButton value={password} />
               </>

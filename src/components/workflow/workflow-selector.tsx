@@ -2,13 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Workflow } from '@/types/workflow';
 
 interface WorkflowSelectorProps {

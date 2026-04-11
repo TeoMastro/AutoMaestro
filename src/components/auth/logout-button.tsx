@@ -16,10 +16,7 @@ export default function LogoutButton() {
   };
 
   return (
-    <button
-      onClick={handleLogout}
-      className="w-full text-left cursor-pointer"
-    >
+    <button onClick={handleLogout} className="w-full text-left cursor-pointer">
       {t('signOut')}
     </button>
   );

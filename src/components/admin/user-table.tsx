@@ -4,23 +4,10 @@ import { useState, useTransition, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { deleteUserAction } from '@/server-actions/user';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,10 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Pencil, Trash2, Plus, Eye, X, Download } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
 import { Pagination } from '../layout/pagination';
-import {
-  SortableTableHeader,
-  SortField,
-} from '../layout/sortable-table-header';
+import { SortableTableHeader, SortField } from '../layout/sortable-table-header';
 import { Role, Status } from '@/lib/constants';
 import { UsersTableProps } from '@/types/user';
 import { InfoAlert } from '@/components/info-alert';
@@ -132,8 +116,7 @@ export function UsersTable({
   // Handle sorting
   const handleSort = useCallback(
     (field: SortField) => {
-      const newDirection =
-        sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+      const newDirection = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
 
       updateUrl({
         sortField: field,
@@ -205,8 +188,7 @@ export function UsersTable({
         });
       } catch (error) {
         setAlert({
-          message:
-            error instanceof Error ? t(error.message) : t('unexpectedError'),
+          message: error instanceof Error ? t(error.message) : t('unexpectedError'),
           type: 'error',
         });
       } finally {
@@ -239,9 +221,7 @@ export function UsersTable({
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `users_export_${new Date()
-          .toISOString()
-          .slice(0, 10)}.${format}`;
+        link.download = `users_export_${new Date().toISOString().slice(0, 10)}.${format}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -253,14 +233,7 @@ export function UsersTable({
         });
       }
     },
-    [
-      searchTermLocal,
-      roleFilterLocal,
-      statusFilterLocal,
-      sortField,
-      sortDirection,
-      t,
-    ]
+    [searchTermLocal, roleFilterLocal, statusFilterLocal, sortField, sortDirection, t]
   );
 
   const handleResetFilters = useCallback(() => {
@@ -275,10 +248,7 @@ export function UsersTable({
     });
   }, [updateUrl]);
 
-  const hasActiveFilters =
-    searchTermLocal !== '' ||
-    roleFilterLocal !== 'all' ||
-    statusFilterLocal !== 'all';
+  const hasActiveFilters = searchTermLocal !== '' || roleFilterLocal !== 'all' || statusFilterLocal !== 'all';
 
   return (
     <Card>
@@ -286,19 +256,11 @@ export function UsersTable({
         <div className="flex justify-between items-center">
           <CardTitle className="text-2xl">{t('users')}</CardTitle>
           <div className="flex gap-2">
-            <Button
-              onClick={() => exportFilteredUsers('csv')}
-              variant="outline"
-              className="flex items-center gap-1"
-            >
+            <Button onClick={() => exportFilteredUsers('csv')} variant="outline" className="flex items-center gap-1">
               <Download className="h-4 w-4" />
               .csv
             </Button>
-            <Button
-              onClick={() => exportFilteredUsers('xlsx')}
-              variant="outline"
-              className="flex items-center gap-1"
-            >
+            <Button onClick={() => exportFilteredUsers('xlsx')} variant="outline" className="flex items-center gap-1">
               <Download className="h-4 w-4" />
               .xlsx
             </Button>
@@ -310,221 +272,198 @@ export function UsersTable({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-      {message && <InfoAlert message={t(message) as string} type="success" />}
+        {message && <InfoAlert message={t(message) as string} type="success" />}
 
-      {alert && <InfoAlert message={alert.message} type={alert.type} />}
+        {alert && <InfoAlert message={alert.message} type={alert.type} />}
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <Input
-          placeholder={t('searchUsers')}
-          value={searchTermLocal}
-          onChange={(e) => {
-            setSearchTermLocal(e.target.value);
-            debouncedSearch(e.target.value);
-          }}
-          className="w-full md:max-w-sm"
-        />
-        <Select value={roleFilterLocal} onValueChange={handleRoleFilterChange}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder={t('filterByRole')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('allRoles')}</SelectItem>
-            <SelectItem value="CLIENT">{t('clientRole')}</SelectItem>
-            <SelectItem value="MANAGER">{t('managerRole')}</SelectItem>
-            <SelectItem value="ADMIN">{t('adminRole')}</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={statusFilterLocal}
-          onValueChange={handleStatusFilterChange}
-        >
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder={t('filterByStatus')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('allStatuses')}</SelectItem>
-            <SelectItem value="ACTIVE">{t('activeStatus')}</SelectItem>
-            <SelectItem value="INACTIVE">{t('inactiveStatus')}</SelectItem>
-            <SelectItem value="UNVERIFIED">{t('unverifiedStatus')}</SelectItem>
-          </SelectContent>
-        </Select>
-        {hasActiveFilters && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResetFilters}
-            className="whitespace-nowrap"
-          >
-            <X className="mr-2 h-4 w-4" />
-            {t('resetFilters')}
-          </Button>
-        )}
-      </div>
+        <div className="flex flex-col md:flex-row gap-4">
+          <Input
+            placeholder={t('searchUsers')}
+            value={searchTermLocal}
+            onChange={(e) => {
+              setSearchTermLocal(e.target.value);
+              debouncedSearch(e.target.value);
+            }}
+            className="w-full md:max-w-sm"
+          />
+          <Select value={roleFilterLocal} onValueChange={handleRoleFilterChange}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder={t('filterByRole')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allRoles')}</SelectItem>
+              <SelectItem value="CLIENT">{t('clientRole')}</SelectItem>
+              <SelectItem value="MANAGER">{t('managerRole')}</SelectItem>
+              <SelectItem value="ADMIN">{t('adminRole')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={statusFilterLocal} onValueChange={handleStatusFilterChange}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder={t('filterByStatus')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allStatuses')}</SelectItem>
+              <SelectItem value="ACTIVE">{t('activeStatus')}</SelectItem>
+              <SelectItem value="INACTIVE">{t('inactiveStatus')}</SelectItem>
+              <SelectItem value="UNVERIFIED">{t('unverifiedStatus')}</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasActiveFilters && (
+            <Button variant="outline" size="sm" onClick={handleResetFilters} className="whitespace-nowrap">
+              <X className="mr-2 h-4 w-4" />
+              {t('resetFilters')}
+            </Button>
+          )}
+        </div>
 
-      <div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <SortableTableHeader
-                field="name"
-                currentField={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              >
-                {t('name')}
-              </SortableTableHeader>
-              <SortableTableHeader
-                field="email"
-                currentField={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              >
-                {t('email')}
-              </SortableTableHeader>
-              <SortableTableHeader
-                field="role"
-                currentField={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              >
-                {t('role')}
-              </SortableTableHeader>
-              {/* Add status column header */}
-              <SortableTableHeader
-                field="status"
-                currentField={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              >
-                {t('status')}
-              </SortableTableHeader>
-              <SortableTableHeader
-                field="createdAt"
-                currentField={sortField}
-                direction={sortDirection}
-                onSort={handleSort}
-              >
-                {t('created')}
-              </SortableTableHeader>
-              <TableHead className="text-right">{t('actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => {
-              const statusBadge = getStatusBadge(user.status, t);
-              return (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">
-                    {user.first_name} {user.last_name}
-                  </TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={getRoleBadgeClass(user.role)}
-                    >
-                      {user.role === Role.ADMIN
-                        ? t('adminRole')
-                        : user.role === Role.MANAGER
-                          ? t('managerRole')
-                          : t('clientRole')}
-                    </Badge>
-                  </TableCell>
-                  {/* Add status column */}
-                  <TableCell>
-                    <Badge variant="outline" className={statusBadge.className}>
-                      {statusBadge.text}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(user.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => router.push(`/admin/user/${user.id}`)}
-                        disabled={isPending}
-                        title={t('viewUser')}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+        <div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <SortableTableHeader
+                  field="name"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('name')}
+                </SortableTableHeader>
+                <SortableTableHeader
+                  field="email"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('email')}
+                </SortableTableHeader>
+                <SortableTableHeader
+                  field="role"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('role')}
+                </SortableTableHeader>
+                {/* Add status column header */}
+                <SortableTableHeader
+                  field="status"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('status')}
+                </SortableTableHeader>
+                <SortableTableHeader
+                  field="createdAt"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('created')}
+                </SortableTableHeader>
+                <TableHead className="text-right">{t('actions')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => {
+                const statusBadge = getStatusBadge(user.status, t);
+                return (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">
+                      {user.first_name} {user.last_name}
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={getRoleBadgeClass(user.role)}>
+                        {user.role === Role.ADMIN
+                          ? t('adminRole')
+                          : user.role === Role.MANAGER
+                            ? t('managerRole')
+                            : t('clientRole')}
+                      </Badge>
+                    </TableCell>
+                    {/* Add status column */}
+                    <TableCell>
+                      <Badge variant="outline" className={statusBadge.className}>
+                        {statusBadge.text}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(user.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => router.push(`/admin/user/${user.id}`)}
+                          disabled={isPending}
+                          title={t('viewUser')}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(`/admin/user/${user.id}/update`)
-                        }
-                        disabled={isPending}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => router.push(`/admin/user/${user.id}/update`)}
+                          disabled={isPending}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
 
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            disabled={
-                              user.id === currentUserId ||
-                              isPending ||
-                              deletingUserId === user.id
-                            }
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {t('confirmDelete')}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t('deleteUserConfirmation', {
-                                name: `${user.first_name} ${user.last_name}`,
-                              })}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(user.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              disabled={user.id === currentUserId || isPending || deletingUserId === user.id}
                             >
-                              {t('delete')}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t('deleteUserConfirmation', {
+                                  name: `${user.first_name} ${user.last_name}`,
+                                })}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(user.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
+                              >
+                                {t('delete')}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
 
-        {users.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            {t('noUsersFound')}
-          </div>
-        )}
-      </div>
+          {users.length === 0 && <div className="text-center py-8 text-muted-foreground">{t('noUsersFound')}</div>}
+        </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalCount={totalCount}
-        limit={limit}
-      />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          totalCount={totalCount}
+          limit={limit}
+        />
       </CardContent>
     </Card>
   );

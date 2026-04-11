@@ -17,10 +17,7 @@ interface DynamicResponseProps {
   emptyMessage?: string;
 }
 
-export function DynamicResponse({
-  data,
-  emptyMessage,
-}: DynamicResponseProps) {
+export function DynamicResponse({ data, emptyMessage }: DynamicResponseProps) {
   if (data === null || data === undefined) {
     if (emptyMessage) {
       return (
@@ -50,16 +47,10 @@ export function DynamicResponse({
       <div className="p-4 space-y-4">
         {entries.map(([key, value]) => (
           <div key={key} className="space-y-1.5 flex flex-col">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {key}
-            </Label>
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{key}</Label>
             <Textarea
               readOnly
-              value={
-                typeof value === 'object'
-                  ? JSON.stringify(value, null, 2)
-                  : String(value)
-              }
+              value={typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
               className="resize-none min-h-[60px] max-h-[400px] overflow-y-auto bg-background/50 font-mono text-sm leading-relaxed"
             />
           </div>
@@ -69,14 +60,11 @@ export function DynamicResponse({
   }
 
   // Arrays / primitives → formatted JSON pre block
-  const formatted =
-    typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data);
+  const formatted = typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data);
 
   return (
     <div className="p-4">
-      <pre className="text-sm font-mono text-muted-foreground whitespace-pre-wrap overflow-x-auto">
-        {formatted}
-      </pre>
+      <pre className="text-sm font-mono text-muted-foreground whitespace-pre-wrap overflow-x-auto">{formatted}</pre>
     </div>
   );
 }

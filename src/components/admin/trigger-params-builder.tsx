@@ -6,13 +6,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { WorkflowParam } from '@/types/workflow';
 
 type TriggerParamsBuilderProps = {
@@ -36,11 +30,7 @@ function labelToKey(label: string): string {
     .replace(/^_|_$/g, '');
 }
 
-export function TriggerParamsBuilder({
-  initialParams,
-  hasError,
-  errorMessage,
-}: TriggerParamsBuilderProps) {
+export function TriggerParamsBuilder({ initialParams, hasError, errorMessage }: TriggerParamsBuilderProps) {
   const t = useTranslations('app');
   const [params, setParams] = useState<WorkflowParam[]>(initialParams);
 
@@ -64,8 +54,7 @@ export function TriggerParamsBuilder({
 
   const addParam = () => setParams((prev) => [...prev, createEmptyParam()]);
 
-  const removeParam = (index: number) =>
-    setParams((prev) => prev.filter((_, i) => i !== index));
+  const removeParam = (index: number) => setParams((prev) => prev.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-3">
@@ -73,20 +62,10 @@ export function TriggerParamsBuilder({
       <p className="text-sm text-muted-foreground">{t('workflowParamsHint')}</p>
 
       {params.map((param, index) => (
-        <div
-          key={index}
-          className={`rounded-lg border p-4 space-y-3${hasError ? ' border-red-500' : ''}`}
-        >
+        <div key={index} className={`rounded-lg border p-4 space-y-3${hasError ? ' border-red-500' : ''}`}>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
-              {t('paramNumber', { number: index + 1 })}
-            </span>
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              onClick={() => removeParam(index)}
-            >
+            <span className="text-sm font-medium">{t('paramNumber', { number: index + 1 })}</span>
+            <Button type="button" variant="destructive" size="sm" onClick={() => removeParam(index)}>
               <Trash2 className="h-4 w-4 mr-1" />
               {t('removeParam')}
             </Button>
@@ -116,9 +95,7 @@ export function TriggerParamsBuilder({
               <Label className="text-xs">{t('paramType')}</Label>
               <Select
                 value={param.type}
-                onValueChange={(val) =>
-                  updateParam(index, { type: val as WorkflowParam['type'] })
-                }
+                onValueChange={(val) => updateParam(index, { type: val as WorkflowParam['type'] })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -166,9 +143,7 @@ export function TriggerParamsBuilder({
                 value={param.options?.join(', ') ?? ''}
                 onChange={(e) =>
                   updateParam(index, {
-                    options: e.target.value
-                      ? e.target.value.split(',').map((o) => o.trim())
-                      : [],
+                    options: e.target.value ? e.target.value.split(',').map((o) => o.trim()) : [],
                   })
                 }
                 placeholder="option1, option2, option3"
@@ -183,15 +158,9 @@ export function TriggerParamsBuilder({
         {t('addParam')}
       </Button>
 
-      {hasError && errorMessage && (
-        <p className="text-sm text-red-500">{errorMessage}</p>
-      )}
+      {hasError && errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
-      <input
-        type="hidden"
-        name="params_json"
-        value={params.length > 0 ? JSON.stringify(params) : ''}
-      />
+      <input type="hidden" name="params_json" value={params.length > 0 ? JSON.stringify(params) : ''} />
     </div>
   );
 }

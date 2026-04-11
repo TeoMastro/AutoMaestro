@@ -4,23 +4,10 @@ import { useState, useTransition, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { deleteWorkflowAction } from '@/server-actions/workflow';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,10 +79,7 @@ export function WorkflowTable({
     [sortField, sortDirection, updateUrl]
   );
 
-  const handlePageChange = useCallback(
-    (page: number) => updateUrl({ page: page.toString() }),
-    [updateUrl]
-  );
+  const handlePageChange = useCallback((page: number) => updateUrl({ page: page.toString() }), [updateUrl]);
 
   const debouncedSearch = useDebouncedCallback((value: string) => {
     updateUrl({ search: value, page: '1' });
@@ -152,163 +136,176 @@ export function WorkflowTable({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-      {message && <InfoAlert message={t(message)} type="success" />}
-      {alert && <InfoAlert message={alert.message} type={alert.type} />}
+        {message && <InfoAlert message={t(message)} type="success" />}
+        {alert && <InfoAlert message={alert.message} type={alert.type} />}
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <Input
-          placeholder={t('searchWorkflows')}
-          value={searchLocal}
-          onChange={(e) => {
-            setSearchLocal(e.target.value);
-            debouncedSearch(e.target.value);
-          }}
-          className="w-full md:max-w-sm"
-        />
-        <Select value={typeFilterLocal} onValueChange={handleTypeFilter}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder={t('filterByType')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('allTypes')}</SelectItem>
-            <SelectItem value="chat">{t('workflowTypeChat')}</SelectItem>
-            <SelectItem value="trigger">{t('workflowTypeTrigger')}</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={companyFilterLocal} onValueChange={handleCompanyFilter}>
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder={t('filterByCompany')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('allCompanies')}</SelectItem>
-            {companies.map((c) => (
-              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {hasFilters && (
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            <X className="mr-2 h-4 w-4" />
-            {t('resetFilters')}
-          </Button>
-        )}
-      </div>
+        <div className="flex flex-col md:flex-row gap-4">
+          <Input
+            placeholder={t('searchWorkflows')}
+            value={searchLocal}
+            onChange={(e) => {
+              setSearchLocal(e.target.value);
+              debouncedSearch(e.target.value);
+            }}
+            className="w-full md:max-w-sm"
+          />
+          <Select value={typeFilterLocal} onValueChange={handleTypeFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder={t('filterByType')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allTypes')}</SelectItem>
+              <SelectItem value="chat">{t('workflowTypeChat')}</SelectItem>
+              <SelectItem value="trigger">{t('workflowTypeTrigger')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={companyFilterLocal} onValueChange={handleCompanyFilter}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder={t('filterByCompany')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allCompanies')}</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {hasFilters && (
+            <Button variant="outline" size="sm" onClick={handleReset}>
+              <X className="mr-2 h-4 w-4" />
+              {t('resetFilters')}
+            </Button>
+          )}
+        </div>
 
-      <div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <SortableTableHeader field="name" currentField={sortField} direction={sortDirection} onSort={handleSort}>
-                {t('name')}
-              </SortableTableHeader>
-              <TableHead>{t('company')}</TableHead>
-              <SortableTableHeader field="type" currentField={sortField} direction={sortDirection} onSort={handleSort}>
-                {t('workflowType')}
-              </SortableTableHeader>
-              <TableHead>{t('knowledgeBase')}</TableHead>
-              <TableHead>{t('status')}</TableHead>
-              <SortableTableHeader field="createdAt" currentField={sortField} direction={sortDirection} onSort={handleSort}>
-                {t('created')}
-              </SortableTableHeader>
-              <TableHead className="text-right">{t('actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {workflows.map((wf) => (
-              <TableRow key={wf.id}>
-                <TableCell className="font-medium">{wf.name}</TableCell>
-                <TableCell className="text-muted-foreground text-sm">
-                  {wf.companyName || '—'}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={wf.type === 'chat' ? badgeStyles.green : badgeStyles.slate}>
-                    {wf.type === 'chat' ? t('workflowTypeChat') : t('workflowTypeTrigger')}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {wf.hasKnowledgeBase ? (
-                    <Badge variant="outline" className={badgeStyles.green}>{t('active')}</Badge>
-                  ) : (
-                    <span className="text-muted-foreground text-sm">—</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={wf.isActive ? badgeStyles.green : badgeStyles.red}>
-                    {wf.isActive ? t('activeStatus') : t('inactiveStatus')}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {new Date(wf.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                  })}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/manage/workflows/${wf.id}`)}
-                      disabled={isPending}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/manage/workflows/${wf.id}/update`)}
-                      disabled={isPending}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          disabled={isPending || deletingId === wf.id}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t('deleteWorkflowConfirmation', { name: wf.name })}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(wf.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
-                          >
-                            {t('delete')}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </TableCell>
+        <div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <SortableTableHeader
+                  field="name"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('name')}
+                </SortableTableHeader>
+                <TableHead>{t('company')}</TableHead>
+                <SortableTableHeader
+                  field="type"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('workflowType')}
+                </SortableTableHeader>
+                <TableHead>{t('knowledgeBase')}</TableHead>
+                <TableHead>{t('status')}</TableHead>
+                <SortableTableHeader
+                  field="createdAt"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                >
+                  {t('created')}
+                </SortableTableHeader>
+                <TableHead className="text-right">{t('actions')}</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {workflows.map((wf) => (
+                <TableRow key={wf.id}>
+                  <TableCell className="font-medium">{wf.name}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{wf.companyName || '—'}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={wf.type === 'chat' ? badgeStyles.green : badgeStyles.slate}>
+                      {wf.type === 'chat' ? t('workflowTypeChat') : t('workflowTypeTrigger')}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {wf.hasKnowledgeBase ? (
+                      <Badge variant="outline" className={badgeStyles.green}>
+                        {t('active')}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={wf.isActive ? badgeStyles.green : badgeStyles.red}>
+                      {wf.isActive ? t('activeStatus') : t('inactiveStatus')}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(wf.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/manage/workflows/${wf.id}`)}
+                        disabled={isPending}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/manage/workflows/${wf.id}/update`)}
+                        disabled={isPending}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm" disabled={isPending || deletingId === wf.id}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t('deleteWorkflowConfirmation', { name: wf.name })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(wf.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
+                            >
+                              {t('delete')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
-        {workflows.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">{t('noWorkflowsFound')}</div>
-        )}
-      </div>
+          {workflows.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">{t('noWorkflowsFound')}</div>
+          )}
+        </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalCount={totalCount}
-        limit={limit}
-      />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          totalCount={totalCount}
+          limit={limit}
+        />
       </CardContent>
     </Card>
   );

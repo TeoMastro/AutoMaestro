@@ -31,17 +31,11 @@ export default async function middleware(req: NextRequest) {
 
   // For authenticated users, check profile
   if (user && isProtected) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, status')
-      .eq('id', user.id)
-      .single();
+    const { data: profile } = await supabase.from('profiles').select('role, status').eq('id', user.id).single();
 
     // If profile not found or inactive, redirect to signin
     if (!profile || profile.status !== 'ACTIVE') {
-      const redirectResponse = NextResponse.redirect(
-        new URL('/auth/signin', req.url)
-      );
+      const redirectResponse = NextResponse.redirect(new URL('/auth/signin', req.url));
       supabaseResponse.cookies.getAll().forEach((cookie) => {
         redirectResponse.cookies.set(cookie.name, cookie.value);
       });
@@ -54,11 +48,7 @@ export default async function middleware(req: NextRequest) {
     }
 
     // Manage route protection (admin + manager)
-    if (
-      pathname.startsWith('/manage') &&
-      profile.role !== Role.ADMIN &&
-      profile.role !== Role.MANAGER
-    ) {
+    if (pathname.startsWith('/manage') && profile.role !== Role.ADMIN && profile.role !== Role.MANAGER) {
       return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
   }
@@ -72,11 +62,7 @@ export default async function middleware(req: NextRequest) {
 
   // Protect admin API routes (defense in depth)
   if (pathname.startsWith('/api/users') && user) {
-    const { data: apiProfile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    const { data: apiProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
     if (!apiProfile || apiProfile.role !== Role.ADMIN) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

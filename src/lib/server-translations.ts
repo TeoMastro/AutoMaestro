@@ -7,10 +7,7 @@ type MessageStructure = typeof enMessages;
 type Namespace = keyof MessageStructure;
 type MessageKey<T extends Namespace> = keyof MessageStructure[T];
 
-export async function getServerTranslation<T extends Namespace>(
-  namespace: T,
-  key: MessageKey<T>
-): Promise<string> {
+export async function getServerTranslation<T extends Namespace>(namespace: T, key: MessageKey<T>): Promise<string> {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('locale')?.value as 'en' | 'el') || 'en';
 

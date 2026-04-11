@@ -10,15 +10,12 @@ import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 export default async function UpdateWorkflowPage({ params }: WorkflowPageProps) {
   const session = await getSession();
 
-  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 
   const { id } = await params;
-  const [workflow, companies] = await Promise.all([
-    getWorkflowById(id),
-    getAllCompanies(),
-  ]);
+  const [workflow, companies] = await Promise.all([getWorkflowById(id), getAllCompanies()]);
 
   if (!workflow) notFound();
 

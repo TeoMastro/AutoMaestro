@@ -4,11 +4,7 @@ import { getSession } from '@/lib/auth-session';
 import { Role } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import type {
-  TriggerLogEntry,
-  GetTriggerLogsParams,
-  GetTriggerLogsResult,
-} from '@/types/trigger-log';
+import type { TriggerLogEntry, GetTriggerLogsParams, GetTriggerLogsResult } from '@/types/trigger-log';
 
 async function checkAuth() {
   const session = await getSession();
@@ -22,9 +18,7 @@ async function checkAuth() {
 // Fetch trigger logs list (Admin configures all, Users see own)
 // ============================================================
 
-export async function getTriggerLogsWithPagination(
-  params: GetTriggerLogsParams
-): Promise<GetTriggerLogsResult> {
+export async function getTriggerLogsWithPagination(params: GetTriggerLogsParams): Promise<GetTriggerLogsResult> {
   try {
     const session = await checkAuth();
     const isAdmin = session.user.role === Role.ADMIN;
@@ -111,7 +105,9 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
     // Base query
     const query = supabase
       .from('trigger_logs')
-      .select('id, workflow_id, user_id, status, request_params, response_data, error_message, duration_ms, created_at, execution_id');
+      .select(
+        'id, workflow_id, user_id, status, request_params, response_data, error_message, duration_ms, created_at, execution_id'
+      );
 
     // We bypass initial RLS using admin client to fetch the row,
     // then authorize the user manually to allow assigned-workflow viewing.
@@ -162,7 +158,6 @@ export async function getTriggerLogDetail(id: string): Promise<TriggerLogEntry> 
       createdAt: new Date(row.created_at),
       executionId: row.execution_id,
     };
-
   } catch (error) {
     logger.error('Error fetching trigger log detail', { error: (error as Error).message });
     throw error;
@@ -180,10 +175,7 @@ export async function getTriggerWorkflowsForFilter(companyId?: string): Promise<
     const supabase = createAdminClient();
 
     if (isAdmin) {
-      let query = supabase
-        .from('workflows')
-        .select('id, name')
-        .eq('type', 'trigger');
+      let query = supabase.from('workflows').select('id, name').eq('type', 'trigger');
       if (companyId) {
         query = query.eq('company_id', companyId);
       }
@@ -192,10 +184,7 @@ export async function getTriggerWorkflowsForFilter(companyId?: string): Promise<
       return (data || []).map((w) => ({ id: w.id, name: w.name }));
     } else {
       // Users see workflows from their assigned companies
-      let companyQuery = supabase
-        .from('user_companies')
-        .select('company_id')
-        .eq('user_id', session.user.id);
+      let companyQuery = supabase.from('user_companies').select('company_id').eq('user_id', session.user.id);
 
       if (companyId) {
         companyQuery = companyQuery.eq('company_id', companyId);

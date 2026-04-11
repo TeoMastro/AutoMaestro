@@ -1,9 +1,4 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '../ui/button';
 
@@ -29,26 +24,15 @@ export const Pagination = ({
   return (
     <div className="flex items-center justify-between px-2 py-4 flex-col md:flex-row">
       <div className="text-sm text-muted-foreground">
-        {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {totalCount}{' '}
-        {t('results')}
+        {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {totalCount} {t('results')}
       </div>
 
       <div className="flex items-center space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(1)}
-          disabled={currentPage <= 1}
-        >
+        <Button variant="outline" size="sm" onClick={() => onPageChange(1)} disabled={currentPage <= 1}>
           <ChevronsLeft className="h-4 w-4" />
         </Button>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage <= 1}
-        >
+        <Button variant="outline" size="sm" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
 

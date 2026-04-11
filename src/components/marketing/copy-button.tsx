@@ -22,12 +22,7 @@ export default function CopyButton({ textToCopy }: CopyButtonProps) {
   };
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={handleCopy}
-      className="ml-2 flex-shrink-0"
-    >
+    <Button variant="outline" size="sm" onClick={handleCopy} className="ml-2 flex-shrink-0">
       {isCopied ? (
         <>
           <Check className="mr-2 h-4 w-4" />

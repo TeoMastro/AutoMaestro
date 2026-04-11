@@ -5,25 +5,15 @@ import { getCompanyById, getCompanyLogoSignedUrl } from '@/server-actions/compan
 import { Role } from '@/lib/constants';
 import { BreadcrumbSetter } from '@/components/layout/breadcrumb-setter';
 
-export default async function UpdateCompanyPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function UpdateCompanyPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
 
-  if (
-    !session ||
-    (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)
-  ) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 
   const { id } = await params;
-  const [company, logoUrl] = await Promise.all([
-    getCompanyById(id),
-    getCompanyLogoSignedUrl(id),
-  ]);
+  const [company, logoUrl] = await Promise.all([getCompanyById(id), getCompanyLogoSignedUrl(id)]);
 
   if (!company) notFound();
 

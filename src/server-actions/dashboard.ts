@@ -4,26 +4,15 @@ import { getSession } from '@/lib/auth-session';
 import { Role } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import type {
-  DashboardData,
-  DashboardStats,
-  RecentChatSession,
-  RecentTriggerRun,
-} from '@/types/dashboard';
+import type { DashboardData, DashboardStats, RecentChatSession, RecentTriggerRun } from '@/types/dashboard';
 
 /**
  * For non-admin users, fetch their accessible workflow IDs via company assignments.
  */
-async function getUserWorkflowIds(
-  userId: string,
-  companyId?: string
-): Promise<string[]> {
+async function getUserWorkflowIds(userId: string, companyId?: string): Promise<string[]> {
   const supabase = createAdminClient();
 
-  let companyQuery = supabase
-    .from('user_companies')
-    .select('company_id')
-    .eq('user_id', userId);
+  let companyQuery = supabase.from('user_companies').select('company_id').eq('user_id', userId);
 
   if (companyId) {
     companyQuery = companyQuery.eq('company_id', companyId);
@@ -63,10 +52,7 @@ async function getAuthContext() {
  * Fetch date-filtered stats (chat sessions, trigger runs, success rate).
  * Called by the client component when the date range changes.
  */
-export async function getDashboardStats(
-  dateFrom: string,
-  dateTo: string
-): Promise<DashboardStats> {
+export async function getDashboardStats(dateFrom: string, dateTo: string): Promise<DashboardStats> {
   try {
     const { isAdmin, workflowIds } = await getAuthContext();
 
@@ -83,49 +69,44 @@ export async function getDashboardStats(
 
     const supabase = createAdminClient();
 
-    const [workflowResult, chatLogsResult, triggerTotalResult, triggerSuccessResult] =
-      await Promise.all([
-        // 1. Workflow counts (not date-filtered)
-        (() => {
-          let q = supabase.from('workflows').select('id, is_active');
-          if (workflowIds) q = q.in('id', workflowIds);
-          return q;
-        })(),
+    const [workflowResult, chatLogsResult, triggerTotalResult, triggerSuccessResult] = await Promise.all([
+      // 1. Workflow counts (not date-filtered)
+      (() => {
+        let q = supabase.from('workflows').select('id, is_active');
+        if (workflowIds) q = q.in('id', workflowIds);
+        return q;
+      })(),
 
-        // 2. Chat sessions in date range
-        (() => {
-          let q = supabase
-            .from('chat_logs')
-            .select('session_id')
-            .gte('created_at', dateFrom)
-            .lte('created_at', dateTo);
-          if (workflowIds) q = q.in('workflow_id', workflowIds);
-          return q;
-        })(),
+      // 2. Chat sessions in date range
+      (() => {
+        let q = supabase.from('chat_logs').select('session_id').gte('created_at', dateFrom).lte('created_at', dateTo);
+        if (workflowIds) q = q.in('workflow_id', workflowIds);
+        return q;
+      })(),
 
-        // 3. Trigger total in date range
-        (() => {
-          let q = supabase
-            .from('trigger_logs')
-            .select('id', { count: 'exact', head: true })
-            .gte('created_at', dateFrom)
-            .lte('created_at', dateTo);
-          if (workflowIds) q = q.in('workflow_id', workflowIds);
-          return q;
-        })(),
+      // 3. Trigger total in date range
+      (() => {
+        let q = supabase
+          .from('trigger_logs')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', dateFrom)
+          .lte('created_at', dateTo);
+        if (workflowIds) q = q.in('workflow_id', workflowIds);
+        return q;
+      })(),
 
-        // 4. Trigger successes in date range
-        (() => {
-          let q = supabase
-            .from('trigger_logs')
-            .select('id', { count: 'exact', head: true })
-            .gte('created_at', dateFrom)
-            .lte('created_at', dateTo)
-            .eq('status', 'success');
-          if (workflowIds) q = q.in('workflow_id', workflowIds);
-          return q;
-        })(),
-      ]);
+      // 4. Trigger successes in date range
+      (() => {
+        let q = supabase
+          .from('trigger_logs')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', dateFrom)
+          .lte('created_at', dateTo)
+          .eq('status', 'success');
+        if (workflowIds) q = q.in('workflow_id', workflowIds);
+        return q;
+      })(),
+    ]);
 
     const workflows = workflowResult.data || [];
     const totalWorkflows = workflows.length;
@@ -137,8 +118,7 @@ export async function getDashboardStats(
 
     const triggerRuns = triggerTotalResult.count ?? 0;
     const triggerSuccesses = triggerSuccessResult.count ?? 0;
-    const triggerSuccessRate =
-      triggerRuns > 0 ? Math.round((triggerSuccesses / triggerRuns) * 100) : 0;
+    const triggerSuccessRate = triggerRuns > 0 ? Math.round((triggerSuccesses / triggerRuns) * 100) : 0;
 
     return {
       totalWorkflows,
@@ -160,13 +140,9 @@ export async function getDashboardStats(
  * Fetch full dashboard data (stats + recent activity).
  * Called on initial server render.
  */
-export async function getDashboardData(
-  dateFrom: string,
-  dateTo: string
-): Promise<DashboardData> {
+export async function getDashboardData(dateFrom: string, dateTo: string): Promise<DashboardData> {
   try {
-    const { session, isAdmin, isManager, workflowIds } =
-      await getAuthContext();
+    const { session, isAdmin, isManager, workflowIds } = await getAuthContext();
 
     if (!isAdmin && workflowIds && workflowIds.length === 0) {
       return {
@@ -209,11 +185,7 @@ export async function getDashboardData(
 
       // 2. Chat sessions in date range
       (() => {
-        let q = supabase
-          .from('chat_logs')
-          .select('session_id')
-          .gte('created_at', dateFrom)
-          .lte('created_at', dateTo);
+        let q = supabase.from('chat_logs').select('session_id').gte('created_at', dateFrom).lte('created_at', dateTo);
         if (workflowIds) q = q.in('workflow_id', workflowIds);
         return q;
       })(),
@@ -280,8 +252,7 @@ export async function getDashboardData(
     // Process trigger counts
     const triggerRuns = triggerTotalResult.count ?? 0;
     const triggerSuccesses = triggerSuccessResult.count ?? 0;
-    const triggerSuccessRate =
-      triggerRuns > 0 ? Math.round((triggerSuccesses / triggerRuns) * 100) : 0;
+    const triggerSuccessRate = triggerRuns > 0 ? Math.round((triggerSuccesses / triggerRuns) * 100) : 0;
 
     // Process recent chats
     const recentChatRows = (recentChatsResult.data || []) as Array<{

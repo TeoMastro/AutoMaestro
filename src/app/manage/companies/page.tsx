@@ -5,20 +5,15 @@ import { getCompaniesWithPagination } from '@/server-actions/company';
 import { GetCompaniesParams } from '@/types/company';
 import { Role } from '@/lib/constants';
 
-export default async function ManageCompaniesPage({
-  searchParams,
-}: {
-  searchParams: Promise<GetCompaniesParams>;
-}) {
+export default async function ManageCompaniesPage({ searchParams }: { searchParams: Promise<GetCompaniesParams> }) {
   const session = await getSession();
 
-  if (!session || session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER) {
+  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
     notFound();
   }
 
   const params = await searchParams;
-  const { companies, totalCount, totalPages, currentPage, limit } =
-    await getCompaniesWithPagination(params);
+  const { companies, totalCount, totalPages, currentPage, limit } = await getCompaniesWithPagination(params);
 
   return (
     <div className="container mx-auto py-6">

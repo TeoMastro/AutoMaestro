@@ -1,12 +1,4 @@
-import {
-  Home,
-  Users,
-  Workflow,
-  MessageSquare,
-  Zap,
-  Building2,
-  BookOpen,
-} from 'lucide-react';
+import { Home, Users, Workflow, MessageSquare, Zap, Building2, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -35,9 +27,7 @@ export async function AppSidebar() {
   const t = await getTranslations('app');
 
   const userData = {
-    name:
-      `${session?.user.first_name || ''} ${session?.user.last_name || ''}`.trim() ||
-      'User',
+    name: `${session?.user.first_name || ''} ${session?.user.last_name || ''}`.trim() || 'User',
     email: session?.user.email || 'user@example.com',
     avatar: '',
   };
@@ -121,10 +111,7 @@ export async function AppSidebar() {
   const clientCompany = userCompanies[0];
   const clientCompanyName = clientCompany?.name;
 
-  const clientLogoUrl =
-    isClient && clientCompany?.id
-      ? await getCompanyLogoSignedUrl(clientCompany.id)
-      : null;
+  const clientLogoUrl = isClient && clientCompany?.id ? await getCompanyLogoSignedUrl(clientCompany.id) : null;
 
   return (
     <Sidebar>
@@ -142,18 +129,14 @@ export async function AppSidebar() {
                 <Building2 className="size-4 text-white" />
               </div>
             )}
-            <span className="truncate text-sm font-medium">
-              {clientCompanyName ?? 'No company assigned'}
-            </span>
+            <span className="truncate text-sm font-medium">{clientCompanyName ?? 'No company assigned'}</span>
           </div>
         ) : (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">NL</span>
             </div>
-            <h2 className="text-lg font-semibold text-sidebar-foreground">
-              {APP_NAME}
-            </h2>
+            <h2 className="text-lg font-semibold text-sidebar-foreground">{APP_NAME}</h2>
           </div>
         )}
       </SidebarHeader>

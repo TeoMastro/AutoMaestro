@@ -1,7 +1,22 @@
 import { ChevronDown, ChevronsUpDown, ChevronUp } from 'lucide-react';
 import { TableHead } from '../ui/table';
 
-export type SortField = 'name' | 'title' | 'email' | 'role' | 'status' | 'createdAt' | 'type' | 'workflowName' | 'messageCount' | 'firstMessageAt' | 'lastMessageAt' | 'workflow_name' | 'user_email' | 'duration_ms' | 'created_at';
+export type SortField =
+  | 'name'
+  | 'title'
+  | 'email'
+  | 'role'
+  | 'status'
+  | 'createdAt'
+  | 'type'
+  | 'workflowName'
+  | 'messageCount'
+  | 'firstMessageAt'
+  | 'lastMessageAt'
+  | 'workflow_name'
+  | 'user_email'
+  | 'duration_ms'
+  | 'created_at';
 
 export const SortableTableHeader = ({
   field,
@@ -20,10 +35,7 @@ export const SortableTableHeader = ({
   const currentDirection = isActive ? direction : null;
 
   return (
-    <TableHead
-      className="cursor-pointer select-none hover:bg-muted/50"
-      onClick={() => onSort(field)}
-    >
+    <TableHead className="cursor-pointer select-none hover:bg-muted/50" onClick={() => onSort(field)}>
       <div className="flex items-center gap-1">
         {children}
         {currentDirection === 'asc' && <ChevronUp className="h-4 w-4" />}

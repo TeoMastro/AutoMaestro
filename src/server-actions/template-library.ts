@@ -3,11 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { checkAdminAuth, checkAdminOrManagerAuth } from '@/lib/auth-helpers';
-import {
-  createTemplateLibrarySchema,
-  updateTemplateLibrarySchema,
-  formatZodErrors,
-} from '@/lib/validation-schemas';
+import { createTemplateLibrarySchema, updateTemplateLibrarySchema, formatZodErrors } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type {
@@ -43,18 +39,14 @@ export async function getTemplateLibraryWithPagination(
     const offset = (page - 1) * limit;
 
     const supabase = createAdminClient();
-    let query = supabase
-      .from('template_library')
-      .select('*', { count: 'exact' });
+    let query = supabase.from('template_library').select('*', { count: 'exact' });
 
     if (search) {
       const safe = search.replace(/[,.()]/g, '');
       query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%,setup_guide.ilike.%${safe}%`);
     }
 
-    const dbSort = sortField === 'createdAt' ? 'created_at'
-      : sortField === 'updatedAt' ? 'updated_at'
-      : sortField;
+    const dbSort = sortField === 'createdAt' ? 'created_at' : sortField === 'updatedAt' ? 'updated_at' : sortField;
 
     query = query.order(dbSort, { ascending: sortDirection === 'asc' });
     query = query.range(offset, offset + limit - 1);
@@ -78,11 +70,7 @@ export async function getTemplateLibraryById(id: string): Promise<TemplateLibrar
     await checkAdminOrManagerAuth();
 
     const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from('template_library')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('template_library').select('*').eq('id', id).single();
 
     if (error || !data) return false;
     return mapTemplateLibraryItem(data as Record<string, unknown>);
@@ -129,14 +117,12 @@ export async function createTemplateLibraryItemAction(
     }
 
     const supabase = createAdminClient();
-    const { error } = await supabase
-      .from('template_library')
-      .insert({
-        title: parsed.data.title.trim(),
-        description: parsed.data.description?.trim() || null,
-        setup_guide: parsed.data.setup_guide?.trim() || null,
-        workflow_json: parsedWorkflowJson,
-      });
+    const { error } = await supabase.from('template_library').insert({
+      title: parsed.data.title.trim(),
+      description: parsed.data.description?.trim() || null,
+      setup_guide: parsed.data.setup_guide?.trim() || null,
+      workflow_json: parsedWorkflowJson,
+    });
 
     if (error) throw error;
 
@@ -234,10 +220,7 @@ export async function deleteTemplateLibraryItemAction(id: string): Promise<{ suc
     const session = await checkAdminAuth();
 
     const supabase = createAdminClient();
-    const { error } = await supabase
-      .from('template_library')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('template_library').delete().eq('id', id);
 
     if (error) throw error;
 

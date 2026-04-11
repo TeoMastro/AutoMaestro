@@ -2,9 +2,7 @@ import { getSession, AuthSession } from '@/lib/auth-session';
 import { Role } from '@/lib/constants';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-export async function checkAuth(
-  allowedRoles: string[]
-): Promise<AuthSession> {
+export async function checkAuth(allowedRoles: string[]): Promise<AuthSession> {
   const session = await getSession();
   if (!session || !allowedRoles.includes(session.user.role)) {
     throw new Error('Unauthorized');
@@ -23,14 +21,9 @@ export async function checkAdminOrManagerAuth(): Promise<AuthSession> {
 /**
  * Get all company IDs a manager is assigned to.
  */
-export async function getManagerCompanyIds(
-  managerId: string
-): Promise<string[]> {
+export async function getManagerCompanyIds(managerId: string): Promise<string[]> {
   const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from('user_companies')
-    .select('company_id')
-    .eq('user_id', managerId);
+  const { data, error } = await supabase.from('user_companies').select('company_id').eq('user_id', managerId);
 
   if (error) throw error;
   return (data || []).map((r) => r.company_id);
@@ -39,10 +32,7 @@ export async function getManagerCompanyIds(
 /**
  * Verify that a manager has access to a specific company.
  */
-export async function checkManagerCompanyAccess(
-  managerId: string,
-  companyId: string
-): Promise<void> {
+export async function checkManagerCompanyAccess(managerId: string, companyId: string): Promise<void> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('user_companies')

@@ -7,10 +7,7 @@ import { ProfileFormState } from '@/types/user';
 import logger from '@/lib/logger';
 import { revalidatePath } from 'next/cache';
 
-export async function updateProfileAction(
-  prevState: ProfileFormState,
-  formData: FormData
-): Promise<ProfileFormState> {
+export async function updateProfileAction(prevState: ProfileFormState, formData: FormData): Promise<ProfileFormState> {
   const session = await getSession();
   if (!session) {
     return {

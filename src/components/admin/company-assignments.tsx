@@ -2,37 +2,16 @@
 
 import { useState, useTransition, useActionState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  assignUserToCompanyAction,
-  unassignUserFromCompanyAction,
-} from '@/server-actions/company';
+import { assignUserToCompanyAction, unassignUserFromCompanyAction } from '@/server-actions/company';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, ChevronsUpDown, UserPlus, UserMinus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { User } from '@/types/user';
 import { Role } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { InfoAlert } from '@/components/info-alert';
 import { AssignUserToCompanyFormState } from '@/types/company';
 
@@ -69,10 +48,7 @@ export function CompanyAssignments({
     globalError: null,
   };
 
-  const [assignState, assignAction, isAssigning] = useActionState(
-    assignUserToCompanyAction,
-    initialAssignState
-  );
+  const [assignState, assignAction, isAssigning] = useActionState(assignUserToCompanyAction, initialAssignState);
 
   const handleUnassign = async (userId: string) => {
     startTransition(async () => {
@@ -86,9 +62,7 @@ export function CompanyAssignments({
   };
 
   const availableUsers = users.filter(
-    (user) =>
-      user.role !== Role.ADMIN &&
-      !assignments.some((a) => a.userId === user.id)
+    (user) => user.role !== Role.ADMIN && !assignments.some((a) => a.userId === user.id)
   );
 
   return (
@@ -106,14 +80,9 @@ export function CompanyAssignments({
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className={cn(
-                  'w-full justify-between',
-                  assignState.errors.user_id ? 'border-red-500' : ''
-                )}
+                className={cn('w-full justify-between', assignState.errors.user_id ? 'border-red-500' : '')}
               >
-                {selectedUserId
-                  ? availableUsers.find((user) => user.id === selectedUserId)?.email
-                  : t('searchUsers')}
+                {selectedUserId ? availableUsers.find((user) => user.id === selectedUserId)?.email : t('searchUsers')}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -133,10 +102,7 @@ export function CompanyAssignments({
                         }}
                       >
                         <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            selectedUserId === user.id ? 'opacity-100' : 'opacity-0'
-                          )}
+                          className={cn('mr-2 h-4 w-4', selectedUserId === user.id ? 'opacity-100' : 'opacity-0')}
                         />
                         {user.first_name} {user.last_name} ({user.email})
                       </CommandItem>
@@ -153,12 +119,8 @@ export function CompanyAssignments({
         </Button>
       </form>
 
-      {assignState.globalError && (
-        <InfoAlert message={t(assignState.globalError)} type="error" />
-      )}
-      {assignState.success && (
-        <InfoAlert message={t('userAssignedSuccess')} type="success" />
-      )}
+      {assignState.globalError && <InfoAlert message={t(assignState.globalError)} type="error" />}
+      {assignState.success && <InfoAlert message={t('userAssignedSuccess')} type="success" />}
 
       <Separator />
 
@@ -182,17 +144,10 @@ export function CompanyAssignments({
                   {a.firstName} {a.lastName}
                 </TableCell>
                 <TableCell>{a.email}</TableCell>
-                <TableCell>
-                  {new Date(a.assignedAt).toLocaleDateString()}
-                </TableCell>
+                <TableCell>{new Date(a.assignedAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
                   {currentUserRole === Role.MANAGER && a.userId === currentUserId ? null : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={isPending}
-                      onClick={() => handleUnassign(a.userId)}
-                    >
+                    <Button variant="outline" size="sm" disabled={isPending} onClick={() => handleUnassign(a.userId)}>
                       <UserMinus className="h-4 w-4" />
                     </Button>
                   )}

@@ -14,9 +14,7 @@ export const badgeStyles = {
   amber:
     'bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
   /** INACTIVE, inactive workflow, error */
-  red:
-    'bg-red-50 text-red-700 border-red-200/80 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20',
+  red: 'bg-red-50 text-red-700 border-red-200/80 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20',
   /** CLIENT, TRIGGER */
-  slate:
-    'bg-zinc-50 text-zinc-600 border-zinc-200/80 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-500/20',
+  slate: 'bg-zinc-50 text-zinc-600 border-zinc-200/80 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-500/20',
 } as const;

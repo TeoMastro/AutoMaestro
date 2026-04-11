@@ -181,8 +181,6 @@ export function CompanyForm({
           )}
 
           <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-sm font-medium text-muted-foreground">{t('n8nCredentials')}</h3>
-
             <div className="space-y-2">
               <Label htmlFor="n8n_instance_url">{t('n8nInstanceUrl')}</Label>
               <Input

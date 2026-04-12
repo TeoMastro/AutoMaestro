@@ -19,11 +19,28 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Auto-create profile on auth.users insert
+-- Self-registered users become MANAGER with 14-day trial.
+-- Admin-created users (created_by_admin metadata) become CLIENT with no trial.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, first_name, last_name)
-  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'first_name', NEW.raw_user_meta_data->>'last_name');
+  IF NEW.raw_user_meta_data->>'created_by_admin' IS NOT NULL THEN
+    INSERT INTO public.profiles (id, email, first_name, last_name, role, subscription_status)
+    VALUES (
+      NEW.id, NEW.email,
+      NEW.raw_user_meta_data->>'first_name',
+      NEW.raw_user_meta_data->>'last_name',
+      'CLIENT', 'none'
+    );
+  ELSE
+    INSERT INTO public.profiles (id, email, first_name, last_name, role, subscription_status, trial_ends_at)
+    VALUES (
+      NEW.id, NEW.email,
+      NEW.raw_user_meta_data->>'first_name',
+      NEW.raw_user_meta_data->>'last_name',
+      'MANAGER', 'trialing', now() + interval '14 days'
+    );
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -44,14 +61,20 @@ $$ LANGUAGE plpgsql;
 
 -- 1. profiles
 CREATE TABLE public.profiles (
-  id          UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  first_name  TEXT,
-  last_name   TEXT,
-  email       TEXT        NOT NULL,
-  role        TEXT        NOT NULL DEFAULT 'CLIENT' CHECK (role IN ('CLIENT', 'MANAGER', 'ADMIN')),
-  status      TEXT        NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'UNVERIFIED')),
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  id                      UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  first_name              TEXT,
+  last_name               TEXT,
+  email                   TEXT        NOT NULL,
+  role                    TEXT        NOT NULL DEFAULT 'CLIENT' CHECK (role IN ('CLIENT', 'MANAGER', 'ADMIN')),
+  status                  TEXT        NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'UNVERIFIED')),
+  subscription_tier       TEXT        CHECK (subscription_tier IN ('freelancer', 'agency', 'scale')),
+  subscription_status     TEXT        NOT NULL DEFAULT 'none' CHECK (subscription_status IN ('none', 'trialing', 'active', 'past_due', 'canceled', 'unpaid')),
+  subscription_end_date   TIMESTAMPTZ,
+  trial_ends_at           TIMESTAMPTZ,
+  stripe_customer_id      TEXT        UNIQUE,
+  stripe_subscription_id  TEXT        UNIQUE,
+  created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Helper: check admin role (must be after profiles table)
@@ -260,6 +283,37 @@ LANGUAGE sql STABLE SECURITY DEFINER AS $$
     JOIN public.user_companies uc2 ON uc1.company_id = uc2.company_id
     WHERE uc1.user_id = user_a AND uc2.user_id = user_b
   );
+$$;
+
+-- Helper: check if any manager sharing a company with a client has an active sub
+CREATE OR REPLACE FUNCTION public.any_manager_has_active_sub(p_client_id UUID)
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.user_companies uc_client
+    JOIN public.user_companies uc_manager ON uc_client.company_id = uc_manager.company_id
+    JOIN public.profiles p ON p.id = uc_manager.user_id
+    WHERE uc_client.user_id = p_client_id
+      AND p.role = 'MANAGER'
+      AND (
+        p.subscription_status IN ('active', 'past_due')
+        OR (p.subscription_status = 'trialing' AND p.trial_ends_at > now())
+      )
+  );
+$$;
+
+-- Helper: get the manager ID for a client
+CREATE OR REPLACE FUNCTION public.get_manager_for_client(p_client_id UUID)
+RETURNS UUID
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT p.id
+  FROM public.user_companies uc_client
+  JOIN public.user_companies uc_manager ON uc_client.company_id = uc_manager.company_id
+  JOIN public.profiles p ON p.id = uc_manager.user_id
+  WHERE uc_client.user_id = p_client_id
+    AND p.role = 'MANAGER'
+  LIMIT 1;
 $$;
 
 

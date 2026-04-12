@@ -1,9 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
+import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess, requireActiveSubscription } from '@/lib/auth-helpers';
 import { revalidatePath } from 'next/cache';
 import { Role, WorkflowType } from '@/lib/constants';
+import { checkResourceLimit } from '@/lib/subscription';
 import { createWorkflowSchema, updateWorkflowSchema, formatZodErrors } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -56,6 +57,19 @@ export async function createWorkflowAction(
 
     // Trigger workflows cannot have knowledge base
     if (data.type === 'trigger') data.has_knowledge_base = false;
+
+    // Check resource limit for managers
+    if (session.user.role === Role.MANAGER) {
+      const limitCheck = await checkResourceLimit(session.user.id, 'workflows');
+      if (!limitCheck.allowed) {
+        return {
+          success: false,
+          errors: {},
+          formData: data,
+          globalError: 'workflowLimitReached',
+        };
+      }
+    }
 
     const parsed = createWorkflowSchema.safeParse(data);
     if (!parsed.success) {
@@ -168,6 +182,7 @@ export async function updateWorkflowAction(
 ): Promise<WorkflowFormState> {
   try {
     const session = await checkAdminOrManagerAuth();
+    requireActiveSubscription(session);
 
     const data = {
       company_id: formData.get('company_id')?.toString() ?? '',
@@ -284,6 +299,7 @@ export async function updateWorkflowAction(
 export async function deleteWorkflowAction(workflowId: string) {
   try {
     const session = await checkAdminOrManagerAuth();
+    requireActiveSubscription(session);
 
     const supabase = createAdminClient();
 
@@ -420,6 +436,7 @@ export async function rerollWorkflowTokenAction(
 ): Promise<{ success: boolean; token?: string; error?: string }> {
   try {
     const session = await checkAdminOrManagerAuth();
+    requireActiveSubscription(session);
     const supabase = createAdminClient();
 
     // If MANAGER, verify they have access to this workflow's company

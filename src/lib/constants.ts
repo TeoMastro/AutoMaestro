@@ -39,3 +39,33 @@ export const Status = {
 } as const;
 
 export type Status = (typeof Status)[keyof typeof Status];
+
+// Subscription
+
+export const SubscriptionTier = {
+  FREELANCER: 'freelancer',
+  AGENCY: 'agency',
+  SCALE: 'scale',
+} as const;
+
+export type SubscriptionTier = (typeof SubscriptionTier)[keyof typeof SubscriptionTier];
+
+export const SubscriptionStatus = {
+  NONE: 'none',
+  TRIALING: 'trialing',
+  ACTIVE: 'active',
+  PAST_DUE: 'past_due',
+  CANCELED: 'canceled',
+  UNPAID: 'unpaid',
+} as const;
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];
+
+export const TIER_LIMITS: Record<SubscriptionTier, { companies: number; workflows: number; clients: number }> = {
+  freelancer: { companies: 3, workflows: 10, clients: 10 },
+  agency: { companies: 10, workflows: 50, clients: 50 },
+  scale: { companies: Infinity, workflows: Infinity, clients: Infinity },
+};
+
+// During trial, users get Freelancer-tier limits
+export const TRIAL_TIER = SubscriptionTier.FREELANCER;

@@ -126,6 +126,7 @@
     "passwordTooShort": "Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες",
     "passwordsDontMatch": "Οι κωδικοί δεν ταιριάζουν",
 
+    "pricing": "Τιμολόγηση",
     "privacyPolicy": "Πολιτική απορρήτου",
     "profile": "Προφίλ",
     "redirectingMessage": "Ανακατεύθυνση στη σελίδα σύνδεσης σε 3 δευτερόλεπτα...",
@@ -400,6 +401,67 @@
     "n8nChatWorkflows": "Ροές Συνομιλίας (Chat)",
     "n8nChatAuthDescription": "Όταν η ροή n8n κάνει κλήσεις ΠΡΟΣ αυτήν την εφαρμογή (π.χ. για καταγραφή ή αναζήτηση γνώσης), χρησιμοποιήστε πιστοποίηση Bearer Token με το API token της ροής.",
     "n8nBearerToken": "Bearer Token",
-    "n8nChatTokenValue": "Χρησιμοποιήστε το API token της ροής ως bearer τιμή. Αυτό το token πιστοποιεί τη ροή."
+    "n8nChatTokenValue": "Χρησιμοποιήστε το API token της ροής ως bearer τιμή. Αυτό το token πιστοποιεί τη ροή.",
+
+    "choosePlan": "Επιλέξτε Πλάνο",
+    "choosePlanDescription": "Επιλέξτε το πλάνο που ταιριάζει στις ανάγκες σας. Αναβαθμίστε ή υποβαθμίστε ανά πάσα στιγμή.",
+    "monthlyBilling": "Μηνιαία",
+    "annualBilling": "Ετήσια",
+    "perMonth": "/μήνα",
+    "perYear": "/έτος",
+    "save2Months": "Εξοικονομήστε 2 μήνες",
+    "currentPlan": "Τρέχον Πλάνο",
+    "subscribe": "Εγγραφή",
+    "switchPlan": "Αλλαγή Πλάνου",
+    "confirmSwitchPlan": "Επιβεβαίωση Αλλαγής Πλάνου",
+    "switchPlanUpgradeDescription": "Αναβαθμίζεστε σε {plan}. Θα χρεωθείτε αναλογικά {price} για το υπόλοιπο του τρέχοντος κύκλου χρέωσης.",
+    "switchPlanDowngradeDescription": "Υποβαθμίζεστε σε {plan} στα {price}. Η αχρησιμοποίητη πίστωση από το τρέχον πλάνο θα εφαρμοστεί στο επόμενο τιμολόγιό σας.",
+    "confirmSwitch": "Επιβεβαίωση & Πληρωμή",
+    "changePlan": "Αλλαγή Πλάνου",
+    "mostPopular": "Πιο Δημοφιλές",
+    "loading": "Φόρτωση...",
+
+    "tierFreelancer": "Freelancer",
+    "tierAgency": "Agency",
+    "tierScale": "Scale",
+
+    "companiesLimit": "{count} Εταιρείες",
+    "workflowsLimit": "{count} Ροές Εργασίας",
+    "clientsLimit": "{count} Πελάτες",
+    "unlimitedCompanies": "Απεριόριστες Εταιρείες",
+    "unlimitedWorkflows": "Απεριόριστες Ροές Εργασίας",
+    "unlimitedClients": "Απεριόριστοι Πελάτες",
+    "supportFreelancer": "Υποστήριξη μέσω Email",
+    "supportAgency": "Κλήση Εκκίνησης",
+    "supportScale": "Προτεραιότητα + Κλήση Εκκίνησης",
+
+    "subscriptionInfo": "Συνδρομή",
+    "subscriptionActive": "Ενεργή",
+    "subscriptionTrialing": "Δοκιμαστική",
+    "subscriptionPastDue": "Ληξιπρόθεσμη",
+    "subscriptionCanceled": "Ακυρωμένη",
+    "subscriptionNone": "Χωρίς Συνδρομή",
+    "upgradeToPremium": "Αναβάθμιση σε Premium",
+    "noSubscriptionYet": "Δεν έχετε ενεργή συνδρομή ακόμη.",
+    "manageSubscription": "Διαχείριση Συνδρομής",
+    "trialEndsIn": "Η δοκιμαστική περίοδος λήγει σε {days} ημέρες",
+    "trialEndsOn": "Η δοκιμή λήγει στις {date}",
+    "accessUntil": "Πρόσβαση έως {date}",
+    "paymentFailed": "Η πληρωμή απέτυχε. Παρακαλώ ενημερώστε τον τρόπο πληρωμής σας.",
+    "accessProvidedByManager": "Η πρόσβασή σας παρέχεται από τον πάροχο υπηρεσιών σας.",
+
+    "companyLimitReached": "Έχετε φτάσει τον μέγιστο αριθμό εταιρειών για το πλάνο σας. Αναβαθμίστε για να προσθέσετε περισσότερες.",
+    "workflowLimitReached": "Έχετε φτάσει τον μέγιστο αριθμό ροών εργασίας για το πλάνο σας. Αναβαθμίστε για να προσθέσετε περισσότερες.",
+    "clientLimitReached": "Έχετε φτάσει τον μέγιστο αριθμό πελατών για το πλάνο σας. Αναβαθμίστε για να προσθέσετε περισσότερους.",
+
+    "downgradeBlocked": "Δεν μπορείτε να υποβαθμίσετε σε αυτό το πλάνο γιατί η τρέχουσα χρήση σας υπερβαίνει τα όριά του.",
+    "companiesUsageExceeds": "Έχετε {current} εταιρείες (όριο: {limit}).",
+    "workflowsUsageExceeds": "Έχετε {current} ροές εργασίας (όριο: {limit}).",
+    "clientsUsageExceeds": "Έχετε {current} πελάτες (όριο: {limit}).",
+
+    "subscriptionInactive": "Η συνδρομή σας είναι ανενεργή. Παρακαλώ εγγραφείτε σε ένα πλάνο για να συνεχίσετε.",
+
+    "subscriptionExpiredTitle": "Αναστολή Πρόσβασης",
+    "subscriptionExpiredMessage": "Η πρόσβαση στον λογαριασμό σας έχει ανασταλεί. Παρακαλώ επικοινωνήστε με τον πάροχο υπηρεσιών σας."
   }
 }

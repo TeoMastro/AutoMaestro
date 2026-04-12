@@ -126,6 +126,7 @@
     "passwordTooShort": "Password must be at least 8 characters long",
     "passwordsDontMatch": "Passwords don't match",
 
+    "pricing": "Pricing",
     "privacyPolicy": "Privacy policy",
     "profile": "Profile",
     "redirectingMessage": "Redirecting to login in 3 seconds...",
@@ -400,6 +401,67 @@
     "n8nChatWorkflows": "Chat Workflows",
     "n8nChatAuthDescription": "When your n8n workflow makes calls TO this app (e.g., for logging or knowledge search), use Bearer Token authentication with the workflow API token.",
     "n8nBearerToken": "Bearer Token",
-    "n8nChatTokenValue": "Use the workflow API token as the bearer value. This token authenticates the workflow."
+    "n8nChatTokenValue": "Use the workflow API token as the bearer value. This token authenticates the workflow.",
+
+    "choosePlan": "Choose Your Plan",
+    "choosePlanDescription": "Select the plan that fits your needs. Upgrade or downgrade anytime.",
+    "monthlyBilling": "Monthly",
+    "annualBilling": "Annual",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "save2Months": "Save 2 months",
+    "currentPlan": "Current Plan",
+    "subscribe": "Subscribe",
+    "switchPlan": "Switch Plan",
+    "confirmSwitchPlan": "Confirm Plan Change",
+    "switchPlanUpgradeDescription": "You are upgrading to {plan}. You will be charged a prorated amount of {price} for the remainder of your current billing cycle.",
+    "switchPlanDowngradeDescription": "You are downgrading to {plan} at {price}. The unused credit from your current plan will be applied to your next invoice.",
+    "confirmSwitch": "Confirm & Pay",
+    "changePlan": "Change Plan",
+    "mostPopular": "Most Popular",
+    "loading": "Loading...",
+
+    "tierFreelancer": "Freelancer",
+    "tierAgency": "Agency",
+    "tierScale": "Scale",
+
+    "companiesLimit": "{count} Companies",
+    "workflowsLimit": "{count} Workflows",
+    "clientsLimit": "{count} Clients",
+    "unlimitedCompanies": "Unlimited Companies",
+    "unlimitedWorkflows": "Unlimited Workflows",
+    "unlimitedClients": "Unlimited Clients",
+    "supportFreelancer": "Email Support",
+    "supportAgency": "Onboarding Call",
+    "supportScale": "Priority + Onboarding Call",
+
+    "subscriptionInfo": "Subscription",
+    "subscriptionActive": "Active",
+    "subscriptionTrialing": "Trial",
+    "subscriptionPastDue": "Past Due",
+    "subscriptionCanceled": "Canceled",
+    "subscriptionNone": "No Subscription",
+    "upgradeToPremium": "Upgrade to Premium",
+    "noSubscriptionYet": "You don't have an active subscription yet.",
+    "manageSubscription": "Manage Subscription",
+    "trialEndsIn": "Your free trial ends in {days} days",
+    "trialEndsOn": "Trial ends on {date}",
+    "accessUntil": "Access until {date}",
+    "paymentFailed": "Payment failed. Please update your payment method.",
+    "accessProvidedByManager": "Your access is provided by your service provider.",
+
+    "companyLimitReached": "You've reached the maximum number of companies for your plan. Upgrade to add more.",
+    "workflowLimitReached": "You've reached the maximum number of workflows for your plan. Upgrade to add more.",
+    "clientLimitReached": "You've reached the maximum number of clients for your plan. Upgrade to add more.",
+
+    "downgradeBlocked": "You cannot downgrade to this plan because your current usage exceeds its limits.",
+    "companiesUsageExceeds": "You have {current} companies (limit: {limit}).",
+    "workflowsUsageExceeds": "You have {current} workflows (limit: {limit}).",
+    "clientsUsageExceeds": "You have {current} clients (limit: {limit}).",
+
+    "subscriptionInactive": "Your subscription is inactive. Please subscribe to a plan to continue.",
+
+    "subscriptionExpiredTitle": "Access Suspended",
+    "subscriptionExpiredMessage": "Your account access has been suspended. Please contact your service provider."
   }
 }

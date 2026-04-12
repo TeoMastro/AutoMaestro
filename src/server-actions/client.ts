@@ -5,15 +5,17 @@ import { revalidatePath } from 'next/cache';
 import { UserFormState } from '@/types/user';
 import { createUserSchema, formatZodErrors } from '@/lib/validation-schemas';
 import { Role, Status } from '@/lib/constants';
+import { checkResourceLimit } from '@/lib/subscription';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
+import { checkAdminOrManagerAuth, getManagerCompanyIds, requireActiveSubscription } from '@/lib/auth-helpers';
 
 export async function createClientAction(prevState: UserFormState, formData: FormData): Promise<UserFormState> {
   let companyId = '';
 
   try {
     const session = await checkAdminOrManagerAuth();
+    requireActiveSubscription(session);
 
     const data = {
       first_name: formData.get('first_name')?.toString() ?? '',
@@ -33,6 +35,19 @@ export async function createClientAction(prevState: UserFormState, formData: For
         formData: { ...data, password: '' },
         globalError: null,
       };
+    }
+
+    // Check resource limit for managers
+    if (session.user.role === Role.MANAGER) {
+      const limitCheck = await checkResourceLimit(session.user.id, 'clients');
+      if (!limitCheck.allowed) {
+        return {
+          success: false,
+          errors: {},
+          formData: { ...data, password: '' },
+          globalError: 'clientLimitReached',
+        };
+      }
     }
 
     // Validate company_id
@@ -65,6 +80,7 @@ export async function createClientAction(prevState: UserFormState, formData: For
       user_metadata: {
         first_name: parsed.data.first_name.trim(),
         last_name: parsed.data.last_name.trim(),
+        created_by_admin: 'true',
       },
     });
 

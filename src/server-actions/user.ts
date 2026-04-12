@@ -7,7 +7,7 @@ import { createUserSchema, formatZodErrors, updateUserSchema } from '@/lib/valid
 import { Role, Status } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { checkAdminAuth, checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
+import { checkAdminAuth, checkAdminOrManagerAuth, getManagerCompanyIds, requireActiveSubscription } from '@/lib/auth-helpers';
 
 export async function createUserAction(prevState: UserFormState, formData: FormData): Promise<UserFormState> {
   try {
@@ -68,6 +68,7 @@ export async function createUserAction(prevState: UserFormState, formData: FormD
       user_metadata: {
         first_name: parsed.data.first_name.trim(),
         last_name: parsed.data.last_name.trim(),
+        created_by_admin: 'true',
       },
     });
 
@@ -142,6 +143,7 @@ export async function updateUserAction(
 ): Promise<UserFormState> {
   try {
     const session = await checkAdminOrManagerAuth();
+    requireActiveSubscription(session);
     const isManager = session.user.role === Role.MANAGER;
 
     const data = {
@@ -278,6 +280,7 @@ export async function updateUserAction(
 export async function deleteUserAction(userId: string) {
   try {
     const session = await checkAdminOrManagerAuth();
+    requireActiveSubscription(session);
     const isManager = session.user.role === Role.MANAGER;
 
     if (session.user.id === userId) {

@@ -17,8 +17,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: APP_NAME,
-  description: 'A starter kit to kickstart your next js projects.',
+  title: {
+    default: `${APP_NAME} — Branded Client Portal for n8n Workflows`,
+    template: `%s | ${APP_NAME}`,
+  },
+  description:
+    'Give your clients a branded portal to interact with your n8n automations. Manage companies, workflows, documents, and monitor everything from one dashboard.',
+  openGraph: {
+    title: `${APP_NAME} — Branded Client Portal for n8n Workflows`,
+    description:
+      'The glue between you, your customers, and your n8n workflows. Manage companies, deploy automations, and keep full visibility.',
+    siteName: APP_NAME,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${APP_NAME} — Branded Client Portal for n8n Workflows`,
+    description:
+      'Give your clients a branded portal to interact with your n8n automations. Full observability for managers and clients.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default async function RootLayout({

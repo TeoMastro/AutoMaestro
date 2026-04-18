@@ -76,7 +76,8 @@
     "createdAt": "Created At",
     "delete": "Delete",
     "deleteUserConfirmation": "This action cannot be undone. This will permanently delete the user account for {name}.",
-    "description": "Enter your information to create a new account",
+    "description": "Description",
+    "signupDescription": "Enter your information to create a new account",
     "dontHaveAccount": "Don't have an account?",
     "email": "Email",
     "emailAlreadyTaken": "Email is already taken by another user",
@@ -236,7 +237,7 @@
     "workflowDeletedSuccess": "Workflow deleted successfully",
     "workflowNotFound": "Workflow not found",
     "noWorkflowsFound": "No workflows found.",
-    "noWorkflowsAssigned": "No workflows assigned. Contact your administrator.",
+    "noWorkflowsAssigned": "No workflows available yet. Your company manager will add them soon.",
     "invalidWorkflowType": "Invalid workflow type",
     "triggerWorkflowNoKnowledgeBase": "Knowledge base is not available for trigger workflows",
 
@@ -254,6 +255,8 @@
     "deleteWorkflowConfirmation": "This action cannot be undone. This will permanently delete the workflow \"{name}\" and all its documents.",
 
     "knowledgeBase": "Knowledge Base",
+    "noKnowledgeBaseTitle": "No Knowledge Base",
+    "noKnowledgeBaseDescription": "This chat workflow doesn't use a knowledge base. You can chat with it directly.",
     "uploadDocument": "Upload Document",
     "uploadDocuments": "Upload Documents",
     "dropFilesHere": "Drop files here or click to browse",
@@ -461,6 +464,12 @@
     "clientsUsageExceeds": "You have {current} clients (limit: {limit}).",
 
     "subscriptionInactive": "Your subscription is inactive. Please subscribe to a plan to continue.",
+
+    "subscriptionEndedTitle": "Your access has been suspended",
+    "trialEndedBannerMessage": "Your free trial has ended. Subscribe to a plan below to restore access.",
+    "subscriptionCanceledBannerMessage": "Your subscription has been canceled. Subscribe to a plan below to restore access.",
+    "subscriptionUnpaidBannerMessage": "Your last payment couldn't be processed. Subscribe again or update your payment method to restore access.",
+    "subscriptionPastDueBannerMessage": "Your last payment failed. Please update your payment method to keep your subscription active.",
 
     "subscriptionExpiredTitle": "Access Suspended",
     "subscriptionExpiredMessage": "Your account access has been suspended. Please contact your manager to restore access.",

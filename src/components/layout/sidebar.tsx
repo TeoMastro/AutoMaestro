@@ -116,29 +116,31 @@ export async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        {isClient ? (
-          <div className="flex items-center gap-3">
-            {clientLogoUrl ? (
-              <img
-                src={clientLogoUrl}
-                alt={`${clientCompanyName} logo`}
-                className="w-8 h-8 object-contain rounded-lg"
-              />
-            ) : (
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600">
-                <Building2 className="size-4 text-white" />
+        <Link href="/dashboard" className="flex items-center gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          {isClient ? (
+            <>
+              {clientLogoUrl ? (
+                <img
+                  src={clientLogoUrl}
+                  alt={`${clientCompanyName} logo`}
+                  className="w-8 h-8 object-contain rounded-lg"
+                />
+              ) : (
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600">
+                  <Building2 className="size-4 text-white" />
+                </div>
+              )}
+              <span className="truncate text-sm font-medium">{clientCompanyName ?? 'No company assigned'}</span>
+            </>
+          ) : (
+            <>
+              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">NL</span>
               </div>
-            )}
-            <span className="truncate text-sm font-medium">{clientCompanyName ?? 'No company assigned'}</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">NL</span>
-            </div>
-            <h2 className="text-lg font-semibold text-sidebar-foreground">{APP_NAME}</h2>
-          </div>
-        )}
+              <h2 className="text-lg font-semibold text-sidebar-foreground">{APP_NAME}</h2>
+            </>
+          )}
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>

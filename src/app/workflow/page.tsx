@@ -7,7 +7,8 @@ import { WorkflowSelector } from '@/components/workflow/workflow-selector';
 import { TriggerWorkflow } from '@/components/workflow/trigger-workflow';
 import { HostedChat } from '@/components/workflow/hosted-chat';
 import { DocumentManager } from '@/components/workflow/document-manager';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DatabaseZap } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { getActiveCompanyId } from '@/lib/active-company';
 
@@ -55,8 +56,20 @@ export default async function WorkflowDashboardPage({ searchParams }: WorkflowDa
           <>
             {/* Left column — KB */}
             <div className="space-y-6">
-              {selectedWorkflow.hasKnowledgeBase && (
+              {selectedWorkflow.hasKnowledgeBase ? (
                 <DocumentManager workflowId={selectedWorkflow.id} initialDocuments={documents} />
+              ) : (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <DatabaseZap className="h-4 w-4" />
+                      {t('noKnowledgeBaseTitle')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm text-muted-foreground">
+                    {t('noKnowledgeBaseDescription')}
+                  </CardContent>
+                </Card>
               )}
             </div>
             {/* Right column — Main area */}

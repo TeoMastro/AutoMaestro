@@ -52,6 +52,8 @@
     "hidePassword": "Απόκρυψη κωδικού",
     "invalidUrl": "Παρακαλώ εισάγετε έγκυρο URL",
     "noCompaniesFound": "Δεν βρέθηκαν εταιρείες.",
+    "noCompaniesAvailable": "Δεν υπάρχουν διαθέσιμες εταιρείες",
+    "createCompanyFirstHint": "Δημιουργήστε πρώτα μια εταιρεία",
     "searchCompanies": "Αναζήτηση εταιρειών...",
     "selectCompany": "Επιλέξτε εταιρεία",
     "allCompanies": "Όλες οι Εταιρείες",
@@ -419,7 +421,6 @@
     "confirmSwitch": "Επιβεβαίωση & Πληρωμή",
     "changePlan": "Αλλαγή Πλάνου",
     "mostPopular": "Πιο Δημοφιλές",
-    "loading": "Φόρτωση...",
 
     "tierFreelancer": "Freelancer",
     "tierAgency": "Agency",
@@ -462,6 +463,8 @@
     "subscriptionInactive": "Η συνδρομή σας είναι ανενεργή. Παρακαλώ εγγραφείτε σε ένα πλάνο για να συνεχίσετε.",
 
     "subscriptionExpiredTitle": "Αναστολή Πρόσβασης",
-    "subscriptionExpiredMessage": "Η πρόσβαση στον λογαριασμό σας έχει ανασταλεί. Παρακαλώ επικοινωνήστε με τον πάροχο υπηρεσιών σας."
+    "subscriptionExpiredMessage": "Η πρόσβαση στον λογαριασμό σας έχει ανασταλεί. Παρακαλώ επικοινωνήστε με τον διαχειριστή σας για την επαναφορά της πρόσβασης.",
+    "contactManager": "Επικοινωνία με Διαχειριστή",
+    "managerEmailUnavailable": "Τα στοιχεία επικοινωνίας του διαχειριστή δεν είναι διαθέσιμα αυτή τη στιγμή."
   }
 }

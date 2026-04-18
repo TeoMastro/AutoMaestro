@@ -13,6 +13,7 @@ import { InfoAlert } from '@/components/info-alert';
 import { TriggerParamsBuilder } from '@/components/admin/trigger-params-builder';
 import { WorkflowFormProps, WorkflowFormState, WorkflowParam } from '@/types/workflow';
 import { WorkflowType } from '@/lib/constants';
+import Link from 'next/link';
 
 function parseParams(json: string): WorkflowParam[] {
   if (!json) return [];
@@ -58,6 +59,8 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
     return errs?.length ? t(errs[0]) : null;
   };
 
+  const hasNoCompanies = companies.length === 0;
+
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
@@ -69,9 +72,9 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="company_id">{t('company')}</Label>
-            <Select name="company_id" defaultValue={state.formData.company_id}>
+            <Select name="company_id" defaultValue={state.formData.company_id} disabled={hasNoCompanies}>
               <SelectTrigger className={state.errors.company_id ? 'border-red-500' : ''}>
-                <SelectValue placeholder={t('selectCompany')} />
+                <SelectValue placeholder={hasNoCompanies ? t('noCompaniesAvailable') : t('selectCompany')} />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((c) => (
@@ -81,6 +84,13 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
                 ))}
               </SelectContent>
             </Select>
+            {hasNoCompanies && (
+              <p className="text-sm text-muted-foreground">
+                <Link href="/manage/companies/create" className="text-primary underline-offset-4 hover:underline">
+                  {t('createCompanyFirstHint')}
+                </Link>
+              </p>
+            )}
             {err('company_id') && <p className="text-sm text-red-500">{err('company_id')}</p>}
           </div>
 
@@ -179,7 +189,7 @@ export function WorkflowForm({ workflow, mode, companies }: WorkflowFormProps) {
           )}
 
           <div className="flex gap-4">
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={isPending || hasNoCompanies}>
               {isPending ? t('saving') : mode === 'create' ? t('create') : t('update')}
             </Button>
             <Button type="button" variant="outline" onClick={() => window.history.back()}>

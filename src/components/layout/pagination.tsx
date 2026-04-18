@@ -18,6 +18,8 @@ export const Pagination = ({
 }) => {
   const t = useTranslations('app');
 
+  if (totalCount === 0) return null;
+
   const startItem = (currentPage - 1) * limit + 1;
   const endItem = Math.min(currentPage * limit, totalCount);
 

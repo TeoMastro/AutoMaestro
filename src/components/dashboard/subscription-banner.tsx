@@ -20,7 +20,7 @@ export function SubscriptionBanner({ isTrialing, isPastDue, trialDaysLeft, curre
 
   if (isPastDue) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="items-center [&>svg]:translate-y-0">
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription className="flex items-center justify-between">
           <span>{t('paymentFailed')}</span>
@@ -32,7 +32,7 @@ export function SubscriptionBanner({ isTrialing, isPastDue, trialDaysLeft, curre
 
   if (isTrialing) {
     return (
-      <Alert>
+      <Alert className="items-center [&>svg]:translate-y-0">
         <Clock className="h-4 w-4" />
         <AlertDescription className="flex items-center justify-between">
           <span>{t('trialEndsIn', { days: trialDaysLeft })}</span>
@@ -55,7 +55,7 @@ export function SubscriptionBanner({ isTrialing, isPastDue, trialDaysLeft, curre
   }
 
   return (
-    <Alert>
+    <Alert className="items-center [&>svg]:translate-y-0">
       <Sparkles className="h-4 w-4" />
       <AlertDescription className="flex items-center justify-between">
         <span>{t('noSubscriptionYet')}</span>

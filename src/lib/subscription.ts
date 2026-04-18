@@ -67,6 +67,28 @@ export async function clientHasActiveManagerSub(clientId: string): Promise<boole
 }
 
 /**
+ * Get the manager's email for a client (for display on the subscription-expired page).
+ */
+export async function getManagerEmailForClient(clientId: string): Promise<string | null> {
+  const supabase = createAdminClient();
+
+  const { data: managerId, error: rpcError } = await supabase.rpc('get_manager_for_client', {
+    p_client_id: clientId,
+  });
+
+  if (rpcError || !managerId) return null;
+
+  const { data: manager, error: profileError } = await supabase
+    .from('profiles')
+    .select('email')
+    .eq('id', managerId)
+    .single();
+
+  if (profileError || !manager) return null;
+  return manager.email ?? null;
+}
+
+/**
  * Get the manager's subscription info for a client (for display purposes).
  */
 export async function getManagerSubscriptionForClient(clientId: string): Promise<{

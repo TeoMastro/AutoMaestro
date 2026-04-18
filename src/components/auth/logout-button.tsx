@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-export default function LogoutButton() {
+export default function LogoutButton({ className }: { className?: string }) {
   const t = useTranslations('app');
   const router = useRouter();
   const supabase = createClient();
@@ -16,7 +16,7 @@ export default function LogoutButton() {
   };
 
   return (
-    <button onClick={handleLogout} className="w-full text-left cursor-pointer">
+    <button onClick={handleLogout} className={className ?? 'w-full text-left cursor-pointer'}>
       {t('signOut')}
     </button>
   );

@@ -52,6 +52,8 @@
     "hidePassword": "Hide password",
     "invalidUrl": "Please enter a valid URL",
     "noCompaniesFound": "No companies found.",
+    "noCompaniesAvailable": "No companies available",
+    "createCompanyFirstHint": "Create a company first",
     "searchCompanies": "Search companies...",
     "selectCompany": "Select a company",
     "allCompanies": "All Companies",
@@ -419,7 +421,6 @@
     "confirmSwitch": "Confirm & Pay",
     "changePlan": "Change Plan",
     "mostPopular": "Most Popular",
-    "loading": "Loading...",
 
     "tierFreelancer": "Freelancer",
     "tierAgency": "Agency",
@@ -462,6 +463,8 @@
     "subscriptionInactive": "Your subscription is inactive. Please subscribe to a plan to continue.",
 
     "subscriptionExpiredTitle": "Access Suspended",
-    "subscriptionExpiredMessage": "Your account access has been suspended. Please contact your service provider."
+    "subscriptionExpiredMessage": "Your account access has been suspended. Please contact your manager to restore access.",
+    "contactManager": "Contact Manager",
+    "managerEmailUnavailable": "Manager contact information is currently unavailable."
   }
 }

@@ -74,7 +74,7 @@ Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_compani
 - Webhook proxy routes: `/api/workflows/trigger` and chat via n8n
 - Document pipeline: upload → parse (pdf-parse/mammoth) → chunk (1000 chars) → embed (OpenAI `text-embedding-3-small`) → upsert to `knowledge_base`
 - `knowledge_base` schema is n8n Supabase Vector Store compatible: `{id, content, metadata, embedding, doc_id, workflow_id}`
-- Document processing API: `/api/documents/process`
+- Document processing runs in-process via `triggerDocumentProcessingAction` (no separate API route)
 - Supabase Storage bucket `workflow-documents` must be created manually
 - Trigger workflows: knowledge base is **optional** (toggleable per workflow, see migration 006). JSON params input is built via `trigger-params-builder.tsx`, and the n8n response is rendered through `dynamic-response.tsx`
 
@@ -93,7 +93,6 @@ Dynamic breadcrumbs use a context (`breadcrumb-context.tsx`) + per-page setter (
 ### API Routes
 
 - `/api/workflows/trigger` — webhook proxy for n8n trigger workflows
-- `/api/documents/process` — document processing pipeline
 - `/api/documents/status` — document status polling
 - `/api/logs/chat` — chat logging (Bearer auth, called by n8n)
 - `/api/knowledge-search` — vector search (Bearer auth, called by n8n)

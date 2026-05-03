@@ -7,6 +7,7 @@ import { createUserSchema, formatZodErrors, updateUserSchema } from '@/lib/valid
 import { Role, Status } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { buildOrIlikeFilter } from '@/lib/supabase/search';
 import { checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
 
 export async function createUserAction(prevState: UserFormState, formData: FormData): Promise<UserFormState> {
@@ -421,12 +422,8 @@ async function fetchUsers(params: GetUsersParams & { paginate?: boolean }, calle
     query = query.in('id', userIds).eq('role', Role.CLIENT);
   }
 
-  // Apply search filter (sanitize to prevent PostgREST filter injection)
   if (search) {
-    const sanitizedSearch = search.replace(/[,.()]/g, '');
-    query = query.or(
-      `first_name.ilike.%${sanitizedSearch}%,last_name.ilike.%${sanitizedSearch}%,email.ilike.%${sanitizedSearch}%`
-    );
+    query = query.or(buildOrIlikeFilter(['first_name', 'last_name', 'email'], search));
   }
 
   // Apply role filter

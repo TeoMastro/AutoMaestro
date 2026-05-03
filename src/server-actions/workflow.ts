@@ -8,13 +8,15 @@ import { createWorkflowSchema, updateWorkflowSchema, formatZodErrors } from '@/l
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
+import { encrypt, decrypt, hashSecret } from '@/lib/encryption';
+import { buildOrIlikeFilter } from '@/lib/supabase/search';
 import type { Workflow, WorkflowFormState, GetWorkflowsParams, GetWorkflowsResult } from '@/types/workflow';
 
 function mapWorkflow(w: Record<string, unknown>): Workflow {
   const config = (w.config as Record<string, unknown>) ?? {};
   return {
     id: w.id as string,
-    token: w.token as string,
+    token: decrypt(w.token_encrypted as string),
     companyId: w.company_id as string,
     companyName: (w as any).companies?.name ?? undefined,
     name: w.name as string,
@@ -93,6 +95,8 @@ export async function createWorkflowAction(
       params: parsedParams,
     };
 
+    const initialToken = crypto.randomUUID();
+
     const { data: newWorkflow, error } = await supabase
       .from('workflows')
       .insert({
@@ -105,6 +109,8 @@ export async function createWorkflowAction(
         is_active: parsed.data.is_active,
         config,
         created_by: session.user.id,
+        token_hash: hashSecret(initialToken),
+        token_encrypted: encrypt(initialToken),
       })
       .select('id')
       .single();
@@ -384,8 +390,7 @@ export async function getWorkflowsWithPagination(params: GetWorkflowsParams): Pr
     }
 
     if (search) {
-      const safe = search.replace(/[,.()]/g, '');
-      query = query.or(`name.ilike.%${safe}%,description.ilike.%${safe}%`);
+      query = query.or(buildOrIlikeFilter(['name', 'description'], search));
     }
     if (typeFilter !== 'all') query = query.eq('type', typeFilter);
     if (companyFilter) query = query.eq('company_id', companyFilter);
@@ -436,18 +441,19 @@ export async function rerollWorkflowTokenAction(
 
     const newToken = crypto.randomUUID();
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('workflows')
-      .update({ token: newToken })
-      .eq('id', workflowId)
-      .select('token')
-      .single();
+      .update({
+        token_hash: hashSecret(newToken),
+        token_encrypted: encrypt(newToken),
+      })
+      .eq('id', workflowId);
 
-    if (error || !data) throw error ?? new Error('No data returned');
+    if (error) throw error;
 
     logger.info('Workflow token rerolled', { workflowId });
     revalidatePath(`/manage/workflows/${workflowId}`);
-    return { success: true, token: data.token as string };
+    return { success: true, token: newToken };
   } catch (err) {
     logger.error('Error rerolling workflow token', {
       error: (err as Error).message,

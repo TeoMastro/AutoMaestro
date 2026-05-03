@@ -13,6 +13,7 @@ import {
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { encrypt, decrypt } from '@/lib/encryption';
+import { buildOrIlikeFilter } from '@/lib/supabase/search';
 import type {
   Company,
   CompanyFormState,
@@ -371,8 +372,7 @@ export async function getCompaniesWithPagination(params: GetCompaniesParams): Pr
     }
 
     if (search) {
-      const safe = search.replace(/[,.()]/g, '');
-      query = query.or(`name.ilike.%${safe}%,note.ilike.%${safe}%`);
+      query = query.or(buildOrIlikeFilter(['name', 'note'], search));
     }
 
     const dbSort = sortField === 'createdAt' ? 'created_at' : sortField === 'updatedAt' ? 'updated_at' : sortField;

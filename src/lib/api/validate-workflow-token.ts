@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { hashSecret } from '@/lib/encryption';
 import logger from '@/lib/logger';
 
 const baseWorkflowSchema = z.object({
@@ -37,8 +38,14 @@ export async function validateWorkflowToken<Extra extends z.ZodRawShape = Record
   const fullSchema = extraSchema ? baseWorkflowSchema.extend(extraSchema.shape) : baseWorkflowSchema;
   const selectFields = Object.keys(fullSchema.shape).join(', ');
 
+  const tokenHash = hashSecret(rawToken);
+
   const supabase = createAdminClient();
-  const { data, error: wfError } = await supabase.from('workflows').select(selectFields).eq('token', rawToken).single();
+  const { data, error: wfError } = await supabase
+    .from('workflows')
+    .select(selectFields)
+    .eq('token_hash', tokenHash)
+    .single();
 
   if (wfError || !data) {
     logger.error(`${context}: invalid token`, { error: wfError?.message });

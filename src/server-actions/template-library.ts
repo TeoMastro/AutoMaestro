@@ -6,6 +6,7 @@ import { checkAdminAuth, checkAdminOrManagerAuth } from '@/lib/auth-helpers';
 import { createTemplateLibrarySchema, updateTemplateLibrarySchema, formatZodErrors } from '@/lib/validation-schemas';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { buildOrIlikeFilter } from '@/lib/supabase/search';
 import type {
   TemplateLibraryItem,
   TemplateLibraryFormState,
@@ -42,8 +43,7 @@ export async function getTemplateLibraryWithPagination(
     let query = supabase.from('template_library').select('*', { count: 'exact' });
 
     if (search) {
-      const safe = search.replace(/[,.()]/g, '');
-      query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%,setup_guide.ilike.%${safe}%`);
+      query = query.or(buildOrIlikeFilter(['title', 'description', 'setup_guide'], search));
     }
 
     const dbSort = sortField === 'createdAt' ? 'created_at' : sortField === 'updatedAt' ? 'updated_at' : sortField;

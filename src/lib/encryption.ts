@@ -3,13 +3,26 @@ import crypto from 'crypto';
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
+const MIN_KEY_LENGTH = 32;
+
+let cachedKey: Buffer | null = null;
 
 function getKey(): Buffer {
+  if (cachedKey) return cachedKey;
+
   const key = process.env.ENCRYPTION_KEY;
   if (!key) {
     throw new Error('ENCRYPTION_KEY environment variable is not set');
   }
-  return crypto.createHash('sha256').update(key).digest();
+  if (key.length < MIN_KEY_LENGTH) {
+    throw new Error(
+      `ENCRYPTION_KEY must be at least ${MIN_KEY_LENGTH} characters of high-entropy data ` +
+        '(generate with `openssl rand -base64 32`)'
+    );
+  }
+
+  cachedKey = crypto.createHash('sha256').update(key).digest();
+  return cachedKey;
 }
 
 export function encrypt(plaintext: string): string {
@@ -37,4 +50,13 @@ export function decrypt(ciphertext: string): string {
 
   const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
   return decrypted.toString('utf8');
+}
+
+/**
+ * Deterministic, keyed hash for indexed lookups of secret values
+ * (e.g. workflow tokens). HMAC-SHA256 lets us look up by hash without
+ * leaking the plaintext to anyone with read access to the database.
+ */
+export function hashSecret(value: string): string {
+  return crypto.createHmac('sha256', getKey()).update(value).digest('hex');
 }

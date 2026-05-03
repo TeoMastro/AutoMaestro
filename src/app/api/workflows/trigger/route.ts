@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { decrypt } from '@/lib/encryption';
 import logger from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
@@ -29,13 +30,25 @@ export async function POST(req: NextRequest) {
     // Verify user is assigned to this workflow (RLS also enforces this)
     const { data: workflow, error: wfError } = await supabase
       .from('workflows')
-      .select('id, webhook_url, config, type, token')
+      .select('id, webhook_url, config, type, token_encrypted')
       .eq('id', workflowId)
       .eq('is_active', true)
       .single();
 
     if (wfError || !workflow) {
       return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
+    }
+
+    let outboundToken: string | null = null;
+    if (workflow.token_encrypted) {
+      try {
+        outboundToken = decrypt(workflow.token_encrypted);
+      } catch (err) {
+        logger.error('Failed to decrypt workflow token for outbound call', {
+          workflowId,
+          error: (err as Error).message,
+        });
+      }
     }
 
     // Build payload: merge config defaults + user params
@@ -57,7 +70,7 @@ export async function POST(req: NextRequest) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(workflow.token ? { Authorization: workflow.token } : {}),
+          ...(outboundToken ? { Authorization: outboundToken } : {}),
         },
         body: JSON.stringify(payload),
       });

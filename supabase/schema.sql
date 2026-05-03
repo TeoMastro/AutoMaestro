@@ -110,7 +110,8 @@ CREATE TABLE public.user_companies (
 -- 4. workflows (belongs to one company)
 CREATE TABLE public.workflows (
   id                 UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  token              UUID        NOT NULL DEFAULT gen_random_uuid() UNIQUE,
+  token_hash         TEXT        NOT NULL,
+  token_encrypted    TEXT        NOT NULL,
   company_id         UUID        NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
   name               TEXT        NOT NULL,
   description        TEXT,
@@ -217,7 +218,7 @@ CREATE INDEX idx_user_companies_company_id ON public.user_companies(company_id);
 
 -- workflows
 CREATE INDEX idx_workflows_company_id ON public.workflows(company_id);
-CREATE INDEX idx_workflows_token ON public.workflows(token);
+CREATE UNIQUE INDEX idx_workflows_token_hash ON public.workflows(token_hash);
 CREATE TRIGGER workflows_updated_at
   BEFORE UPDATE ON public.workflows
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();

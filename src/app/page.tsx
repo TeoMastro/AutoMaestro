@@ -4,7 +4,7 @@ import { ProblemSection } from '@/components/landing/problem-section';
 import { FeaturesSection } from '@/components/landing/features-section';
 import { ObservabilitySection } from '@/components/landing/observability-section';
 import { HowItWorksSection } from '@/components/landing/how-it-works-section';
-import { PricingSection } from '@/components/landing/pricing-section';
+import { OpenSourceSection } from '@/components/landing/open-source-section';
 import { FaqSection } from '@/components/landing/faq-section';
 import { FinalCtaSection } from '@/components/landing/final-cta-section';
 import { SiteFooter } from '@/components/landing/site-footer';
@@ -19,7 +19,7 @@ export default function MarketingPage() {
         <FeaturesSection />
         <ObservabilitySection />
         <HowItWorksSection />
-        <PricingSection />
+        <OpenSourceSection />
         <FaqSection />
         <FinalCtaSection />
       </main>

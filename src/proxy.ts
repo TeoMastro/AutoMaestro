@@ -22,7 +22,6 @@ export default async function middleware(req: NextRequest) {
     '/chat-history',
     '/trigger-history',
     '/workflow',
-    '/pricing',
   ];
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
 
@@ -32,11 +31,7 @@ export default async function middleware(req: NextRequest) {
 
   // For authenticated users, check profile
   if (user && isProtected) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, status, subscription_status, trial_ends_at')
-      .eq('id', user.id)
-      .single();
+    const { data: profile } = await supabase.from('profiles').select('role, status').eq('id', user.id).single();
 
     // If profile not found or inactive, redirect to signin
     if (!profile || profile.status !== 'ACTIVE') {
@@ -56,39 +51,10 @@ export default async function middleware(req: NextRequest) {
     if (pathname.startsWith('/manage') && profile.role !== Role.ADMIN && profile.role !== Role.MANAGER) {
       return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
-
-    // ── Subscription gate ──
-    // Paths exempt from subscription checks
-    const subscriptionExemptPaths = ['/pricing', '/profile', '/settings'];
-    const isSubscriptionExempt = subscriptionExemptPaths.some((p) => pathname.startsWith(p));
-
-    if (!isSubscriptionExempt && profile.role !== Role.ADMIN) {
-      if (profile.role === Role.MANAGER) {
-        const hasActiveSub = isSubActive(profile.subscription_status, profile.trial_ends_at);
-        if (!hasActiveSub) {
-          return NextResponse.redirect(new URL('/pricing', req.url));
-        }
-      }
-
-      if (profile.role === Role.CLIENT) {
-        // Check if the client's manager has an active subscription
-        // We use the SQL function via RPC through the admin supabase client
-        // But in middleware we only have the user's supabase client (RLS-scoped).
-        // Instead, do a lightweight check: query the manager's subscription
-        // via the user_companies + profiles join.
-        const { data: managerSub } = await supabase.rpc('any_manager_has_active_sub', {
-          p_client_id: user.id,
-        });
-
-        if (managerSub !== true) {
-          return NextResponse.redirect(new URL('/subscription-expired', req.url));
-        }
-      }
-    }
   }
 
-  // Protect API routes — allow Bearer-token routes used by n8n and Stripe webhook
-  const bearerApiPaths = ['/api/logs/', '/api/knowledge-search', '/api/stripe/webhook'];
+  // Protect API routes — allow Bearer-token routes used by n8n
+  const bearerApiPaths = ['/api/logs/', '/api/knowledge-search'];
   const isBearerApi = bearerApiPaths.some((p) => pathname.startsWith(p));
   if (pathname.startsWith('/api') && !user && !isBearerApi) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -106,19 +72,6 @@ export default async function middleware(req: NextRequest) {
   return supabaseResponse;
 }
 
-/**
- * Lightweight subscription check for middleware.
- */
-function isSubActive(subscriptionStatus: string | null, trialEndsAt: string | null): boolean {
-  if (subscriptionStatus === 'active' || subscriptionStatus === 'past_due') {
-    return true;
-  }
-  if (subscriptionStatus === 'trialing' && trialEndsAt) {
-    return new Date(trialEndsAt) > new Date();
-  }
-  return false;
-}
-
 export const config = {
   matcher: [
     '/dashboard/:path*',
@@ -131,7 +84,5 @@ export const config = {
     '/chat-history/:path*',
     '/trigger-history/:path*',
     '/workflow/:path*',
-    '/pricing/:path*',
-    '/subscription-expired',
   ],
 };

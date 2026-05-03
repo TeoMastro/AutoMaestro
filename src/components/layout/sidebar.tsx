@@ -116,7 +116,10 @@ export async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <Link href="/dashboard" className="flex items-center gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
           {isClient ? (
             <>
               {clientLogoUrl ? (

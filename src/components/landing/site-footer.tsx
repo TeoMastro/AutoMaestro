@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
+import { Github, Zap } from 'lucide-react';
 import { PrivacyPolicyDialog } from '@/components/legal/privacy-policy-dialog';
 import { TermsDialog } from '@/components/legal/terms-dialog';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME, GITHUB_REPO_URL, GITHUB_WORKFLOWS_REPO_URL } from '@/lib/constants';
 
 export function SiteFooter() {
   return (
@@ -17,7 +17,7 @@ export function SiteFooter() {
               <span className="text-sm font-semibold">{APP_NAME}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+              &copy; {new Date().getFullYear()} {APP_NAME}. Open source, MIT licensed.
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-2">
               <PrivacyPolicyDialog title="Privacy Policy" isInSidebar={false} />
@@ -25,16 +25,34 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div className="flex gap-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
             <Link href="#features" className="hover:text-foreground transition-colors">
               Features
             </Link>
-            <Link href="#pricing" className="hover:text-foreground transition-colors">
-              Pricing
+            <Link href="#open-source" className="hover:text-foreground transition-colors">
+              Open Source
             </Link>
             <Link href="#faq" className="hover:text-foreground transition-colors">
               FAQ
             </Link>
+            <a
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+            >
+              <Github className="h-3.5 w-3.5" />
+              Frontend
+            </a>
+            <a
+              href={GITHUB_WORKFLOWS_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+            >
+              <Github className="h-3.5 w-3.5" />
+              Workflows
+            </a>
             <Link href="/auth/signin" className="hover:text-foreground transition-colors">
               Sign In
             </Link>

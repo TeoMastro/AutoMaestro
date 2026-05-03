@@ -11,10 +11,9 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
-import { Pencil, CreditCard, ExternalLink, Sparkles, ArrowRightLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Pencil } from 'lucide-react';
 import { updateProfileAction } from '@/server-actions/profile';
-import { Role, SubscriptionStatus } from '@/lib/constants';
+import { Role } from '@/lib/constants';
 import { badgeStyles } from '@/lib/badge-styles';
 import {
   updateProfileSchema,
@@ -31,26 +30,14 @@ interface ProfileCardUser {
   first_name: string | null;
   last_name: string | null;
   createdAt: Date;
-  subscription_tier: string | null;
-  subscription_status: string;
-  subscription_end_date: Date | null;
-  trial_ends_at: Date | null;
-}
-
-interface ManagerSubscription {
-  subscription_end_date: string | null;
-  trial_ends_at: string | null;
-  subscription_status: string;
-  subscription_tier: string | null;
 }
 
 interface ProfileCardProps {
   user: ProfileCardUser;
   companies: { id: string; name: string }[];
-  managerSubscription?: ManagerSubscription | null;
 }
 
-export function ProfileCard({ user, companies, managerSubscription }: ProfileCardProps) {
+export function ProfileCard({ user, companies }: ProfileCardProps) {
   const t = useTranslations('app');
   const supabase = createClient();
 
@@ -218,74 +205,6 @@ export function ProfileCard({ user, companies, managerSubscription }: ProfileCar
   };
 
   const showCompany = user.role !== Role.ADMIN;
-  const showSubscription = user.role !== Role.ADMIN;
-  const [portalLoading, setPortalLoading] = useState(false);
-
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch {
-      // error handled silently
-    } finally {
-      setPortalLoading(false);
-    }
-  };
-
-  const getSubscriptionEndDate = (): string | null => {
-    if (user.role === Role.MANAGER) {
-      if (user.subscription_status === SubscriptionStatus.TRIALING && user.trial_ends_at) {
-        return new Date(user.trial_ends_at).toLocaleDateString();
-      }
-      if (user.subscription_end_date) {
-        return new Date(user.subscription_end_date).toLocaleDateString();
-      }
-      return null;
-    }
-
-    if (user.role === Role.CLIENT && managerSubscription) {
-      if (managerSubscription.subscription_status === 'trialing' && managerSubscription.trial_ends_at) {
-        return new Date(managerSubscription.trial_ends_at).toLocaleDateString();
-      }
-      if (managerSubscription.subscription_end_date) {
-        return new Date(managerSubscription.subscription_end_date).toLocaleDateString();
-      }
-    }
-
-    return null;
-  };
-
-  const getSubscriptionStatusBadge = () => {
-    const status = user.role === Role.CLIENT
-      ? managerSubscription?.subscription_status || 'none'
-      : user.subscription_status;
-
-    switch (status) {
-      case SubscriptionStatus.ACTIVE:
-        return <Badge variant="outline" className={badgeStyles.green}>{t('subscriptionActive')}</Badge>;
-      case SubscriptionStatus.TRIALING:
-        return <Badge variant="outline" className={badgeStyles.amber}>{t('subscriptionTrialing')}</Badge>;
-      case SubscriptionStatus.PAST_DUE:
-        return <Badge variant="outline" className={badgeStyles.red}>{t('subscriptionPastDue')}</Badge>;
-      case SubscriptionStatus.CANCELED:
-        return <Badge variant="outline" className={badgeStyles.red}>{t('subscriptionCanceled')}</Badge>;
-      default:
-        return <Badge variant="outline" className={badgeStyles.slate}>{t('subscriptionNone')}</Badge>;
-    }
-  };
-
-  const getTierLabel = () => {
-    const tier = user.role === Role.CLIENT
-      ? managerSubscription?.subscription_tier
-      : user.subscription_tier;
-
-    if (!tier) return null;
-    return t(`tier${tier.charAt(0).toUpperCase() + tier.slice(1)}`);
-  };
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -382,82 +301,6 @@ export function ProfileCard({ user, companies, managerSubscription }: ProfileCar
                   ) : (
                     <p className="text-sm text-muted-foreground">{t('noCompanyAssigned')}</p>
                   )}
-                </div>
-              </>
-            )}
-
-            {showSubscription && (
-              <>
-                <Separator />
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <CreditCard className="h-4 w-4 text-muted-foreground" />
-                    <p className="text-sm font-medium text-muted-foreground">{t('subscriptionInfo')}</p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      {getSubscriptionStatusBadge()}
-                      {getTierLabel() && (
-                        <Badge variant="outline" className={badgeStyles.indigo}>
-                          {getTierLabel()}
-                        </Badge>
-                      )}
-                    </div>
-
-                    {user.role === Role.CLIENT && (
-                      <p className="text-sm text-muted-foreground">{t('accessProvidedByManager')}</p>
-                    )}
-
-                    {(() => {
-                      const endDate = getSubscriptionEndDate();
-                      if (!endDate) return null;
-                      return (
-                        <p className="text-sm">
-                          {user.subscription_status === SubscriptionStatus.TRIALING
-                            ? t('trialEndsOn', { date: endDate })
-                            : t('accessUntil', { date: endDate })}
-                        </p>
-                      );
-                    })()}
-
-                    {user.role === Role.MANAGER && user.subscription_status !== SubscriptionStatus.NONE && user.subscription_status !== SubscriptionStatus.TRIALING && (
-                      <div className="flex gap-2 mt-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleManageSubscription}
-                          disabled={portalLoading}
-                        >
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          {portalLoading ? t('loading') : t('manageSubscription')}
-                        </Button>
-                        <Button asChild variant="outline" size="sm">
-                          <Link href="/pricing">
-                            <ArrowRightLeft className="h-4 w-4 mr-2" />
-                            {t('changePlan')}
-                          </Link>
-                        </Button>
-                      </div>
-                    )}
-
-                    {user.role === Role.MANAGER && user.subscription_status === SubscriptionStatus.TRIALING && (
-                      <Button asChild variant="outline" size="sm" className="mt-2">
-                        <Link href="/pricing">
-                          <ArrowRightLeft className="h-4 w-4 mr-2" />
-                          {t('changePlan')}
-                        </Link>
-                      </Button>
-                    )}
-
-                    {user.role === Role.MANAGER && (user.subscription_status === SubscriptionStatus.NONE || user.subscription_status === SubscriptionStatus.CANCELED) && (
-                      <Button asChild size="sm" variant="default" className="mt-2">
-                        <Link href="/pricing">
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          {t('upgradeToPremium')}
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
                 </div>
               </>
             )}

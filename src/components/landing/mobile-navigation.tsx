@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Github, Menu } from 'lucide-react';
+import { GITHUB_REPO_URL } from '@/lib/constants';
 
 interface NavigationItem {
   title: string;
@@ -42,8 +43,20 @@ export default function MobileNavigation({ navigationItems }: MobileNavigationPr
               {item.title}
             </Link>
           ))}
+          <a
+            href={GITHUB_REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-2 py-1 text-lg transition-colors hover:text-foreground/80"
+            onClick={() => setOpen(false)}
+          >
+            <Github className="h-5 w-5" />
+            GitHub
+          </a>
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 mx-5">
-            <Link href="/auth/signin">Demo</Link>
+            <Link href="/auth/signin" onClick={() => setOpen(false)}>
+              Sign In
+            </Link>
           </Button>
         </nav>
       </SheetContent>

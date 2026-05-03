@@ -66,9 +66,7 @@ export default async function WorkflowDashboardPage({ searchParams }: WorkflowDa
                       {t('noKnowledgeBaseTitle')}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="text-sm text-muted-foreground">
-                    {t('noKnowledgeBaseDescription')}
-                  </CardContent>
+                  <CardContent className="text-sm text-muted-foreground">{t('noKnowledgeBaseDescription')}</CardContent>
                 </Card>
               )}
             </div>

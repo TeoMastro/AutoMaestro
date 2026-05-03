@@ -5,11 +5,19 @@ import { APP_NAME } from '@/lib/constants';
 const faqs = [
   {
     q: 'Do I need my own n8n instance?',
-    a: `Yes. ${APP_NAME} connects to your existing n8n instance via encrypted credentials. You keep full control of your workflows — we provide the branded client-facing layer on top.`,
+    a: `Yes. ${APP_NAME} connects to your existing n8n instance via encrypted credentials. You keep full control of your workflows — the project provides the branded client-facing layer on top.`,
   },
   {
-    q: 'What happens during the free trial?',
-    a: 'You get 14 days with Freelancer-tier limits — 3 companies, 10 workflows, 10 clients. No credit card required to start. Upgrade or cancel anytime.',
+    q: 'Is it really free?',
+    a: `Yes. ${APP_NAME} is MIT licensed and free to self-host forever. There are no plans, no resource limits, no payments — clone the repo, run the migrations, and you're live. The only costs are your own infrastructure (Supabase, n8n, OpenAI for embeddings).`,
+  },
+  {
+    q: 'Where do the workflow templates come from?',
+    a: 'The template library is backed by a companion open-source repo of ready-to-import n8n workflows. You can use any of them as-is, customize them for your clients, or contribute your own — every merged workflow becomes available to everyone running the project.',
+  },
+  {
+    q: 'How do I contribute?',
+    a: 'Both repos accept issues and pull requests. The frontend lives at github.com/TeoMastro/n8n-whitelabel-frontend, and the workflow library at github.com/TeoMastro/n8n-whitelabel-workflows. Bug reports, feature ideas, and new workflows are all welcome.',
   },
   {
     q: 'Can managers only see specific companies?',

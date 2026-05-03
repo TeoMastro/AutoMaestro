@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, Bot } from 'lucide-react';
+import { Github, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatedSection } from '@/components/landing/animated-section';
 import { HeroVisual } from '@/components/landing/hero-visual';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME, GITHUB_REPO_URL } from '@/lib/constants';
 
 export function HeroSection() {
   return (
@@ -23,8 +23,8 @@ export function HeroSection() {
         <div className="mx-auto max-w-4xl text-center">
           <AnimatedSection>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
-              <Bot className="h-3.5 w-3.5" />
-              n8n workflow management for agencies
+              <Github className="h-3.5 w-3.5" />
+              Open source · MIT licensed
             </div>
           </AnimatedSection>
 
@@ -40,23 +40,24 @@ export function HeroSection() {
           <AnimatedSection delay={200}>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
               Stop sharing raw webhook URLs with clients. {APP_NAME} gives every customer a branded portal to your
-              automations — while you keep full visibility over every company, workflow, and conversation.
+              automations — while you keep full visibility over every company, workflow, and conversation. Free to
+              self-host, forever.
             </p>
           </AnimatedSection>
 
           <AnimatedSection delay={300}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="h-12 px-8 text-base shadow-md shadow-primary/20">
-                <Link href="/auth/signup">
-                  Start My Free Trial
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
+                  <Star className="mr-2 h-4 w-4" />
+                  Star on GitHub
+                </a>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base">
                 <Link href="#features">See How It Works</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">14-day free trial. No credit card required.</p>
+            <p className="mt-4 text-sm text-muted-foreground">No accounts. No payments. Just clone and run.</p>
           </AnimatedSection>
 
           {/* Animated connection diagram */}

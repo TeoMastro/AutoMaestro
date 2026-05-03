@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-n8n Whitelabel Frontend (branded as **AutoExec**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack SaaS that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Source is proprietary / All Rights Reserved (see `LICENCE.md`).
+n8n Whitelabel Frontend (branded as **AutoExec**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack open-source app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Released under the MIT License (see `LICENCE.md`).
 
 ## Key Commands
 
@@ -64,7 +64,7 @@ Supabase PostgreSQL with RLS. Key tables: `profiles`, `companies`, `user_compani
 - User IDs are UUID strings
 - `is_admin()`, `is_manager()`, `is_admin_or_manager()` are SECURITY DEFINER functions (prevent RLS recursion)
 - pgvector extension required for `knowledge_base` (IVFFlat index)
-- Migrations in `/supabase/migrations/` (001–009). Notable: `005_template_library`, `006_no_kb_on_trigger`, `008_add_company_logo`, `009_add_n8n_credentials`
+- Migrations in `/supabase/migrations/`. Notable: `005_template_library`, `006_no_kb_on_trigger`, `008_add_company_logo`, `009_add_n8n_credentials`, `014_remove_subscriptions` (drops legacy Stripe/subscription state)
 - `companies` carries optional logo (Storage) and **encrypted** n8n credentials (see `/src/lib/encryption.ts`, `ENCRYPTION_KEY` env var)
 - Use `revalidatePath()` after mutations that affect UI
 
@@ -192,6 +192,7 @@ Helper exports in `user-table.tsx`: `getStatusBadge(status, t)` and `getRoleBadg
 - Demo users (seed): `admin@nextlaunchkit.com`, `manager@nextlaunchkit.com`, `user@nextlaunchkit.com`
 - n8n credentials on `companies` are encrypted with `ENCRYPTION_KEY` — rotating the key invalidates existing rows; decrypt + re-encrypt before changing it
 - App display name comes from `APP_NAME` in `/src/lib/constants.ts` (currently "AutoExec") — never hardcode the brand string
+- Self-signup is disabled. Admins create users (managers + clients) from `/admin/user`. Only login (`/auth/signin`), forgot/reset password, and email verification are exposed under `/auth/*`.
 
 ## Environment Variables
 

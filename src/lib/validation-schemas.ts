@@ -54,27 +54,6 @@ export const signinSchema = z.object({
   password: z.string().min(1, 'passwordTooShort').min(6, 'passwordTooShort'),
 });
 
-export const signupSchema = z
-  .object({
-    first_name: z.string().min(2, 'firstNameTooShort'),
-    last_name: z.string().min(2, 'lastNameTooShort'),
-    email: z.email('invalidEmail'),
-    password: z
-      .string()
-      .min(8, 'passwordTooShort')
-      .regex(/[a-z]/, 'passwordNeedsLowercase')
-      .regex(/\d/, 'passwordNeedsNumber')
-      .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/, 'passwordNeedsSpecialChar'),
-    confirmPassword: z.string(),
-    accept_tos: z.literal(true, {
-      error: 'acceptTosRequired',
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'passwordsDontMatch',
-    path: ['confirmPassword'],
-  });
-
 export const createUserSchema = z.object({
   first_name: z.string().min(1, 'firstNameRequired'),
   last_name: z.string().min(1, 'lastNameRequired'),

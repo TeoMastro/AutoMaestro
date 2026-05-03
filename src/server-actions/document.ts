@@ -1,7 +1,6 @@
 'use server';
 
 import { getSession } from '@/lib/auth-session';
-import { requireActiveSubscription } from '@/lib/auth-helpers';
 import { revalidatePath } from 'next/cache';
 import { SUPPORTED_FILE_TYPES, MAX_FILE_SIZE_BYTES, Role } from '@/lib/constants';
 import logger from '@/lib/logger';
@@ -42,7 +41,6 @@ export async function initiateDocumentUploadAction(
     if (!session) {
       return { success: false, errors: {}, formData: { workflow_id: '' }, globalError: 'Unauthorized' };
     }
-    requireActiveSubscription(session);
 
     const workflowId = formData.get('workflow_id')?.toString() ?? '';
     const fileName = formData.get('file_name')?.toString() ?? '';
@@ -192,7 +190,6 @@ export async function deleteDocumentAction(documentId: string) {
   try {
     const session = await getSession();
     if (!session) throw new Error('Unauthorized');
-    requireActiveSubscription(session);
 
     const adminClient = createAdminClient();
 

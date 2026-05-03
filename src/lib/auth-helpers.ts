@@ -1,7 +1,6 @@
 import { getSession, AuthSession } from '@/lib/auth-session';
 import { Role } from '@/lib/constants';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { isSubscriptionActive } from '@/lib/subscription';
 
 export async function checkAuth(allowedRoles: string[]): Promise<AuthSession> {
   const session = await getSession();
@@ -17,26 +16,6 @@ export async function checkAdminAuth(): Promise<AuthSession> {
 
 export async function checkAdminOrManagerAuth(): Promise<AuthSession> {
   return checkAuth([Role.ADMIN, Role.MANAGER]);
-}
-
-/**
- * Verify that the session user has an active subscription (or valid trial).
- * Admins are always allowed. Throws 'Subscription inactive' otherwise.
- */
-export function requireActiveSubscription(session: AuthSession): void {
-  if (session.user.role === Role.ADMIN) return;
-
-  const active = isSubscriptionActive({
-    role: session.user.role,
-    subscription_status: session.user.subscription_status,
-    subscription_tier: session.user.subscription_tier,
-    trial_ends_at: session.user.trial_ends_at?.toISOString() ?? null,
-    subscription_end_date: session.user.subscription_end_date?.toISOString() ?? null,
-  });
-
-  if (!active) {
-    throw new Error('Subscription inactive');
-  }
 }
 
 /**

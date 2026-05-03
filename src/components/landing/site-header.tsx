@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
+import { Github, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -8,11 +8,11 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import MobileNavigation from '@/components/landing/mobile-navigation';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME, GITHUB_REPO_URL } from '@/lib/constants';
 
 const navigationItems = [
   { title: 'Features', href: '#features' },
-  { title: 'Pricing', href: '#pricing' },
+  { title: 'Open Source', href: '#open-source' },
   { title: 'FAQ', href: '#faq' },
 ];
 
@@ -41,6 +41,13 @@ export function SiteHeader() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
+            <NavigationMenuItem>
+              <Button asChild variant="ghost" size="sm" aria-label="GitHub">
+                <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
+                  <Github className="h-4 w-4" />
+                </a>
+              </Button>
+            </NavigationMenuItem>
             <NavigationMenuItem>
               <Button asChild size="sm">
                 <Link href="/auth/signin">Sign In</Link>

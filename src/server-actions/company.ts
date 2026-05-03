@@ -3,8 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { Role } from '@/lib/constants';
-import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess, requireActiveSubscription } from '@/lib/auth-helpers';
-import { checkResourceLimit } from '@/lib/subscription';
+import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
 import {
   createCompanySchema,
   updateCompanySchema,
@@ -65,25 +64,6 @@ export async function createCompanyAction(prevState: CompanyFormState, formData:
       n8n_instance_username: formData.get('n8n_instance_username')?.toString() ?? '',
       n8n_instance_password: formData.get('n8n_instance_password')?.toString() ?? '',
     };
-
-    // Check resource limit for managers
-    if (session.user.role === Role.MANAGER) {
-      const limitCheck = await checkResourceLimit(session.user.id, 'companies');
-      if (!limitCheck.allowed) {
-        return {
-          success: false,
-          errors: {},
-          formData: {
-            name: data.name,
-            note: data.note,
-            n8nInstanceUrl: data.n8n_instance_url,
-            n8nInstanceUsername: data.n8n_instance_username,
-            n8nInstancePassword: data.n8n_instance_password,
-          },
-          globalError: 'companyLimitReached',
-        };
-      }
-    }
 
     const parsed = createCompanySchema.safeParse(data);
     if (!parsed.success) {
@@ -154,7 +134,6 @@ export async function updateCompanyAction(
 ): Promise<CompanyFormState> {
   try {
     const session = await checkAdminOrManagerAuth();
-    requireActiveSubscription(session);
 
     if (session.user.role === Role.MANAGER) {
       await checkManagerCompanyAccess(session.user.id, companyId);
@@ -224,7 +203,6 @@ export async function updateCompanyAction(
 export async function deleteCompanyAction(companyId: string) {
   try {
     const session = await checkAdminOrManagerAuth();
-    requireActiveSubscription(session);
 
     if (session.user.role === Role.MANAGER) {
       await checkManagerCompanyAccess(session.user.id, companyId);
@@ -255,7 +233,6 @@ export async function assignUserToCompanyAction(
 ): Promise<AssignUserToCompanyFormState> {
   try {
     const session = await checkAdminOrManagerAuth();
-    requireActiveSubscription(session);
 
     const data = {
       user_id: formData.get('user_id')?.toString() ?? '',
@@ -316,7 +293,6 @@ export async function assignUserToCompanyAction(
 export async function unassignUserFromCompanyAction(userId: string, companyId: string) {
   try {
     const session = await checkAdminOrManagerAuth();
-    requireActiveSubscription(session);
 
     // Managers cannot unassign themselves from a company
     if (session.user.role === Role.MANAGER && session.user.id === userId) {
@@ -521,7 +497,6 @@ export async function uploadCompanyLogoAction(
 ): Promise<{ success: boolean; error?: string; signedUrl?: string }> {
   try {
     const session = await checkAdminOrManagerAuth();
-    requireActiveSubscription(session);
 
     if (session.user.role === Role.MANAGER) {
       await checkManagerCompanyAccess(session.user.id, companyId);
@@ -593,7 +568,6 @@ export async function uploadCompanyLogoAction(
 export async function deleteCompanyLogoAction(companyId: string): Promise<{ success: boolean; error?: string }> {
   try {
     const session = await checkAdminOrManagerAuth();
-    requireActiveSubscription(session);
 
     if (session.user.role === Role.MANAGER) {
       await checkManagerCompanyAccess(session.user.id, companyId);

@@ -1,15 +1,16 @@
-Copyright (c) 2026 teomastro. All Rights Reserved.
+MIT License
 
-This software and its source code are proprietary and confidential.
+Copyright (c) 2026 teomastro
 
-No part of this software, including but not limited to the source code,
-documentation, assets, or any derivative works, may be copied, modified,
-distributed, sublicensed, sold, published, or used in any form or by any
-means without the express prior written permission of the copyright holder.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Unauthorized use, reproduction, or distribution of this software, or any
-portion of it, is strictly prohibited and may result in severe civil and
-criminal penalties.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

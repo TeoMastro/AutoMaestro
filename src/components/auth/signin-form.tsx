@@ -169,13 +169,6 @@ export function SigninForm({ error, message }: LoginFormProps) {
             </svg>
             Google
           </Button>
-
-          <p className="text-center text-sm text-muted-foreground">
-            {t('dontHaveAccount')}{' '}
-            <Link href="/auth/signup" className="font-medium text-primary hover:underline">
-              {t('signUp')}
-            </Link>
-          </p>
         </CardFooter>
       </form>
     </Card>

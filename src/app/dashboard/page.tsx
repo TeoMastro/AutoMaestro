@@ -1,14 +1,13 @@
 import { getSession } from '@/lib/auth-session';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { Role, Status, SubscriptionStatus } from '@/lib/constants';
+import { Status } from '@/lib/constants';
 import { getDashboardData } from '@/server-actions/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardStatsCards } from '@/components/dashboard/dashboard-stats';
 import { RecentChatTable } from '@/components/dashboard/recent-chat-table';
 import { RecentTriggerTable } from '@/components/dashboard/recent-trigger-table';
 import { Workflow } from 'lucide-react';
-import { SubscriptionBanner } from '@/components/dashboard/subscription-banner';
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -30,16 +29,6 @@ export default async function DashboardPage() {
 
   const hasWorkflows = data.stats.totalWorkflows > 0;
 
-  // Calculate trial days remaining
-  const isManager = session.user.role === Role.MANAGER;
-  const isTrialing = session.user.subscription_status === SubscriptionStatus.TRIALING;
-  const isPastDue = session.user.subscription_status === SubscriptionStatus.PAST_DUE;
-
-  let trialDaysLeft = 0;
-  if (isTrialing && session.user.trial_ends_at) {
-    trialDaysLeft = Math.max(0, Math.ceil((new Date(session.user.trial_ends_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-  }
-
   return (
     <div className="container mx-auto space-y-6">
       <div>
@@ -49,16 +38,6 @@ export default async function DashboardPage() {
           })}
         </h1>
       </div>
-
-      {/* Subscription banners for managers */}
-      {isManager && session.user.role !== Role.ADMIN && (
-        <SubscriptionBanner
-          isTrialing={isTrialing}
-          isPastDue={isPastDue}
-          trialDaysLeft={trialDaysLeft}
-          currentTier={session.user.subscription_tier}
-        />
-      )}
 
       {!hasWorkflows ? (
         <Card>

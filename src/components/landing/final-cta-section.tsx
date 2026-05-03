@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatedSection } from '@/components/landing/animated-section';
+import { GITHUB_REPO_URL } from '@/lib/constants';
 
 export function FinalCtaSection() {
   return (
@@ -13,15 +13,16 @@ export function FinalCtaSection() {
               Stop duct-taping your client delivery
             </h2>
             <p className="mb-8 text-lg text-muted-foreground">
-              Your automations are already great. Give them a front door that matches.
+              Your automations are already great. Give them a front door that matches — open source, on your own
+              infrastructure.
             </p>
             <Button asChild size="lg" className="h-12 px-8 text-base shadow-md shadow-primary/20">
-              <Link href="/auth/signup">
-                Start My Free Trial
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
+                <Star className="mr-2 h-4 w-4" />
+                Star on GitHub
+              </a>
             </Button>
-            <p className="mt-4 text-sm text-muted-foreground">14 days free. No credit card. Cancel anytime.</p>
+            <p className="mt-4 text-sm text-muted-foreground">MIT licensed. Self-host on your own infrastructure.</p>
           </div>
         </AnimatedSection>
       </div>

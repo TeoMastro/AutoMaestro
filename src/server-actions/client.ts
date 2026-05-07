@@ -7,13 +7,13 @@ import { createUserSchema, formatZodErrors } from '@/lib/validation-schemas';
 import { Role, Status } from '@/lib/constants';
 import logger from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
+import { checkAdminAuth } from '@/lib/auth-helpers';
 
 export async function createClientAction(prevState: UserFormState, formData: FormData): Promise<UserFormState> {
   let companyId = '';
 
   try {
-    const session = await checkAdminOrManagerAuth();
+    const session = await checkAdminAuth();
 
     const data = {
       first_name: formData.get('first_name')?.toString() ?? '',
@@ -35,7 +35,6 @@ export async function createClientAction(prevState: UserFormState, formData: For
       };
     }
 
-    // Validate company_id
     companyId = formData.get('company_id')?.toString() ?? '';
     if (!companyId) {
       return {
@@ -46,18 +45,9 @@ export async function createClientAction(prevState: UserFormState, formData: For
       };
     }
 
-    // Verify manager has access to this company
-    if (session.user.role === Role.MANAGER) {
-      const managerCompanyIds = await getManagerCompanyIds(session.user.id);
-      if (!managerCompanyIds.includes(companyId)) {
-        throw new Error('Unauthorized');
-      }
-    }
-
     const trimmedEmail = parsed.data.email.trim().toLowerCase();
     const supabaseAdmin = createAdminClient();
 
-    // Create the auth user via admin API
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email: trimmedEmail,
       password: parsed.data.password,
@@ -81,7 +71,6 @@ export async function createClientAction(prevState: UserFormState, formData: For
       throw authError;
     }
 
-    // Update profile with role and status
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
       .update({
@@ -94,15 +83,14 @@ export async function createClientAction(prevState: UserFormState, formData: For
       throw profileError;
     }
 
-    // Assign user to company
     await supabaseAdmin.from('user_companies').insert({
       user_id: authData.user.id,
       company_id: companyId,
       assigned_by: session.user.id,
     });
 
-    logger.info('Client created successfully by manager', {
-      managerId: session.user.id,
+    logger.info('Client created successfully', {
+      adminId: session.user.id,
       createdUserId: authData.user.id,
       companyId,
     });

@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { Role } from '@/lib/constants';
-import { checkAdminOrManagerAuth, getManagerCompanyIds, checkManagerCompanyAccess } from '@/lib/auth-helpers';
+import { checkAdminAuth, checkAdminOrManagerAuth, getManagerCompanyIds } from '@/lib/auth-helpers';
 import {
   createCompanySchema,
   updateCompanySchema,
@@ -51,12 +51,12 @@ function mapCompany(c: Record<string, unknown>): Company {
 }
 
 // ============================================================
-// Admin / Manager: CRUD
+// Admin: CRUD
 // ============================================================
 
 export async function createCompanyAction(prevState: CompanyFormState, formData: FormData): Promise<CompanyFormState> {
   try {
-    const session = await checkAdminOrManagerAuth();
+    await checkAdminAuth();
 
     const data = {
       name: formData.get('name')?.toString() ?? '',
@@ -85,28 +85,15 @@ export async function createCompanyAction(prevState: CompanyFormState, formData:
     const rawPassword = parsed.data.n8n_instance_password?.trim() || null;
 
     const supabase = createAdminClient();
-    const { data: newCompany, error } = await supabase
-      .from('companies')
-      .insert({
-        name: parsed.data.name.trim(),
-        note: parsed.data.note?.trim() || null,
-        n8n_instance_url: parsed.data.n8n_instance_url?.trim() || null,
-        n8n_instance_username: parsed.data.n8n_instance_username?.trim() || null,
-        n8n_instance_password: rawPassword ? encrypt(rawPassword) : null,
-      })
-      .select('id')
-      .single();
+    const { error } = await supabase.from('companies').insert({
+      name: parsed.data.name.trim(),
+      note: parsed.data.note?.trim() || null,
+      n8n_instance_url: parsed.data.n8n_instance_url?.trim() || null,
+      n8n_instance_username: parsed.data.n8n_instance_username?.trim() || null,
+      n8n_instance_password: rawPassword ? encrypt(rawPassword) : null,
+    });
 
     if (error) throw error;
-
-    // If the caller is a MANAGER, auto-assign them to the new company
-    if (session.user.role === Role.MANAGER && newCompany) {
-      await supabase.from('user_companies').insert({
-        user_id: session.user.id,
-        company_id: newCompany.id,
-        assigned_by: session.user.id,
-      });
-    }
 
     logger.info('Company created');
     revalidatePath('/manage/companies');
@@ -134,11 +121,7 @@ export async function updateCompanyAction(
   formData: FormData
 ): Promise<CompanyFormState> {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    await checkAdminAuth();
 
     const data = {
       name: formData.get('name')?.toString() ?? '',
@@ -203,11 +186,7 @@ export async function updateCompanyAction(
 
 export async function deleteCompanyAction(companyId: string) {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    const session = await checkAdminAuth();
 
     const supabase = createAdminClient();
     const { error } = await supabase.from('companies').delete().eq('id', companyId);
@@ -225,7 +204,7 @@ export async function deleteCompanyAction(companyId: string) {
 }
 
 // ============================================================
-// Admin / Manager: User assignments
+// Admin: User assignments
 // ============================================================
 
 export async function assignUserToCompanyAction(
@@ -233,7 +212,7 @@ export async function assignUserToCompanyAction(
   formData: FormData
 ): Promise<AssignUserToCompanyFormState> {
   try {
-    const session = await checkAdminOrManagerAuth();
+    const session = await checkAdminAuth();
 
     const data = {
       user_id: formData.get('user_id')?.toString() ?? '',
@@ -248,10 +227,6 @@ export async function assignUserToCompanyAction(
         formData: data,
         globalError: null,
       };
-    }
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, parsed.data.company_id);
     }
 
     const supabase = createAdminClient();
@@ -293,16 +268,7 @@ export async function assignUserToCompanyAction(
 
 export async function unassignUserFromCompanyAction(userId: string, companyId: string) {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    // Managers cannot unassign themselves from a company
-    if (session.user.role === Role.MANAGER && session.user.id === userId) {
-      throw new Error('cannotUnassignSelf');
-    }
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    await checkAdminAuth();
 
     const supabase = createAdminClient();
     const { error } = await supabase.from('user_companies').delete().eq('user_id', userId).eq('company_id', companyId);
@@ -320,16 +286,12 @@ export async function unassignUserFromCompanyAction(userId: string, companyId: s
 }
 
 // ============================================================
-// Admin / Manager: Data fetches
+// Admin: Data fetches
 // ============================================================
 
 export async function getCompanyById(companyId: string): Promise<Company | false> {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    await checkAdminAuth();
 
     const supabase = createAdminClient();
     const { data, error } = await supabase.from('companies').select('*').eq('id', companyId).single();
@@ -344,7 +306,7 @@ export async function getCompanyById(companyId: string): Promise<Company | false
 
 export async function getCompaniesWithPagination(params: GetCompaniesParams): Promise<GetCompaniesResult> {
   try {
-    const session = await checkAdminOrManagerAuth();
+    await checkAdminAuth();
 
     const page = parseInt(params.page || '1');
     const limit = parseInt(params.limit || '10');
@@ -355,21 +317,6 @@ export async function getCompaniesWithPagination(params: GetCompaniesParams): Pr
 
     const supabase = createAdminClient();
     let query = supabase.from('companies').select('*', { count: 'exact' });
-
-    // If MANAGER, restrict to their assigned companies
-    if (session.user.role === Role.MANAGER) {
-      const companyIds = await getManagerCompanyIds(session.user.id);
-      if (companyIds.length === 0) {
-        return {
-          companies: [],
-          totalCount: 0,
-          totalPages: 0,
-          currentPage: page,
-          limit,
-        };
-      }
-      query = query.in('id', companyIds);
-    }
 
     if (search) {
       query = query.or(buildOrIlikeFilter(['name', 'note'], search));
@@ -396,6 +343,8 @@ export async function getCompaniesWithPagination(params: GetCompaniesParams): Pr
   }
 }
 
+// Used by admin and manager to populate company dropdowns (workflows, history filters).
+// Managers are scoped to companies they're assigned to via user_companies.
 export async function getAllCompanies(): Promise<{ id: string; name: string }[]> {
   try {
     const session = await checkAdminOrManagerAuth();
@@ -403,7 +352,6 @@ export async function getAllCompanies(): Promise<{ id: string; name: string }[]>
     const supabase = createAdminClient();
     let query = supabase.from('companies').select('id, name').order('name');
 
-    // If MANAGER, restrict to their assigned companies
     if (session.user.role === Role.MANAGER) {
       const companyIds = await getManagerCompanyIds(session.user.id);
       if (companyIds.length === 0) {
@@ -434,11 +382,7 @@ export async function getCompanyAssignments(companyId: string): Promise<
   }[]
 > {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    await checkAdminAuth();
 
     const supabase = createAdminClient();
     const { data: assignments, error } = await supabase
@@ -488,7 +432,7 @@ export async function getCompanyAssignments(companyId: string): Promise<
 }
 
 // ============================================================
-// Admin / Manager: Company Logo
+// Admin: Company Logo
 // ============================================================
 
 export async function uploadCompanyLogoAction(
@@ -496,11 +440,7 @@ export async function uploadCompanyLogoAction(
   formData: FormData
 ): Promise<{ success: boolean; error?: string; signedUrl?: string }> {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    await checkAdminAuth();
 
     const file = formData.get('logo') as File | null;
     if (!file || file.size === 0) {
@@ -567,11 +507,7 @@ export async function uploadCompanyLogoAction(
 
 export async function deleteCompanyLogoAction(companyId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const session = await checkAdminOrManagerAuth();
-
-    if (session.user.role === Role.MANAGER) {
-      await checkManagerCompanyAccess(session.user.id, companyId);
-    }
+    await checkAdminAuth();
 
     const supabase = createAdminClient();
 

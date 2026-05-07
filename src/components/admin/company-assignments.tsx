@@ -19,8 +19,6 @@ export function CompanyAssignments({
   companyId,
   assignments,
   users = [],
-  currentUserId,
-  currentUserRole,
 }: {
   companyId: string;
   assignments: {
@@ -32,8 +30,6 @@ export function CompanyAssignments({
     assignedBy: string | null;
   }[];
   users?: User[];
-  currentUserId?: string;
-  currentUserRole?: string;
 }) {
   const t = useTranslations('app');
   const [isPending, startTransition] = useTransition();
@@ -146,11 +142,9 @@ export function CompanyAssignments({
                 <TableCell>{a.email}</TableCell>
                 <TableCell>{new Date(a.assignedAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
-                  {currentUserRole === Role.MANAGER && a.userId === currentUserId ? null : (
-                    <Button variant="outline" size="sm" disabled={isPending} onClick={() => handleUnassign(a.userId)}>
-                      <UserMinus className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <Button variant="outline" size="sm" disabled={isPending} onClick={() => handleUnassign(a.userId)}>
+                    <UserMinus className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

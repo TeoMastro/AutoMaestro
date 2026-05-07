@@ -26,11 +26,11 @@ Next.js 16 App Router, React 19, TypeScript strict, Supabase (Postgres + Auth + 
 
 Roles: `ADMIN`, `MANAGER`, `CLIENT` (defined in `/src/lib/constants.ts`).
 
-- **ADMIN** — unrestricted access to all companies, all users, and all routes (including `/admin/*`)
-- **MANAGER** — can only see and manage the companies they are assigned to (via `user_companies` table) and the clients that belong to those companies; accesses `/manage/*` routes
+- **ADMIN** — unrestricted access. Owns all provisioning: companies, users (incl. clients), templates. Accesses `/admin/*` and all `/manage/*` routes.
+- **MANAGER** — operational access only, scoped to companies assigned via `user_companies`. Can CRUD workflows in those companies, view templates, and see scoped chat/trigger history + dashboard. Cannot create/edit/delete companies, users, or templates.
 - **CLIENT** — can only see and interact with resources (workflows, documents, chat/trigger history) that belong to their own company; accesses `/workflow`, `/chat-history`, `/trigger-history`, `/dashboard`, `/profile`, `/settings`
 
-`/manage/*` is a **shared** admin + manager route (not manager-only). The same pages render for both roles, but the data scope differs: admins see **all companies** and everything under them, while managers only see the companies they're assigned to via `user_companies` (and the clients, workflows, templates, logs that belong to those companies). Server actions enforce this via `getManagerCompanyIds()` / `checkManagerCompanyAccess()`. `/manage/*` currently includes `companies`, `clients`, `workflows`, `templates`. `/admin/*` is admin-only and currently scoped to `user` management.
+`/manage/*` is mixed: **`/manage/workflows`** is shared (admin + manager, manager scoped via `user_companies`); **`/manage/templates`** is shared but read-only for managers (only admins can CRUD); **`/manage/companies`** and **`/manage/clients/create`** are admin-only despite the path. Server actions enforce per-action: `checkAdminAuth()` for provisioning, `checkAdminOrManagerAuth()` + `getManagerCompanyIds()` / `checkManagerCompanyAccess()` for workflow ops. `/admin/*` is admin-only and scoped to `user` management.
 
 Auth helpers in `/src/lib/auth-helpers.ts`:
 

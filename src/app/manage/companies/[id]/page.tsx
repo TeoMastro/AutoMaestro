@@ -15,7 +15,7 @@ export default async function ManageCompanyViewPage({
 }) {
   const session = await getSession();
 
-  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
+  if (!session || session.user.role !== Role.ADMIN) {
     notFound();
   }
 
@@ -37,8 +37,6 @@ export default async function ManageCompanyViewPage({
         assignments={assignments}
         users={users}
         searchParams={await searchParams}
-        currentUserId={session.user.id}
-        currentUserRole={session.user.role}
         logoUrl={logoUrl}
       />
     </div>

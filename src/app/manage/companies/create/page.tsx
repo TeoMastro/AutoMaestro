@@ -6,7 +6,7 @@ import { Role } from '@/lib/constants';
 export default async function CreateCompanyPage() {
   const session = await getSession();
 
-  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
+  if (!session || session.user.role !== Role.ADMIN) {
     notFound();
   }
 

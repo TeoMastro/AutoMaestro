@@ -9,15 +9,7 @@ import { N8nCredentialsCard } from './n8n-credentials-card';
 import Link from 'next/link';
 import { InfoAlert } from '@/components/info-alert';
 
-export function CompanyView({
-  company,
-  assignments,
-  users = [],
-  searchParams,
-  currentUserId,
-  currentUserRole,
-  logoUrl,
-}: CompanyViewProps) {
+export function CompanyView({ company, assignments, users = [], searchParams, logoUrl }: CompanyViewProps) {
   const t = useTranslations('app');
   const errorMsg = searchParams?.error as string | undefined;
 
@@ -98,13 +90,7 @@ export function CompanyView({
           <CardTitle>{t('assignedUsers')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <CompanyAssignments
-            companyId={company.id}
-            assignments={assignments}
-            users={users}
-            currentUserId={currentUserId}
-            currentUserRole={currentUserRole}
-          />
+          <CompanyAssignments companyId={company.id} assignments={assignments} users={users} />
         </CardContent>
       </Card>
     </div>

@@ -63,8 +63,8 @@ export async function AppSidebar() {
           },
         ]
       : []),
-    // Admin + Manager: Companies (manage)
-    ...(isAdmin || isManager
+    // Admin-only: Companies (manage)
+    ...(isAdmin
       ? [
           {
             title: t('companies'),

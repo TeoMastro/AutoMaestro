@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { Role } from '@/lib/constants';
 import { ClientForm } from '@/components/manage/client-form';
 import { getCompanyById } from '@/server-actions/company';
-import { getManagerCompanyIds } from '@/lib/auth-helpers';
 
 export default async function CreateClientPage({
   searchParams,
@@ -12,7 +11,7 @@ export default async function CreateClientPage({
 }) {
   const session = await getSession();
 
-  if (!session || (session.user.role !== Role.ADMIN && session.user.role !== Role.MANAGER)) {
+  if (!session || session.user.role !== Role.ADMIN) {
     notFound();
   }
 
@@ -23,18 +22,9 @@ export default async function CreateClientPage({
     notFound();
   }
 
-  // Verify the company exists
   const company = await getCompanyById(companyId);
   if (!company) {
     notFound();
-  }
-
-  // Verify manager has access to this company
-  if (session.user.role === Role.MANAGER) {
-    const managerCompanyIds = await getManagerCompanyIds(session.user.id);
-    if (!managerCompanyIds.includes(companyId)) {
-      notFound();
-    }
   }
 
   return (

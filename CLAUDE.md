@@ -12,9 +12,19 @@ n8n Whitelabel Frontend (branded as **AutoExec**, see `APP_NAME` in `/src/lib/co
 - `npm run build` — production build (requires `.env.local`)
 - `npm run lint` — ESLint
 - `npm run format` / `npm run format:check` — Prettier (single quotes, 2 spaces, trailing commas)
-- `npm run db:seed` — seed demo users (uses `tsx --env-file=.env.local`)
+- `npm run db:seed` — seed demo users into the dev DB (uses `tsx --env-file=.env.local`)
+- `npm run db:seed:test` — seed demo users into the **test** DB (no `--env-file`; inherits env from caller, used by `globalSetup`)
+- `npm run test:e2e` — Playwright E2E suite (loads `.env.test.local`, re-seeds the test DB on every run)
+- `npm run test:e2e:ui` / `:headed` / `:report` — Playwright UI mode / headed run / open last HTML report
 
-No test suite exists.
+## Testing (Playwright E2E)
+
+- Tests live in `/tests/e2e`; helpers in `/tests/helpers`; entry point `tests/global-setup.ts`.
+- **Always run against a dedicated Supabase project**, not the dev DB. The global setup re-seeds and resets demo passwords on every run, which would clobber dev data.
+- Bootstrap the test project once with `supabase/schema.sql` (consolidated equivalent of all migrations); apply newly added files in `supabase/migrations/` to it as they land. CI does not auto-apply schema changes.
+- Local credentials go in `.env.test.local` (gitignored). `.env.test` is a committed template (`!.env.test` in `.gitignore`) — never put real secrets there.
+- `playwright.config.ts` and `tests/global-setup.ts` both load `.env.test.local` via `dotenv`. In CI, skip the file and inject the same env vars from GitHub Actions secrets — `dotenv` won't override values already in `process.env`, and a missing `.env.test.local` is silently ignored.
+- The seed script (`supabase/seed.ts`) is shared between dev and test; the difference is only which env file is loaded.
 
 ## Tech Stack
 

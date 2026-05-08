@@ -33,7 +33,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Node 22 — native WebSocket is global by default, required by
+          # @supabase/realtime-js (Node 20 hides it behind --experimental-websocket).
+          node-version: 22
           cache: npm
 
       - name: Install dependencies

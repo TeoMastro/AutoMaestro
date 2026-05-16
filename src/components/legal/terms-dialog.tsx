@@ -11,6 +11,7 @@ import {
 import { FileText } from 'lucide-react';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { APP_NAME } from '@/lib/constants';
 
 interface TermsDialogProps {
   title: string;
@@ -40,7 +41,7 @@ export function TermsDialog({ title, isInSidebar = true }: TermsDialogProps) {
             <section>
               <h3 className="font-semibold mb-2">1. Acceptance of Terms</h3>
               <p>
-                By accessing and using AutoExec (&quot;the Service&quot;), you accept and agree to be bound by these
+                By accessing and using {APP_NAME} (&quot;the Service&quot;), you accept and agree to be bound by these
                 Terms of Service. If you do not agree to these terms, do not use the Service. These terms apply to all
                 users of the platform, including administrators, managers, and clients.
               </p>
@@ -49,7 +50,7 @@ export function TermsDialog({ title, isInSidebar = true }: TermsDialogProps) {
             <section>
               <h3 className="font-semibold mb-2">2. Description of Service</h3>
               <p>
-                AutoExec is a web-based dashboard and analytics platform that provides workflow management, client
+                {APP_NAME} is a web-based dashboard and analytics platform that provides workflow management, client
                 management, document processing, and reporting tools integrated with n8n workflow automation. The
                 Service allows users to manage chat workflows, trigger workflow executions, upload and process documents
                 for AI-powered knowledge bases, and view analytics and execution history.
@@ -88,7 +89,7 @@ export function TermsDialog({ title, isInSidebar = true }: TermsDialogProps) {
             <section>
               <h3 className="font-semibold mb-2">5. Intellectual Property</h3>
               <p>
-                The AutoExec platform, including its design, code, and content, is owned by the platform operator and is
+                The {APP_NAME} platform, including its design, code, and content, is owned by the platform operator and is
                 protected by intellectual property laws. You retain ownership of any data, documents, or content you
                 upload to the Service (&quot;User Content&quot;). By uploading User Content, you grant us a license to
                 process, store, and use it as necessary to provide the Service.
@@ -161,7 +162,7 @@ export function TermsDialog({ title, isInSidebar = true }: TermsDialogProps) {
             <section>
               <h3 className="font-semibold mb-2">10. Limitation of Liability</h3>
               <p>
-                TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL AutoExec OR ITS OPERATORS BE LIABLE FOR ANY
+                TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL {APP_NAME} OR ITS OPERATORS BE LIABLE FOR ANY
                 INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF
                 PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR USE OF OR INABILITY TO USE
                 THE SERVICE.

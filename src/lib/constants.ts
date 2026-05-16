@@ -1,5 +1,5 @@
 // App-wide branding
-export const APP_NAME = 'AutoExec';
+export const APP_NAME = 'AutoMaestro';
 
 // Open-source project links
 export const GITHUB_REPO_URL = 'https://github.com/TeoMastro/n8n-whitelabel-frontend';

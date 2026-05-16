@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-n8n Whitelabel Frontend (branded as **AutoExec**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack open-source app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Released under the MIT License (see `LICENCE.md`).
+n8n Whitelabel Frontend (branded as **AutoMaestro**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack open-source app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Released under the MIT License (see `LICENCE.md`).
 
 ## Key Commands
 
@@ -200,7 +200,7 @@ Helper exports in `user-table.tsx`: `getStatusBadge(status, t)` and `getRoleBadg
 - Build fails without `.env.local` (env vars required at build time)
 - Demo users (seed): `admin@nextlaunchkit.com`, `manager@nextlaunchkit.com`, `user@nextlaunchkit.com`
 - n8n credentials on `companies` are encrypted with `ENCRYPTION_KEY` — rotating the key invalidates existing rows; decrypt + re-encrypt before changing it
-- App display name comes from `APP_NAME` in `/src/lib/constants.ts` (currently "AutoExec") — never hardcode the brand string
+- App display name comes from `APP_NAME` in `/src/lib/constants.ts` (currently "AutoMaestro") — never hardcode the brand string
 - Self-signup is disabled. Admins create users (managers + clients) from `/admin/user`. Only login (`/auth/signin`), forgot/reset password, and email verification are exposed under `/auth/*`.
 
 ## Environment Variables

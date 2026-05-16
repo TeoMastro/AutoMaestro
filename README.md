@@ -99,16 +99,64 @@ npm run start            # Start production server
 npm run lint             # Run ESLint
 
 # Database
-npm run db:seed          # Seed database with demo users
+npm run db:seed          # Seed dev database with demo users (uses .env.local)
+npm run db:seed:test     # Seed test database (inherits env; called by Playwright globalSetup)
+
+# Testing (Playwright E2E)
+npm run test:e2e         # Run end-to-end tests (uses .env.test.local)
+npm run test:e2e:ui      # Run tests in Playwright UI mode
+npm run test:e2e:headed  # Run tests with a visible browser
+npm run test:e2e:report  # Open the last HTML report
 
 # Formatting
 npm run format           # Format all files with Prettier
 npm run format:check     # Check formatting without changes
 ```
 
+## End-to-End Tests
+
+The Playwright suite re-seeds the database and resets demo passwords on every run, so it **must** point at a Supabase project dedicated to testing — never your dev project.
+
+1. **Create a second Supabase project** in the same org (free tier allows 2). Enable the `vector` extension under **Database → Extensions**, then open **SQL Editor** and run `supabase/schema.sql` once — that's the consolidated schema (equivalent to running every file in `supabase/migrations/` in order). For any migration added _after_ you set the project up, run that single migration file the same way.
+2. **Create `.env.test.local`** at the repo root (gitignored). Use `.env.test` as the template:
+
+   ```bash
+   cp .env.test .env.test.local
+   ```
+
+   Fill in the test project's URL, anon key, service role key, and a 32+ character `ENCRYPTION_KEY` (`openssl rand -base64 32`). Leave `OPENAI_API_KEY` blank unless your tests exercise document embedding.
+
+3. **Run the tests:**
+
+   ```bash
+   npm run test:e2e
+   ```
+
+   Both `playwright.config.ts` and `tests/global-setup.ts` load `.env.test.local` via `dotenv` before anything touches the database.
+
+> ⚠️ Do not put real credentials in `.env.test` — that file is committed (opted in via `!.env.test` in `.gitignore`) and is just a template.
+
+### Running in CI
+
+The repo ships a GitHub Actions workflow at `.github/workflows/e2e.yml` that runs Playwright on every push and PR to `main`. It boots `npm run dev` against the test Supabase project, re-seeds, and uploads the HTML report (and traces/videos on failure) as workflow artifacts.
+
+Add these **repository secrets** under **Settings → Secrets and variables → Actions** (values from your test Supabase project):
+
+| Secret                              | Source                                           |
+| ----------------------------------- | ------------------------------------------------ |
+| `TEST_SUPABASE_URL`                 | Test project → Settings → API → Project URL      |
+| `TEST_SUPABASE_ANON_KEY`            | Test project → Settings → API → `anon public`    |
+| `TEST_SUPABASE_SERVICE_ROLE_KEY`    | Test project → Settings → API → `service_role`   |
+| `TEST_ENCRYPTION_KEY`               | `openssl rand -base64 32`                        |
+| `TEST_OPENAI_API_KEY`               | OpenAI API key (only if tests hit embeddings)    |
+
+`NEXT_PUBLIC_APP_URL` is hardcoded to `http://localhost:3000` in the workflow since Playwright runs against the dev server it spawns.
+
+The workflow does **not** apply schema changes to the test project. After you bootstrap the project once with `supabase/schema.sql`, run any newly added file in `supabase/migrations/` against it manually — otherwise tests will fail with schema errors.
+
 ## Environment Variables
 
-Required in `.env.local` (see `.env.example`):
+Required in `.env.local` for development (see `.env.example`). The same variables are required in `.env.test.local` for E2E tests, pointing at the dedicated test Supabase project (see `.env.test`).
 
 | Variable                        | Description                                 |
 | ------------------------------- | ------------------------------------------- |
@@ -116,6 +164,8 @@ Required in `.env.local` (see `.env.example`):
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public/anon key                    |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Supabase service role key (server-only)     |
 | `NEXT_PUBLIC_APP_URL`           | Your app URL (e.g. `http://localhost:3000`) |
+| `ENCRYPTION_KEY`                | 32+ char random string for encrypting n8n credentials at rest |
+| `OPENAI_API_KEY`                | Required for document embedding             |
 
 ## Translations
 

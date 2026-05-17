@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InfoAlert } from '@/components/info-alert';
@@ -383,10 +384,9 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
-                  <Input
+                  <PasswordInput
                     id="currentPassword"
                     name="currentPassword"
-                    type="password"
                     disabled={isSubmitting}
                     className={fieldErrors.currentPassword ? 'border-red-500' : ''}
                   />
@@ -397,10 +397,9 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">{t('newPassword')}</Label>
-                    <Input
+                    <PasswordInput
                       id="newPassword"
                       name="newPassword"
-                      type="password"
                       placeholder={t('passwordPlaceholder')}
                       disabled={isSubmitting}
                       className={fieldErrors.newPassword ? 'border-red-500' : ''}
@@ -409,10 +408,9 @@ export function ProfileCard({ user, companies }: ProfileCardProps) {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">{t('confirmNewPassword')}</Label>
-                    <Input
+                    <PasswordInput
                       id="confirmPassword"
                       name="confirmPassword"
-                      type="password"
                       disabled={isSubmitting}
                       className={fieldErrors.confirmPassword ? 'border-red-500' : ''}
                     />

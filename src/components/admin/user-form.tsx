@@ -6,6 +6,7 @@ import { createUserAction, updateUserAction } from '@/server-actions/user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserFormProps, UserFormState } from '@/types/user';
@@ -100,10 +101,9 @@ export function UserForm({ user, mode }: UserFormProps) {
                 <span className="text-sm text-muted-foreground ml-2">({t('leaveEmptyToKeepCurrent')})</span>
               )}
             </Label>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               className={state.errors.password ? 'border-red-500' : ''}
               required={mode === 'create'}
             />

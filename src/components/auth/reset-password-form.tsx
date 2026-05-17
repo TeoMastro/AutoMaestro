@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
@@ -68,10 +68,9 @@ export function ResetPasswordForm() {
 
           <div className="space-y-2">
             <Label htmlFor="password">{t('newPassword')}</Label>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               placeholder={t('enterNewPassword')}
               disabled={isSubmitting}
               className={fieldErrors.password ? 'border-red-500' : ''}
@@ -81,10 +80,9 @@ export function ResetPasswordForm() {
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
-            <Input
+            <PasswordInput
               id="confirmPassword"
               name="confirmPassword"
-              type="password"
               placeholder={t('confirmNewPassword')}
               disabled={isSubmitting}
               className={fieldErrors.confirmPassword ? 'border-red-500' : ''}

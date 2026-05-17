@@ -131,10 +131,6 @@ export function PrivacyPolicyDialog({ title, isInSidebar = true }: PrivacyPolicy
                   <strong>n8n</strong> — Workflow automation. When you execute workflows, data is sent to your
                   configured n8n webhook URLs. We are not responsible for the privacy practices of your n8n instance.
                 </li>
-                <li>
-                  <strong>Google</strong> — OAuth sign-in provider (if used). Google&apos;s privacy practices govern any
-                  data shared during OAuth authentication.
-                </li>
               </ul>
 
               <h4 className="font-medium mt-3 mb-1">3.2 Legal Requirements</h4>

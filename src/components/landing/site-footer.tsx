@@ -17,7 +17,7 @@ export function SiteFooter() {
               <span className="text-sm font-semibold">{APP_NAME}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} {APP_NAME}. Open source, MIT licensed.
+              &copy; {new Date().getFullYear()} {APP_NAME}. Open source, GPL-3.0 licensed.
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-2">
               <PrivacyPolicyDialog title="Privacy Policy" isInSidebar={false} />
@@ -53,9 +53,6 @@ export function SiteFooter() {
               <Github className="h-3.5 w-3.5" />
               Workflows
             </a>
-            <Link href="/auth/signin" className="hover:text-foreground transition-colors">
-              Sign In
-            </Link>
           </div>
         </div>
       </div>

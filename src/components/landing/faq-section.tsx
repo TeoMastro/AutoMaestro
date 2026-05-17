@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     q: 'Is it really free?',
-    a: `Yes. ${APP_NAME} is MIT licensed and free to self-host forever. There are no plans, no resource limits, no payments — clone the repo, run the migrations, and you're live. The only costs are your own infrastructure (Supabase, n8n, OpenAI for embeddings).`,
+    a: `Yes. ${APP_NAME} is GPL-3.0 licensed and free to self-host forever. There are no plans, no resource limits, no payments — clone the repo, run the migrations, and you're live. The only costs are your own infrastructure (Supabase, n8n, OpenAI for embeddings).`,
   },
   {
     q: 'Where do the workflow templates come from?',

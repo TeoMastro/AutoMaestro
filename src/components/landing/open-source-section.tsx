@@ -6,8 +6,9 @@ import { GITHUB_REPO_URL, GITHUB_WORKFLOWS_REPO_URL } from '@/lib/constants';
 const pillars = [
   {
     icon: Github,
-    title: 'MIT Licensed',
-    description: 'Use it for personal, commercial, or client work — no strings, no hidden fees, no usage caps.',
+    title: 'GPL-3.0 Licensed',
+    description:
+      'Free to use, modify, and self-host. Derivative works must remain open source under the same license.',
   },
   {
     icon: Server,

@@ -126,9 +126,6 @@ export function TermsDialog({ title, isInSidebar = true }: TermsDialogProps) {
                 <li>
                   <strong>n8n</strong> — Workflow automation engine (operated separately by users)
                 </li>
-                <li>
-                  <strong>Google</strong> — Optional OAuth sign-in provider
-                </li>
               </ul>
               <p className="mt-2">
                 We are not responsible for the availability, accuracy, or practices of these third-party services. Their

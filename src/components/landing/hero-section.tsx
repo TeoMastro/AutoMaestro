@@ -24,7 +24,7 @@ export function HeroSection() {
           <AnimatedSection>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
               <Github className="h-3.5 w-3.5" />
-              Open source · MIT licensed
+              Open source · GPL-3.0 licensed
             </div>
           </AnimatedSection>
 

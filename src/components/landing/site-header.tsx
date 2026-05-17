@@ -54,11 +54,6 @@ export function SiteHeader() {
                 </a>
               </Button>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Button asChild size="sm">
-                <Link href="/auth/signin">Sign In</Link>
-              </Button>
-            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 

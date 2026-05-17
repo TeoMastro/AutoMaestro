@@ -53,11 +53,6 @@ export default function MobileNavigation({ navigationItems }: MobileNavigationPr
             <Github className="h-5 w-5" />
             GitHub
           </a>
-          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 mx-5">
-            <Link href="/auth/signin" onClick={() => setOpen(false)}>
-              Sign In
-            </Link>
-          </Button>
         </nav>
       </SheetContent>
     </Sheet>

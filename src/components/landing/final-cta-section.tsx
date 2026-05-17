@@ -22,7 +22,7 @@ export function FinalCtaSection() {
                 Star on GitHub
               </a>
             </Button>
-            <p className="mt-4 text-sm text-muted-foreground">MIT licensed. Self-host on your own infrastructure.</p>
+            <p className="mt-4 text-sm text-muted-foreground">GPL-3.0 licensed. Self-host on your own infrastructure.</p>
           </div>
         </AnimatedSection>
       </div>

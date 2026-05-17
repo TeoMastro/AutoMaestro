@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-n8n Whitelabel Frontend (branded as **AutoMaestro**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack open-source app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Released under the MIT License (see `LICENCE.md`).
+n8n Whitelabel Frontend (branded as **AutoMaestro**, see `APP_NAME` in `/src/lib/constants.ts`) — a Next.js 16 full-stack open-source app that wraps n8n workflows behind a branded portal with Supabase auth, role-based access, document processing, and i18n (English/Greek). Released under the GNU General Public License v3.0 (see `LICENCE.md`).
 
 ## Key Commands
 

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Github, Zap } from 'lucide-react';
+import Image from 'next/image';
+import { Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -21,9 +22,14 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-7xl">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-sm shadow-primary/20">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <Image
+            src="/AutoMaestro-logo.png"
+            alt={`${APP_NAME} logo`}
+            width={32}
+            height={32}
+            priority
+            className="h-8 w-8 rounded-lg object-contain"
+          />
           <span className="font-bold text-lg tracking-tight">{APP_NAME}</span>
         </Link>
 

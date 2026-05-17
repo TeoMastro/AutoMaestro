@@ -1,5 +1,6 @@
 import { Home, Users, Workflow, MessageSquare, Zap, Building2, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import {
   Sidebar,
@@ -129,17 +130,25 @@ export async function AppSidebar() {
                   className="w-8 h-8 object-contain rounded-lg"
                 />
               ) : (
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600">
-                  <Building2 className="size-4 text-white" />
-                </div>
+                <Image
+                  src="/AutoMaestro-logo.png"
+                  alt={`${APP_NAME} logo`}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-lg object-contain"
+                />
               )}
               <span className="truncate text-sm font-medium">{clientCompanyName ?? 'No company assigned'}</span>
             </>
           ) : (
             <>
-              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">NL</span>
-              </div>
+              <Image
+                src="/AutoMaestro-logo.png"
+                alt={`${APP_NAME} logo`}
+                width={32}
+                height={32}
+                className="w-8 h-8 rounded-lg object-contain"
+              />
               <h2 className="text-lg font-semibold text-sidebar-foreground">{APP_NAME}</h2>
             </>
           )}

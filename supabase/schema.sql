@@ -3,6 +3,12 @@
 -- Run this against a clean Supabase project after enabling
 -- the pgvector extension in Dashboard > Database > Extensions.
 --
+-- This file is the consolidated equivalent of every migration in
+-- supabase/migrations/. Apply it once to bootstrap a new project;
+-- after that, apply each new file under migrations/ as it lands.
+-- Currently baked in: 001–011, 014, 015. (012/013 were subscription
+-- tables fully removed by 014, so they are no-ops on a clean apply.)
+--
 -- Structure:
 --   Part A: Extensions + helper functions
 --   Part B: All CREATE TABLE statements (in FK order)
@@ -91,11 +97,15 @@ $$;
 
 -- 2. companies
 CREATE TABLE public.companies (
-  id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  name         TEXT        NOT NULL,
-  note         TEXT,
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  id                     UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  name                   TEXT        NOT NULL,
+  note                   TEXT,
+  logo_storage_path      TEXT,
+  n8n_instance_url       TEXT,
+  n8n_instance_username  TEXT,
+  n8n_instance_password  TEXT,
+  created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at             TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- 3. user_companies (user ↔ company assignment)
@@ -123,7 +133,9 @@ CREATE TABLE public.workflows (
   is_active          BOOLEAN     NOT NULL DEFAULT true,
   created_by         UUID        REFERENCES public.profiles(id) ON DELETE SET NULL,
   created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Trigger workflows never query the knowledge base (migration 006).
+  CONSTRAINT chk_trigger_no_kb CHECK (type != 'trigger' OR has_knowledge_base = false)
 );
 
 -- 4b. template_library (shared n8n templates)
@@ -465,11 +477,12 @@ BEGIN
 END;
 $$;
 
--- Chat sessions aggregation
+-- Chat sessions aggregation (migration 004 added p_company_id)
 CREATE OR REPLACE FUNCTION public.get_chat_sessions(
   p_search        TEXT    DEFAULT '',
   p_workflow_id   UUID    DEFAULT NULL,
   p_workflow_ids  UUID[]  DEFAULT NULL,
+  p_company_id    UUID    DEFAULT NULL,
   p_sort_field    TEXT    DEFAULT 'last_message_at',
   p_sort_dir      TEXT    DEFAULT 'desc',
   p_limit         INTEGER DEFAULT 10,
@@ -494,9 +507,11 @@ BEGIN
   FROM (
     SELECT cl.session_id
     FROM public.chat_logs cl
+    JOIN public.workflows w ON w.id = cl.workflow_id
     WHERE (p_search = '' OR cl.session_id ILIKE '%' || p_search || '%')
       AND (p_workflow_id IS NULL OR cl.workflow_id = p_workflow_id)
       AND (p_workflow_ids IS NULL OR cl.workflow_id = ANY(p_workflow_ids))
+      AND (p_company_id IS NULL OR w.company_id = p_company_id)
     GROUP BY cl.session_id
   ) sub;
 
@@ -514,6 +529,7 @@ BEGIN
   WHERE (p_search = '' OR cl.session_id ILIKE '%' || p_search || '%')
     AND (p_workflow_id IS NULL OR cl.workflow_id = p_workflow_id)
     AND (p_workflow_ids IS NULL OR cl.workflow_id = ANY(p_workflow_ids))
+    AND (p_company_id IS NULL OR w.company_id = p_company_id)
   GROUP BY cl.session_id, cl.workflow_id, w.name
   ORDER BY
     CASE WHEN p_sort_field = 'last_message_at'  AND p_sort_dir = 'desc' THEN MAX(cl.created_at) END DESC NULLS LAST,
@@ -530,11 +546,12 @@ BEGIN
 END;
 $$;
 
--- Trigger logs with pagination
+-- Trigger logs with pagination (migration 004 added p_company_id)
 CREATE OR REPLACE FUNCTION public.get_trigger_logs(
   p_search      TEXT DEFAULT '',
   p_workflow_id UUID DEFAULT NULL,
   p_user_id     UUID DEFAULT NULL,
+  p_company_id  UUID DEFAULT NULL,
   p_status      TEXT DEFAULT '',
   p_sort_field  TEXT DEFAULT 'created_at',
   p_sort_dir    TEXT DEFAULT 'desc',
@@ -574,6 +591,7 @@ BEGIN
         WHERE uc.user_id = p_user_id AND wf.id = t.workflow_id
       )
     )
+    AND (p_company_id IS NULL OR w.company_id = p_company_id)
     AND (p_status = '' OR t.status = p_status)
     AND (
       p_search = ''
@@ -609,6 +627,7 @@ BEGIN
         WHERE uc.user_id = p_user_id AND wf.id = t.workflow_id
       )
     )
+    AND (p_company_id IS NULL OR w.company_id = p_company_id)
     AND (p_status = '' OR t.status = p_status)
     AND (
       p_search = ''

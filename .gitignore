@@ -48,6 +48,7 @@ next-env.d.ts
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/.playwright-cli/
 
 # ignore logs
 logs/*

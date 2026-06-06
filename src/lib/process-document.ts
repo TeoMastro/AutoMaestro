@@ -103,10 +103,15 @@ export async function processDocument(
       allEmbeddings.push(...response.data.map((d) => d.embedding));
     }
 
+    // User-provided key/value metadata (filterable in n8n). Spread first so the
+    // canonical pipeline fields below always win on key collision.
+    const customMetadata = (doc.custom_metadata as Record<string, string> | null) ?? {};
+
     // Build knowledge_base rows
     const rows = chunks.map((content, idx) => ({
       content,
       metadata: {
+        ...customMetadata,
         doc_id: `${documentId}_${idx}`,
         file_id: documentId,
         chunk_index: idx,

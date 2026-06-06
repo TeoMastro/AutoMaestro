@@ -162,6 +162,7 @@ CREATE TABLE public.documents (
                               CHECK (status IN ('pending', 'processing', 'ready', 'error')),
   error_message   TEXT,
   chunk_count     INTEGER,
+  custom_metadata JSONB       NOT NULL DEFAULT '{}'::jsonb,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );

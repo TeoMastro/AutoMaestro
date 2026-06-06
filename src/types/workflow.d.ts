@@ -43,6 +43,7 @@ export type WorkflowDocument = {
   status: DocumentStatus;
   errorMessage: string | null;
   chunkCount: number | null;
+  customMetadata: Record<string, string>;
   createdAt: Date;
   updatedAt: Date;
 };

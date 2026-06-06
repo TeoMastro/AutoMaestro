@@ -10,6 +10,8 @@ import {
 } from '@/server-actions/document';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -23,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Upload, Trash2, Database } from 'lucide-react';
+import { Upload, Trash2, Database, Plus, X } from 'lucide-react';
 import { InfoAlert } from '@/components/info-alert';
 import { WorkflowDocument } from '@/types/workflow';
 import { DocumentStatus, SUPPORTED_FILE_TYPES, MAX_FILE_SIZE_BYTES, MAX_UPLOAD_FILES } from '@/lib/constants';
@@ -58,6 +60,27 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [pollingIds, setPollingIds] = useState<Set<string>>(new Set());
   const [isDragOver, setIsDragOver] = useState(false);
+  const [stagedFiles, setStagedFiles] = useState<File[]>([]);
+  const [metadataPairs, setMetadataPairs] = useState<{ key: string; value: string }[]>([]);
+
+  const updatePair = (index: number, field: 'key' | 'value', value: string) => {
+    setMetadataPairs((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
+  };
+
+  const addPair = () => setMetadataPairs((prev) => [...prev, { key: '', value: '' }]);
+
+  const removePair = (index: number) => setMetadataPairs((prev) => prev.filter((_, i) => i !== index));
+
+  // Serialize non-empty pairs to a JSON object string for the server action.
+  const buildMetadataJson = useCallback(() => {
+    const obj: Record<string, string> = {};
+    for (const { key, value } of metadataPairs) {
+      const k = key.trim();
+      const v = value.trim();
+      if (k && v) obj[k] = v;
+    }
+    return Object.keys(obj).length > 0 ? JSON.stringify(obj) : '';
+  }, [metadataPairs]);
 
   const startPolling = (documentId: string) => {
     setPollingIds((prev) => new Set(prev).add(documentId));
@@ -82,14 +105,11 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
     }, 3000);
   };
 
-  const handleFiles = useCallback(
-    async (files: File[]) => {
+  // Validate and stage files — does NOT upload. The user confirms with the OK
+  // button so they can optionally attach custom metadata first.
+  const stageFiles = useCallback(
+    (files: File[]) => {
       if (files.length === 0) return;
-
-      if (files.length > MAX_UPLOAD_FILES) {
-        setAlert({ message: t('tooManyFiles', { max: MAX_UPLOAD_FILES }), type: 'error' });
-        return;
-      }
 
       // Client-side validation: filter valid files and collect skipped ones
       const validFiles: File[] = [];
@@ -108,91 +128,115 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
         validFiles.push(file);
       }
 
-      if (validFiles.length === 0) {
-        setAlert({ message: skippedNames.join(', '), type: 'error' });
+      if (stagedFiles.length + validFiles.length > MAX_UPLOAD_FILES) {
+        setAlert({ message: t('tooManyFiles', { max: MAX_UPLOAD_FILES }), type: 'error' });
         return;
       }
 
-      setUploading(true);
-      setAlert(null);
-      setUploadProgress({ current: 0, total: validFiles.length });
-
-      let successCount = 0;
-      const failedNames: string[] = [];
-
-      for (let i = 0; i < validFiles.length; i++) {
-        const file = validFiles[i];
-        setUploadProgress({ current: i + 1, total: validFiles.length });
-
-        try {
-          // Step 1: Create document record + get signed URL
-          const formData = new FormData();
-          formData.append('workflow_id', workflowId);
-          formData.append('file_name', file.name);
-          formData.append('file_size', String(file.size));
-          formData.append('file_type', file.type);
-
-          const result = await initiateDocumentUploadAction(
-            { success: false, errors: {}, formData: { workflow_id: workflowId }, globalError: null },
-            formData
-          );
-
-          if (!result.success || !result.documentId || !result.signedUploadUrl) {
-            failedNames.push(file.name);
-            continue;
-          }
-
-          // Step 2: Upload directly to Supabase Storage
-          const uploadRes = await fetch(result.signedUploadUrl, {
-            method: 'PUT',
-            body: file,
-            headers: { 'Content-Type': file.type || 'application/octet-stream' },
-          });
-
-          if (!uploadRes.ok) {
-            failedNames.push(file.name);
-            continue;
-          }
-
-          // Step 3: Trigger processing
-          await triggerDocumentProcessingAction(result.documentId);
-
-          // Step 4: Start polling
-          startPolling(result.documentId);
-          successCount++;
-        } catch {
-          failedNames.push(file.name);
-        }
+      if (validFiles.length === 0) {
+        if (skippedNames.length > 0) setAlert({ message: skippedNames.join(', '), type: 'error' });
+        return;
       }
 
-      // Build result message
-      if (failedNames.length > 0 && successCount > 0) {
-        setAlert({
-          message: `${failedNames.join(', ')} ${t('uploadFailed')}. ${t('uploadSuccessCount', { count: successCount })}`,
-          type: 'error',
-        });
-      } else if (failedNames.length > 0) {
-        setAlert({ message: `${failedNames.join(', ')} ${t('uploadFailed')}`, type: 'error' });
-      } else if (skippedNames.length > 0) {
-        setAlert({
-          message: t('uploadPartialSuccess', { success: successCount, failed: skippedNames.length }),
-          type: 'success',
-        });
-      }
-
-      router.refresh();
-      setUploading(false);
-      setUploadProgress(null);
+      setStagedFiles((prev) => [...prev, ...validFiles]);
+      setAlert(skippedNames.length > 0 ? { message: skippedNames.join(', '), type: 'error' } : null);
     },
-    [workflowId, t, router, startPolling]
+    [stagedFiles.length, t]
   );
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const removeStagedFile = (index: number) => setStagedFiles((prev) => prev.filter((_, i) => i !== index));
+
+  const cancelStaging = () => {
+    setStagedFiles([]);
+    setMetadataPairs([]);
+    setAlert(null);
+  };
+
+  // Upload all staged files with the (optional) shared custom metadata.
+  const confirmUpload = useCallback(async () => {
+    if (stagedFiles.length === 0) return;
+
+    setUploading(true);
+    setAlert(null);
+    setUploadProgress({ current: 0, total: stagedFiles.length });
+
+    // Shared across the whole batch — applies to every file uploaded.
+    const customMetadataJson = buildMetadataJson();
+
+    let successCount = 0;
+    const failedNames: string[] = [];
+
+    for (let i = 0; i < stagedFiles.length; i++) {
+      const file = stagedFiles[i];
+      setUploadProgress({ current: i + 1, total: stagedFiles.length });
+
+      try {
+        // Step 1: Create document record + get signed URL
+        const formData = new FormData();
+        formData.append('workflow_id', workflowId);
+        formData.append('file_name', file.name);
+        formData.append('file_size', String(file.size));
+        formData.append('file_type', file.type);
+        if (customMetadataJson) formData.append('custom_metadata', customMetadataJson);
+
+        const result = await initiateDocumentUploadAction(
+          { success: false, errors: {}, formData: { workflow_id: workflowId }, globalError: null },
+          formData
+        );
+
+        if (!result.success || !result.documentId || !result.signedUploadUrl) {
+          failedNames.push(file.name);
+          continue;
+        }
+
+        // Step 2: Upload directly to Supabase Storage
+        const uploadRes = await fetch(result.signedUploadUrl, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        });
+
+        if (!uploadRes.ok) {
+          failedNames.push(file.name);
+          continue;
+        }
+
+        // Step 3: Trigger processing
+        await triggerDocumentProcessingAction(result.documentId);
+
+        // Step 4: Start polling
+        startPolling(result.documentId);
+        successCount++;
+      } catch {
+        failedNames.push(file.name);
+      }
+    }
+
+    // Build result message
+    if (failedNames.length > 0 && successCount > 0) {
+      setAlert({
+        message: `${failedNames.join(', ')} ${t('uploadFailed')}. ${t('uploadSuccessCount', { count: successCount })}`,
+        type: 'error',
+      });
+    } else if (failedNames.length > 0) {
+      setAlert({ message: `${failedNames.join(', ')} ${t('uploadFailed')}`, type: 'error' });
+    }
+
+    // Clear the staging area on completion
+    setStagedFiles([]);
+    setMetadataPairs([]);
+
+    router.refresh();
+    setUploading(false);
+    setUploadProgress(null);
+  }, [stagedFiles, workflowId, t, router, startPolling, buildMetadataJson]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
     if (!fileList || fileList.length === 0) return;
     const files = Array.from(fileList);
     if (fileRef.current) fileRef.current.value = '';
-    await handleFiles(files);
+    stageFiles(files);
   };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -208,15 +252,15 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
   }, []);
 
   const handleDrop = useCallback(
-    async (e: React.DragEvent) => {
+    (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
       setIsDragOver(false);
       if (uploading || isPending) return;
       const files = Array.from(e.dataTransfer.files);
-      await handleFiles(files);
+      stageFiles(files);
     },
-    [uploading, isPending, handleFiles]
+    [uploading, isPending, stageFiles]
   );
 
   const handleDelete = (documentId: string) => {
@@ -274,6 +318,84 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
           <p className="text-xs text-muted-foreground mt-1">{t('uploadDocumentsHint')}</p>
         </div>
 
+        {/* Staging area — appears once files are selected; upload waits for OK */}
+        {stagedFiles.length > 0 && (
+          <div className="space-y-4 rounded-lg border p-4">
+            {/* Files queued for upload */}
+            <div className="space-y-2">
+              <Label className="text-sm">{t('filesToUpload')}</Label>
+              <div className="space-y-1">
+                {stagedFiles.map((file, i) => (
+                  <div key={`${file.name}-${i}`} className="flex items-center justify-between gap-2 text-sm">
+                    <span className="truncate">
+                      {file.name} <span className="text-muted-foreground">· {formatBytes(file.size)}</span>
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeStagedFile(i)}
+                      disabled={uploading}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom metadata editor — optional, applied to every staged file */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">{t('customMetadata')}</Label>
+                <Button type="button" variant="ghost" size="sm" onClick={addPair} disabled={uploading}>
+                  <Plus className="h-3 w-3 mr-1" />
+                  {t('addMetadataPair')}
+                </Button>
+              </div>
+              {metadataPairs.length === 0 ? (
+                <p className="text-xs text-muted-foreground">{t('customMetadataHint')}</p>
+              ) : (
+                <div className="space-y-2">
+                  {metadataPairs.map((pair, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <Input
+                        value={pair.key}
+                        onChange={(e) => updatePair(i, 'key', e.target.value)}
+                        placeholder={t('metadataKeyPlaceholder')}
+                        disabled={uploading}
+                        className="flex-1"
+                      />
+                      <Input
+                        value={pair.value}
+                        onChange={(e) => updatePair(i, 'value', e.target.value)}
+                        placeholder={t('metadataValuePlaceholder')}
+                        disabled={uploading}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="ghost" size="sm" onClick={() => removePair(i)} disabled={uploading}>
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Confirm / cancel */}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={cancelStaging} disabled={uploading}>
+                {t('cancel')}
+              </Button>
+              <Button type="button" onClick={confirmUpload} disabled={uploading}>
+                {uploading && uploadProgress
+                  ? t('uploadingProgress', { current: uploadProgress.current, total: uploadProgress.total })
+                  : t('ok')}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Documents list */}
         {initialDocuments.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">{t('noDocumentsFound')}</p>
@@ -296,6 +418,15 @@ export function DocumentManager({ workflowId, initialDocuments }: DocumentManage
                         {doc.fileType.toUpperCase()} · {formatBytes(doc.fileSizeBytes)}
                         {doc.chunkCount ? ` · ${doc.chunkCount} chunks` : ''}
                       </p>
+                      {Object.keys(doc.customMetadata).length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {Object.entries(doc.customMetadata).map(([k, v]) => (
+                            <Badge key={k} variant="outline" className={`${badgeStyles.indigo} text-[10px]`}>
+                              {k}: {v}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>

@@ -11,6 +11,49 @@ import { DocumentStatus } from '@/lib/constants';
 
 const STORAGE_BUCKET = 'workflow-documents';
 
+// Reserved metadata keys populated by the processing pipeline — custom keys
+// must not clobber these (see src/lib/process-document.ts).
+const RESERVED_METADATA_KEYS = new Set([
+  'doc_id',
+  'file_id',
+  'chunk_index',
+  'document_name',
+  'file_type',
+  'workflow_id',
+]);
+
+const MAX_METADATA_PAIRS = 20;
+const MAX_METADATA_KEY_LENGTH = 64;
+const MAX_METADATA_VALUE_LENGTH = 256;
+
+/**
+ * Parses and sanitizes the `custom_metadata` form field (a JSON object of
+ * string→string pairs). Silently drops empty, reserved, or oversized entries
+ * so a malformed value never blocks an upload. Returns a flat string map.
+ */
+function parseCustomMetadata(raw: string | null): Record<string, string> {
+  if (!raw) return {};
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return {};
+  }
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+
+  const result: Record<string, string> = {};
+  for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+    const k = key.trim();
+    if (!k || k.length > MAX_METADATA_KEY_LENGTH || RESERVED_METADATA_KEYS.has(k)) continue;
+    if (typeof value !== 'string') continue;
+    const v = value.trim();
+    if (!v || v.length > MAX_METADATA_VALUE_LENGTH) continue;
+    result[k] = v;
+    if (Object.keys(result).length >= MAX_METADATA_PAIRS) break;
+  }
+  return result;
+}
+
 function mapDocument(d: Record<string, unknown>): WorkflowDocument {
   return {
     id: d.id as string,
@@ -23,6 +66,7 @@ function mapDocument(d: Record<string, unknown>): WorkflowDocument {
     status: d.status as DocumentStatus,
     errorMessage: (d.error_message as string | null) ?? null,
     chunkCount: (d.chunk_count as number | null) ?? null,
+    customMetadata: (d.custom_metadata as Record<string, string> | null) ?? {},
     createdAt: new Date(d.created_at as string),
     updatedAt: new Date(d.updated_at as string),
   };
@@ -45,6 +89,7 @@ export async function initiateDocumentUploadAction(
     const workflowId = formData.get('workflow_id')?.toString() ?? '';
     const fileName = formData.get('file_name')?.toString() ?? '';
     const fileSize = parseInt(formData.get('file_size')?.toString() ?? '0');
+    const customMetadata = parseCustomMetadata(formData.get('custom_metadata')?.toString() ?? null);
 
     if (!workflowId) {
       return {
@@ -115,6 +160,7 @@ export async function initiateDocumentUploadAction(
         file_type: ext,
         storage_path: storagePath,
         file_size_bytes: fileSize || null,
+        custom_metadata: customMetadata,
         status: 'pending',
       })
       .select('id')

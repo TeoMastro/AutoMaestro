@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { query, match_count, match_threshold } = body;
+  const { query, match_count, match_threshold, filter } = body;
 
   if (!query || typeof query !== 'string' || !query.trim()) {
     logger.error('api/knowledge-search: missing or invalid query', { workflowId: workflow.id });
@@ -37,6 +37,19 @@ export async function POST(req: NextRequest) {
 
   const matchCount = typeof match_count === 'number' ? match_count : 10;
   const matchThreshold = typeof match_threshold === 'number' ? match_threshold : 0.5;
+
+  // Optional metadata filter (JSONB containment, `metadata @> filter`). Accepts
+  // any object — mirrors n8n's match_documents. `workflow_id` is dropped since
+  // workflow scoping is already enforced server-side from the Bearer token.
+  let metadataFilter: Record<string, unknown> = {};
+  if (filter !== undefined && filter !== null) {
+    if (typeof filter !== 'object' || Array.isArray(filter)) {
+      logger.error('api/knowledge-search: invalid filter', { workflowId: workflow.id });
+      return NextResponse.json({ error: 'filter must be a JSON object' }, { status: 400 });
+    }
+    metadataFilter = { ...(filter as Record<string, unknown>) };
+    delete metadataFilter.workflow_id;
+  }
 
   let embedding: number[];
   try {
@@ -59,7 +72,7 @@ export async function POST(req: NextRequest) {
     workflow_id_filter: workflow.id,
     match_count: matchCount,
     match_threshold: matchThreshold,
-    filter: {},
+    filter: metadataFilter,
   });
 
   if (rpcError) {
